@@ -21,17 +21,20 @@ jobs:
 
       - name: Check for Updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd source
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-            echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           else
-            if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-              echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
             fi
           fi
 

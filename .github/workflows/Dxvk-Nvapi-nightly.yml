@@ -23,17 +23,20 @@ jobs:
 
       - name: Check for Updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd dxvk
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-            echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           else
-            if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-              echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
             fi
           fi
 
@@ -137,6 +140,7 @@ jobs:
           
           find dxvk-nvapi/build-x64 -name "nvapi*.dll" -exec cp -L {} packaging/system32/nvapi64.dll \;
           find dxvk-nvapi/build-x86 -name "nvapi*.dll" -exec cp -L {} packaging/syswow64/nvapi.dll \;
+
           cat <<EOF > packaging/profile.json
           {
             "type": "DXVK",
@@ -265,17 +269,19 @@ jobs:
 
       - name: Check for Updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd dxvk
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-            echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           else
-            if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
-              echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
             fi
           fi
 
@@ -451,6 +457,7 @@ jobs:
           
           find dxvk-nvapi/build-ec -name "nvapi*.dll" -exec cp -L {} packaging/system32/nvapi64.dll \;
           find dxvk-nvapi/build-x86 -name "nvapi*.dll" -exec cp -L {} packaging/syswow64/nvapi.dll \;
+
           llvm-strip --strip-all packaging/system32/*.dll
           llvm-strip --strip-all packaging/syswow64/*.dll
 
@@ -525,6 +532,7 @@ jobs:
           name: "DXVK+NVAPI ARM64EC Nightly ${{ env.COMMIT_HASH }}"
           body: |
             Automated nightly build of DXVK (ARM64EC) bundled with DXVK-NVAPI.
+
             DXVK Commit: https://github.com/doitsujin/dxvk/commit/${{ env.COMMIT_HASH }}
             DXVK-NVAPI Commit: https://github.com/jp7677/dxvk-nvapi/commit/${{ env.NVAPI_HASH }}
 
