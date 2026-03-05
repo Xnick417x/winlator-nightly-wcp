@@ -48,7 +48,8 @@ jobs:
               ("FEXCore", "Stable-FEX"),
               ("Box64", "Stable-Box64"),
               ("WOWBox64", "Stable-wowbox64"),
-              ("Wine", "Wine")
+              ("Wine", "Wine"),
+              ("Proton", "GameNative")
           ]
 
           def run_gh(cmd):
