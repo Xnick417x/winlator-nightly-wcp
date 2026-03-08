@@ -460,5 +460,11 @@
     "verName": "wine-9.0-x86_64-ref4ik",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.0-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-8.20-x86_64_ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-8.20-x86_64_ref4ik.wcp"
   }
 ]
