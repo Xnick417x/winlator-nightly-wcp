@@ -23,6 +23,7 @@ jobs:
           import os
           import json
           import subprocess
+          import re
 
           pack_data = []
           repo = os.environ.get("GITHUB_REPOSITORY")
@@ -88,21 +89,26 @@ jobs:
               assets_json = run_gh(f"gh release view {tag} --repo {repo} --json assets")
               if assets_json:
                   try:
-                          assets = json.loads(assets_json).get("assets", [])
-                          for asset in assets:
-                              asset_name = asset.get("name", "")
-                              if asset_name.endswith(".wcp") or asset_name.endswith(".wcp.xz"):
-                                  clean_name = asset_name.replace(".wcp.xz", "").replace(".wcp", "")
-                                  pack_data.append({
-                                      "type": w_type,
-                                      "verName": clean_name,
-                                      "verCode": "0",
-                                      "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
-                                  })
+                      assets = json.loads(assets_json).get("assets", [])
+                      for asset in assets:
+                          asset_name = asset.get("name", "")
+                          if asset_name.endswith(".wcp") or asset_name.endswith(".wcp.xz"):
+                              clean_name = asset_name.replace(".wcp.xz", "").replace(".wcp", "")
+                              pack_data.append({
+                                  "type": w_type,
+                                  "verName": clean_name,
+                                  "verCode": "0",
+                                  "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
+                              })
                   except:
                       pass
 
-          pack_data = sorted(pack_data, key=lambda x: (x["type"], x["verName"]))
+          def version_sort_key(item):
+              numbers = [int(n) for n in re.findall(r"\d+", item["verName"])]
+              descending_numbers = [-n for n in numbers]
+              return (item["type"], descending_numbers, item["verName"])
+
+          pack_data = sorted(pack_data, key=version_sort_key)
 
           with open("content.json", "w") as f:
               json.dump(pack_data, f, indent=2)
