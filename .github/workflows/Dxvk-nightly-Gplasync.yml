@@ -81,13 +81,21 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: ccache -s
 
-      - name: Prepare Package
+      - name: Generate Version Info
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dxvk
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          cd ..
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "VERSION_NAME=dxvk-${LATEST_TAG}-gplasync-${COMMIT_HASH}" >> $GITHUB_ENV
 
+      - name: Prepare Package
+        if: env.SHOULD_BUILD == 'true'
+        run: |
           mkdir -p packaging/system32 packaging/syswow64
           cp dxvk-built/dxvk-master/x64/*.dll packaging/system32/
           cp dxvk-built/dxvk-master/x32/*.dll packaging/syswow64/
@@ -95,9 +103,9 @@ jobs:
           cat <<EOF > packaging/profile.json
           {
             "type": "DXVK",
-            "versionName": "2.7.1-gplasync-${COMMIT_HASH}",
+            "versionName": "${{ env.VERSION_NAME }}",
             "versionCode": 0,
-            "description": "DXVK 2.7.1 GPLAsync",
+            "description": "DXVK ${{ env.LATEST_TAG }} GPLAsync",
             "author": "Blank",
             "files": [
               {
@@ -136,14 +144,11 @@ jobs:
           }
           EOF
 
-      - name: Create WCP Package
+      - name: Create Package
         if: env.SHOULD_BUILD == 'true'
         run: |
-          cd dxvk
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
-          cd ../packaging
-          tar -cJf ../dxvk-gplasync-${COMMIT_HASH}.wcp *
+          cd packaging
+          tar -cJf ../${{ env.VERSION_NAME }}.wcp *
 
       - name: Create Release
         if: env.SHOULD_BUILD == 'true'
@@ -180,7 +185,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/dxvk-nightly-${{ env.COMMIT_HASH }}/dxvk-gplasync-${{ env.COMMIT_HASH }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/dxvk-nightly-${{ env.COMMIT_HASH }}/${{ env.VERSION_NAME }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
           
           git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
@@ -311,7 +316,7 @@ jobs:
           
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
-          echo "VERSION_NAME=${LATEST_TAG}-gplasync-arm64ec-${COMMIT_HASH}" >> $GITHUB_ENV
+          echo "VERSION_NAME=dxvk-${LATEST_TAG}-gplasync-arm64ec-${COMMIT_HASH}" >> $GITHUB_ENV
 
       - name: Configure Cross-Files
         if: env.SHOULD_BUILD == 'true'
