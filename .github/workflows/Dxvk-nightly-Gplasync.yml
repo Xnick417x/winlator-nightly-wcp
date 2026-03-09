@@ -40,6 +40,18 @@ jobs:
             fi
           fi
 
+      - name: Generate Version Info
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          cd dxvk
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${LATEST_TAG}-gplasync-${COMMIT_HASH}" >> $GITHUB_ENV
+
       - name: Install Dependencies
         if: env.SHOULD_BUILD == 'true'
         run: |
@@ -80,18 +92,6 @@ jobs:
       - name: Show ccache stats
         if: env.SHOULD_BUILD == 'true'
         run: ccache -s
-
-      - name: Generate Version Info
-        if: env.SHOULD_BUILD == 'true'
-        run: |
-          cd dxvk
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
-          
-          git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
-          echo "VERSION_NAME=dxvk-${LATEST_TAG}-gplasync-${COMMIT_HASH}" >> $GITHUB_ENV
 
       - name: Prepare Package
         if: env.SHOULD_BUILD == 'true'
@@ -159,7 +159,6 @@ jobs:
           name: "DXVK Nightly ${{ env.COMMIT_HASH }}"
           body: |
             Automated nightly build of DXVK (GPLAsync).
-            
             Commit: https://github.com/doitsujin/dxvk/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases
@@ -234,6 +233,18 @@ jobs:
             fi
           fi
 
+      - name: Generate Version Info
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          cd dxvk
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          
+          git fetch --tags
+          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${LATEST_TAG}-gplasync-arm64ec-${COMMIT_HASH}" >> $GITHUB_ENV
+
       - name: Install Dependencies
         if: env.SHOULD_BUILD == 'true'
         run: |
@@ -306,17 +317,6 @@ jobs:
           cd dxvk
           wget https://gitlab.com/Ph42oN/dxvk-gplasync/-/raw/main/patches/dxvk-gplasync-master.patch
           git apply dxvk-gplasync-master.patch
-
-      - name: Generate Version Info
-        if: env.SHOULD_BUILD == 'true'
-        run: |
-          cd dxvk
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
-          
-          git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
-          echo "VERSION_NAME=dxvk-${LATEST_TAG}-gplasync-arm64ec-${COMMIT_HASH}" >> $GITHUB_ENV
 
       - name: Configure Cross-Files
         if: env.SHOULD_BUILD == 'true'
@@ -395,7 +395,7 @@ jobs:
             "type": "DXVK",
             "versionName": "${{ env.VERSION_NAME }}",
             "versionCode": 0,
-            "description": "DXVK ARM64EC",
+            "description": "DXVK ${{ env.LATEST_TAG }} ARM64EC",
             "files": [
               {
                 "source": "system32/d3d10core.dll",
