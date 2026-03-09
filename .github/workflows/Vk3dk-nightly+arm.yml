@@ -2,7 +2,7 @@ name: Build Vk3dk Combined
 
 on:
   schedule:
-    - cron: '14 14 * * *'
+    - cron: '14 13 * * *'
   workflow_dispatch:
 
 permissions:
