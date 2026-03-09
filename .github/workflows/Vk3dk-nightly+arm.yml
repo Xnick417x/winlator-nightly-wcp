@@ -94,33 +94,15 @@ jobs:
         run: |
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          VERSION_NAME="3.0b-${COMMIT_HASH}"
+          git fetch --tags --force
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "unknown")
+          VERSION_NAME="${LATEST_TAG}-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
       - name: Build Standard
         if: env.SHOULD_BUILD == 'true'
         run: |
-          cat <<EOF > cross-x64.txt
-          [binaries]
-          c = 'ccache'
-          cpp = 'ccache'
-          c_args = ['/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang']
-          cpp_args = ['/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang++']
-          ar = '/opt/llvm-mingw/bin/llvm-ar'
-          strip = '/opt/llvm-mingw/bin/llvm-strip'
-          windres = '/opt/llvm-mingw/bin/x86_64-w64-mingw32-windres'
-          widl = '/opt/llvm-mingw/bin/x86_64-w64-mingw32-widl'
-          pkg-config = 'pkg-config'
-          exe_wrapper = ['wine']
-          [host_machine]
-          system = 'windows'
-          cpu_family = 'x86_64'
-          cpu = 'x86_64'
-          endian = 'little'
-          EOF
-          
-          # Simplified cross-file for meson+ccache
           cat <<EOF > cross-x64.txt
           [binaries]
           c = ['ccache', '/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang']
@@ -364,7 +346,9 @@ jobs:
         run: |
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          VERSION_NAME="3.0b-arm64ec-${COMMIT_HASH}"
+          git fetch --tags --force
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "unknown")
+          VERSION_NAME="${LATEST_TAG}-arm64ec-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
