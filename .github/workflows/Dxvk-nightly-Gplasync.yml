@@ -50,10 +50,13 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dxvk
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
-          echo "VERSION_NAME=${LATEST_TAG}-gplasync-${DXVK_HASH}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${LATEST_TAG}-gplasync-${COMMIT_HASH}" >> $GITHUB_ENV
 
       - name: Install Dependencies
         if: env.SHOULD_BUILD == 'true'
@@ -162,7 +165,7 @@ jobs:
           name: "DXVK Nightly ${{ env.COMBINED_HASH }}"
           body: |
             Automated nightly build of DXVK (GPLAsync).
-            Commit: https://github.com/doitsujin/dxvk/commit/${{ env.DXVK_HASH }}
+            Commit: https://github.com/doitsujin/dxvk/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases
         if: env.SHOULD_BUILD == 'true'
@@ -246,10 +249,13 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dxvk
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
-          echo "VERSION_NAME=${LATEST_TAG}-arm64ec-${DXVK_HASH}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${LATEST_TAG}-arm64ec-${COMMIT_HASH}" >> $GITHUB_ENV
 
       - name: Install Dependencies
         if: env.SHOULD_BUILD == 'true'
