@@ -39,9 +39,6 @@ jobs:
           download_latest "box64-nightly-"
           download_latest "bionic-box64-nightly-"
           download_latest "wowbox64-nightly-"
-          # Added the two new NVAPI nightly targets:
-          download_latest "dxvk-nvapi-nightly-"
-          download_latest "dxvk-nvapi-arm64ec-nightly-"
 
       - name: Create Zip Bundle
         run: |
