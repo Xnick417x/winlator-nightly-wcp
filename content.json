@@ -271,12 +271,6 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-Arm64ec-3.0a-arm64ec-a83811bf",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-a83811bf/Vk3dk-Arm64ec-3.0a-arm64ec-a83811bf.wcp"
-  },
-  {
-    "type": "VKD3D",
     "verName": "Vk3dk-arm64ec-2.4.1",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-arm64ec-2.4.1.wcp"
@@ -295,21 +289,27 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-Standard-3.0a-a83811bf",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-a83811bf/Vk3dk-Standard-3.0a-a83811bf.wcp"
-  },
-  {
-    "type": "VKD3D",
     "verName": "Vk3dk-Proton-3.0b-2763dd2-0",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-Proton-3.0b-2763dd2-0.wcp"
   },
   {
     "type": "VKD3D",
+    "verName": "Vk3dk-3.0a-arm64ec-0a18efb6",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-0a18efb6/Vk3dk-3.0a-arm64ec-0a18efb6.wcp"
+  },
+  {
+    "type": "VKD3D",
     "verName": "Vkd3d-proton-3.0b-RE9-fix",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vkd3d-proton-3.0b-RE9-fix.wcp"
+  },
+  {
+    "type": "VKD3D",
+    "verName": "Vk3dk-3.0a-0a18efb6",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-0a18efb6/Vk3dk-3.0a-0a18efb6.wcp"
   },
   {
     "type": "VKD3D",
