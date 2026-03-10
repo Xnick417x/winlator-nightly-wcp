@@ -31,7 +31,8 @@ jobs:
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
@@ -84,7 +85,6 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dxvk
-          # Meson picks up ccache automatically if it's in the environment
           ./package-release.sh master ../dxvk-built --no-package
 
       - name: Show ccache stats
@@ -164,7 +164,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("dxvk-nightly-"))' \
+          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
+          select(startswith("dxvk-nightly-"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
 
@@ -222,7 +223,8 @@ jobs:
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
@@ -389,9 +391,10 @@ jobs:
           cat <<EOF > packaging/profile.json
           {
             "type": "DXVK",
-            "versionName": "${{ env.VERSION_NAME }}",
+            "versionName": "${{ env.LATEST_TAG }}-arm64ec-gplasync-${{ env.COMMIT_HASH }}",
             "versionCode": 0,
             "description": "DXVK ${{ env.LATEST_TAG }} ARM64EC GPLAsync",
+            "author": "Blank",
             "files": [
               {
                 "source": "system32/d3d10core.dll",
@@ -457,7 +460,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("dxvk-arm64ec-nightly-"))' \
+          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
+          select(startswith("dxvk-arm64ec-nightly-"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
 
