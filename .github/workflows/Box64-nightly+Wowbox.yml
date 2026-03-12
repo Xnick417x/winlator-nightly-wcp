@@ -285,8 +285,7 @@ jobs:
         run: |
           cd source
           echo -e '\nint __mingw_vsprintf(char* buffer, const char* format, va_list args) { return vsprintf(buffer, format, args);\n}' >> wine/common/crt.c
-          # Force POSIX string functions over Microsoft ones to fix LLVM-MinGW UCRT linking
-          find src -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/\b_stricmp\b/strcasecmp/g; s/\b_strnicmp\b/strncasecmp/g' {} +
+          echo -e '\nint strcasecmp(const char *s1, const char *s2);\nint (*__imp__stricmp)(const char *, const char *) = strcasecmp;\n' >> wine/common/crt.c
 
       - name: Get Version Info
         if: env.SHOULD_BUILD == 'true'
