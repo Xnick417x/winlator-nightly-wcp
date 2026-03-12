@@ -30,10 +30,12 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 |
+            grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -134,7 +136,7 @@ jobs:
             "versionCode": 0,
             "description": "Box64-${{ env.FULL_VERSION }}",
             "files": [
-              {
+               {
                 "source": "box64",
                 "target": "\${bindir}/box64"
               }
@@ -167,7 +169,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("box64-nightly-"))' \
+          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
+          select(startswith("box64-nightly-"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
 
@@ -221,10 +224,12 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 |
+            grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -312,7 +317,8 @@ jobs:
             -DCMAKE_C_COMPILER=aarch64-w64-mingw32-gcc \
             -DWOW64=1 \
             -DARM_DYNAREC=1 \
-            -DCMAKE_BUILD_TYPE=Release
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_FLAGS="-D_stricmp=strcasecmp"
           make -j$(nproc) wowbox64
 
       - name: Show ccache stats
@@ -330,7 +336,7 @@ jobs:
             "versionCode": 0,
             "description": "WOWBox64-${{ env.FULL_VERSION }}",
             "files": [
-              {
+               {
                 "source": "wowbox64.dll",
                 "target": "\${system32}/wowbox64.dll"
               }
@@ -363,7 +369,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("wowbox64-nightly-"))' \
+          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
+          select(startswith("wowbox64-nightly-"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
 
