@@ -355,33 +355,33 @@
   },
   {
     "type": "WOWBox64",
+    "verName": "Wowbox64-0.4.1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.1.wcp"
+  },
+  {
+    "type": "WOWBox64",
     "verName": "WOWBox64-0.4.1-08d376c66-nightly",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-08d376c66/WOWBox64-0.4.1-08d376c66-nightly.wcp"
   },
   {
     "type": "WOWBox64",
-    "verName": "Wowbox64-0.4.1-0",
+    "verName": "Wowbox64-0.4.0",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.1-0.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.0.wcp"
   },
   {
     "type": "WOWBox64",
-    "verName": "Wowbox64-0.4.0-0",
+    "verName": "Wowbox64-0.3.9",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.0-0.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.3.9.wcp"
   },
   {
     "type": "WOWBox64",
-    "verName": "Wowbox64-0.3.9-1",
+    "verName": "Wowbox64-0.3.8",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.3.9-1.wcp"
-  },
-  {
-    "type": "WOWBox64",
-    "verName": "Wowbox64-0.3.8-0",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.3.8-0.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.3.8.wcp"
   },
   {
     "type": "WOWBox64",
