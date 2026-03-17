@@ -95,10 +95,11 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 * Wine [**WineHQ**](https://www.winehq.org/)
 * The412banner - .wcp Hub [**The412Banner**](https://github.com/The412Banner/Nightlies)
 * Zero K11MCH1 - Stables [**K11MCH1**](https://github.com/K11MCH1/Winlator101)
-* GameNative - Wine Layers [**GameNative**](https://github.com/utkarshdalal/GameNative)
+* GameNative - Proton Layers [**GameNative**](https://github.com/utkarshdalal/GameNative)
 * Ajay [**Ajay Prefix Pro**](https://ajay9634dev-pludc.wordpress.com/)
 * REF4IK - Wine Layers [**REF4IK**](https://github.com/REF4IK/winlator-ref4ik-/releases/tag/1.0)
 * Pepelespooder - Bleeding Edge [**Pepelespooder**](https://github.com/Pepelespooder/proton-arm64-nightlies/releases)
+* Smuger - Proton Layers [**Smuger**](https://github.com/Smuger/proton-wine/releases)
 
 ---
 
