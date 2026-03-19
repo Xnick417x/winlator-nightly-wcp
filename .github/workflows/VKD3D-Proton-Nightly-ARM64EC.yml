@@ -473,7 +473,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("vkd3d-nightly-arm64ec"))' \
+          select(startswith("vkd3d-Proton-nightly"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
 
