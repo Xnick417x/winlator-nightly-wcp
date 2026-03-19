@@ -453,7 +453,7 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: vkd3d-arm64ec
+          name: VKD3D-Proton
           path: '*.wcp'
 
       - name: Create Release (ARM64EC)
