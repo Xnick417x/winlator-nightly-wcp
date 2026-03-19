@@ -464,7 +464,7 @@ jobs:
           files: '*.wcp'
           name: "VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-ARM64EC"
           body: |
-            Automated nightly build of Vkd3d (arm64ec).
+            Automated nightly build of Vkd3d.
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases (ARM64EC)
