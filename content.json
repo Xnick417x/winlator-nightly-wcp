@@ -223,9 +223,9 @@
   },
   {
     "type": "Proton",
-    "verName": "proton-BE-arm64ec-e36d548",
+    "verName": "Proton-BE-arm64ec-a7df5e7",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/proton-BE-arm64ec-e36d548.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-BE-arm64ec-a7df5e7.wcp"
   },
   {
     "type": "Proton",
