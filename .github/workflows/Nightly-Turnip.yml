@@ -1,6 +1,9 @@
 name: Build Nightly Turnip Drivers
 
 on:
+  push:
+    branches:
+      - T
   schedule:
     - cron: '14 3 * * *'
   workflow_dispatch:
@@ -39,8 +42,8 @@ jobs:
             echo "First run -- recording hash, triggering build"
             echo "changed=true" >> $GITHUB_OUTPUT 
           else
-            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-              echo "Manual trigger - forcing build"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "push" ]; then
+              echo "Manual trigger or Push - forcing build"
               echo "changed=true" >> $GITHUB_OUTPUT
             else
               echo "No change."
@@ -69,10 +72,11 @@ jobs:
           - variant: regular
             suffix: ""
             extra_patch: ""
+            extra_script: "patch/tu-fix.py"
           - variant: a8xx
             suffix: "-A8xx"
             extra_patch: "patch/tu8_kgsl_26.patch"
-            extra_script: "patch/fix_a8xx_dev_info.py:patch/apply_a8xx_gpus.py"
+            extra_script: "patch/tu-fix.py:patch/fix_a8xx_dev_info.py:patch/apply_a8xx_gpus.py"
 
     steps:
       - name: Checkout
