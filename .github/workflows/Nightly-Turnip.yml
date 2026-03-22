@@ -1,9 +1,6 @@
 name: Build Nightly Turnip Drivers
 
 on:
-  push:
-    branches:
-      - T
   schedule:
     - cron: '14 3 * * *'
   workflow_dispatch:
@@ -42,8 +39,8 @@ jobs:
             echo "First run -- recording hash, triggering build"
             echo "changed=true" >> $GITHUB_OUTPUT 
           else
-            if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "push" ]; then
-              echo "Manual trigger or Push - forcing build"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "Manual trigger - forcing build"
               echo "changed=true" >> $GITHUB_OUTPUT
             else
               echo "No change."
