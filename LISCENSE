@@ -1,0 +1,17 @@
+Copyright (c) 2026 Xnick417x
+
+ALL RIGHTS RESERVED.
+
+This software, including all build scripts, automated workflows, and associated documentation files (the "Software"), is proprietary. 
+
+You do not have permission to copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, nor permit persons to whom the Software is furnished to do so, without express written permission from the copyright holder.
+
+This restriction applies to all automated YAML workflows, custom Python patchers, and bash build scripts contained within this repository. Note: Third-party upstream source code (such as Mesa, DXVK, and Box64) fetched by these scripts remain under their respective original licenses.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
