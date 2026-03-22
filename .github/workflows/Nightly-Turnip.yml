@@ -128,7 +128,7 @@ jobs:
         run: |
           REGULAR_ZIP=$(ls zips/Turnip-*.zip | grep -v "A8xx" | head -1)
           BASE_NAME=$(basename "$REGULAR_ZIP" .zip)
-          echo "release_tag=$BASE_NAME" >> $GITHUB_OUTPUT
+          echo "release_tag=nightly-${BASE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Publish Versioned Release
         env:
@@ -144,6 +144,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(test("^Turnip-[0-9.]+-[a-f0-9]+$"))' \
+          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(test("^nightly-Turnip-[0-9.]+-[a-f0-9]+$"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y || true'
