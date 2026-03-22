@@ -5,7 +5,7 @@ on:
     branches:
       - T
   schedule:
-    - cron: '14 3 * * *'
+    - cron: '15 3 * * *'
   workflow_dispatch:
 
 permissions:
