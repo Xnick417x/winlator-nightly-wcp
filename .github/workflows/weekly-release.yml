@@ -2,7 +2,7 @@ name: Build Weekly Bundle
 
 on:
   schedule:
-    - cron: '0 4 * * 5' # Thursday at 10:00 PM CST (Friday 04:00 UTC)
+    - cron: '0 4 * * 5'
   workflow_dispatch:
 
 permissions:
@@ -24,10 +24,11 @@ jobs:
           
           download_latest() {
             PREFIX=$1
+            PATTERN=${2:-"*.wcp"}
             TAG=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq ".[] | select(.tagName | startswith(\"$PREFIX\")) | .tagName" | head -n 1)
             
             if [ -n "$TAG" ]; then
-              gh release download "$TAG" --repo ${{ github.repository }} --pattern "*.wcp" || true
+              gh release download "$TAG" --repo ${{ github.repository }} --pattern "$PATTERN" || true
             fi
           }
 
@@ -39,12 +40,13 @@ jobs:
           download_latest "box64-nightly-"
           download_latest "bionic-box64-nightly-"
           download_latest "wowbox64-nightly-"
+          download_latest "nightly-Turnip-" "*.zip"
         
       - name: Create Zip Bundle
         run: |
           DATE=$(date +'%Y-%m-%d')
           echo "WEEKLY_DATE=$DATE" >> $GITHUB_ENV
-          zip -j "Weekly-$DATE.zip" weekly_assets/*.wcp
+          zip -j "Weekly-$DATE.zip" weekly_assets/*.wcp weekly_assets/*.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -61,6 +63,7 @@ jobs:
             * VKD3D-Proton (Standard & ARM64EC)
             * FEXCore
             * Box64 (Native & Bionic) & WOWBox64
+            * Freedreno Turnip Drivers (Standard & A8xx Experimental)
 
       - name: Update Dashboard (Weekly)
         run: |
