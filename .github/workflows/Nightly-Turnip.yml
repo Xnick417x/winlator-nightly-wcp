@@ -106,7 +106,7 @@ jobs:
           MESA_VERSION=$(cat turnip_workdir/mesa/VERSION 2>/dev/null | sed 's/-devel.*//' | tr -d '[:space:]' || echo "unknown")
           GITHASH=$(git -C turnip_workdir/mesa rev-parse --short HEAD 2>/dev/null || echo "unknown")
           
-          CLEAN_NAME="Turnip-${MESA_VERSION}-${GITHASH}-v${{ github.run_number }}${{ matrix.suffix }}.zip"
+          CLEAN_NAME="nightly-Turnip-${MESA_VERSION}-${GITHASH}-v${{ github.run_number }}${{ matrix.suffix }}.zip"
           
           SRC=$(ls turnip_workdir/mesa-turnip-*.zip | head -1)
           cp "$SRC" "turnip_workdir/${CLEAN_NAME}"
@@ -119,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: turnip-${{ matrix.variant }}
-          path: turnip_workdir/Turnip-*.zip
+          path: turnip_workdir/nightly-Turnip-*.zip
 
   release-turnip:
     needs: build-turnip
@@ -135,9 +135,8 @@ jobs:
       - name: Extract Versions for Title
         id: ext
         run: |
-          REGULAR_ZIP=$(ls zips/Turnip-*-v${{ github.run_number }}.zip | head -1)
+          REGULAR_ZIP=$(ls zips/nightly-Turnip-*-v${{ github.run_number }}.zip | head -1)
           BASE_NAME=$(basename "$REGULAR_ZIP" .zip)
-          # We will use this exact base name for both the Release Title and the Tag
           echo "release_tag=$BASE_NAME" >> $GITHUB_OUTPUT
 
       - name: Publish Versioned Release
@@ -154,6 +153,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("Turnip-"))' \
+          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("nightly-Turnip-"))' \
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y || true'
