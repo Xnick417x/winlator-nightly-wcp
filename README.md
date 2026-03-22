@@ -119,6 +119,9 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 wcp's are compiled binary's from latest upstream sources. They are not my work. They are not always stable. You the user accept the risks and responsibility.
 If you shall find an issue with something. Please contact the source of the provider, and make an issue request. 
 
+**Copyright © 2026 Xnick417x. All Rights Reserved.**
+The custom build scripts and automated GitHub Actions workflows in this repository are proprietary. Unauthorized copying, modification, or redistribution of this repository's codebase is strictly prohibited.
+
 ---
 
 <div align="center">
