@@ -176,7 +176,7 @@ jobs:
           |
           tail -n +9 \
           |
-          xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y' || true
 
       - name: Checkout Dashboard
         if: env.SHOULD_BUILD == 'true'
