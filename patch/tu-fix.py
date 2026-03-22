@@ -47,7 +47,11 @@ print("-> Injecting A7xx Stability Fixes...")
 replace_in_file('src/freedreno/common/freedreno_devices.py', 'cs_lock_unlock_quirk = True,', 'cs_lock_unlock_quirk = True,\n        has_early_preamble = False,\n        has_scalar_predicates = False,')
 replace_in_file('src/freedreno/common/freedreno_devices.py', 'has_image_processing = True,', 'has_image_processing = True,\n        has_early_preamble = False,\n        has_scalar_predicates = False,')
 
-# 4. Mesa KGSL Timeline Sync Fix
+# 4. A8xx Shader reg_size fix (whitebelyash)
+print("-> Injecting A8xx reg_size fix for Cyberpunk 2077...")
+replace_in_file('src/freedreno/common/freedreno_devices.py', 'reg_size_vec4 = 128,', 'reg_size_vec4 = 96,')
+
+# 5. Mesa KGSL Timeline Sync Fix
 print("-> Fetching and Applying Official KGSL Timeline Sync MR...")
 try:
     urllib.request.urlretrieve("https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/30206.patch", "kgsl_sync.patch")
