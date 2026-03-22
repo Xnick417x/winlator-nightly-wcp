@@ -79,8 +79,8 @@ jobs:
             extra_patch: ""
           - variant: a8xx
             suffix: "-A8xx"
-            extra_patch: "patches/tu8_kgsl_26.patch"
-            extra_script: "patches/fix_a8xx_dev_info.py:patches/apply_a8xx_gpus.py"
+            extra_patch: "patch/tu8_kgsl_26.patch"
+            extra_script: "patch/fix_a8xx_dev_info.py:patch/apply_a8xx_gpus.py"
 
     steps:
       - name: Checkout
@@ -94,14 +94,14 @@ jobs:
 
       - name: Prep and Build
         run: |
-          chmod +x build_turnip.sh
+          chmod +x patch/build_turnip.sh
           
           find . -name "meta.json" -type f -exec sed -i 's/"author": ".*"/"author": "Xnick417x"/g' {} +
 
           export BUILD_VERSION="${{ github.run_number }}"
           [[ -n "${{ matrix.extra_patch }}" ]] && export EXTRA_PATCH="${{ matrix.extra_patch }}"
           [[ -n "${{ matrix.extra_script }}" ]] && export EXTRA_SCRIPT="${{ matrix.extra_script }}"
-          ./build_turnip.sh
+          ./patch/build_turnip.sh
 
       - name: Format Release Info
         id: info
