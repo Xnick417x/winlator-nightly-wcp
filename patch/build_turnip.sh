@@ -99,6 +99,7 @@ build_lib_for_android(){
 	export CXXFLAGS="-D__ANDROID__ -Wno-error -Wno-deprecated-declarations -Wno-incompatible-pointer-types-discards-qualifiers -Wno-incompatible-pointer-types"
 
 	GITHASH=$(git rev-parse --short HEAD)
+	MESA_VERSION=$(cat VERSION 2>/dev/null | sed 's/-devel.*//' | tr -d '[:space:]' || echo "unknown")
 
 	echo "Generating build files..."
 	cat <<EOF >"android-aarch64.txt"
@@ -164,9 +165,9 @@ EOF
 	cat <<EOF >"meta.json"
 {
   "schemaVersion": 1,
-  "name": "Mesa Turnip v${BUILD_VERSION}-${GITHASH}",
+  "name": "Mesa Turnip ${MESA_VERSION}-${GITHASH}",
   "description": "A6xx/A7xx Turnip driver from Mesa main (git ${GITHASH}). KGSL build. A8xx experimental.",
-  "author": "The412Banner",
+  "author": "Xnick417x",
   "packageVersion": "1",
   "vendor": "Mesa",
   "driverVersion": "Vulkan 1.4.335",
