@@ -1,0 +1,145 @@
+name: Build Nightly Turnip Drivers
+
+on:
+  schedule:
+    - cron: '14 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Mesa main for new commits
+        id: check
+        run: |
+          HASH_FILE="mesa_hash.txt"
+          touch "$HASH_FILE"
+          MESA_HASH=$(git ls-remote https://gitlab.freedesktop.org/mesa/mesa HEAD | awk '{print $1}')
+          OLD_HASH=$(cat "$HASH_FILE" 2>/dev/null || echo "")
+          echo "Current:  ${MESA_HASH:0:7}"
+          echo "Previous: ${OLD_HASH:0:7}"
+          if [ -z "$MESA_HASH" ]; then
+            echo "WARNING: could not fetch mesa/mesa HEAD"
+            echo "changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if [ -n "$OLD_HASH" ] && [ "$MESA_HASH" != "$OLD_HASH" ]; then
+            echo "Mesa main changed: ${OLD_HASH:0:7} -> ${MESA_HASH:0:7}"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          elif [ -z "$OLD_HASH" ]; then
+            echo "First run -- recording hash, triggering build"
+            echo "changed=true" >> $GITHUB_OUTPUT 
+          else
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "Manual trigger - forcing build"
+              echo "changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "No change."
+              echo "changed=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+          echo "$MESA_HASH" > "$HASH_FILE"
+
+      - name: Commit updated hash
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mesa_hash.txt
+          git diff --staged --quiet || git commit -m "chore: update mesa_hash.txt"
+          git push
+
+  build-turnip:
+    needs: check-upstream
+    if: needs.check-upstream.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: regular
+            suffix: ""
+            extra_patch: ""
+          - variant: a8xx
+            suffix: "-A8xx"
+            extra_patch: "patch/tu8_kgsl_26.patch"
+            extra_script: "patch/fix_a8xx_dev_info.py:patch/apply_a8xx_gpus.py"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build patchelf unzip flex bison git perl python3-pip glslang-tools curl zip patch jq
+          pip3 install --break-system-packages meson mako
+
+      - name: Prep and Build
+        run: |
+          chmod +x patch/build_turnip.sh
+          export BUILD_VERSION="${{ github.run_number }}"
+          [[ -n "${{ matrix.extra_patch }}" ]] && export EXTRA_PATCH="${{ matrix.extra_patch }}"
+          [[ -n "${{ matrix.extra_script }}" ]] && export EXTRA_SCRIPT="${{ matrix.extra_script }}"
+          ./patch/build_turnip.sh
+
+      - name: Format Release Info
+        id: info
+        run: |
+          MESA_VERSION=$(cat turnip_workdir/mesa/VERSION 2>/dev/null | sed 's/-devel.*//' | tr -d '[:space:]' || echo "unknown")
+          GITHASH=$(git -C turnip_workdir/mesa rev-parse --short HEAD 2>/dev/null || echo "unknown")
+          CLEAN_NAME="Turnip-${MESA_VERSION}-${GITHASH}${{ matrix.suffix }}.zip"
+          SRC=$(ls turnip_workdir/mesa-turnip-*.zip | head -1)
+          cp "$SRC" "turnip_workdir/${CLEAN_NAME}"
+          echo "clean_name=${CLEAN_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Upload driver ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: turnip-${{ matrix.variant }}
+          path: turnip_workdir/Turnip-*.zip
+
+  release-turnip:
+    needs: build-turnip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download driver ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: turnip-*
+          merge-multiple: true
+          path: ./zips
+
+      - name: Extract Versions for Title
+        id: ext
+        run: |
+          REGULAR_ZIP=$(ls zips/Turnip-*.zip | grep -v "A8xx" | head -1)
+          BASE_NAME=$(basename "$REGULAR_ZIP" .zip)
+          echo "release_tag=nightly-${BASE_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Publish Versioned Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.ext.outputs.release_tag }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "${{ steps.ext.outputs.release_tag }}" \
+            --notes "Automated build of Turnip drivers. Includes standard and A8xx experimental variants." \
+            zips/*.zip
+
+      - name: Cleanup Old Builds (Keep Last 8)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(test("^nightly-Turnip-[0-9.]+-[a-f0-9]+$"))' \
+          | tail -n +9 \
+          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y || true'

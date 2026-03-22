@@ -58,13 +58,24 @@ If Contents don't show up. Try turning phone to Landscape View
 | **WOWBox64** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-wowbox64) |
 | **DXVK Sarek** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Sarek) |
 
-###  Wine Layers (Bionic)
+### Turnip Nightly
+
+| Component | Download | History |
+| :--- | :--- | :--- |
+| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+
+### Wine Layers (Bionic)
 [**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Wine)
 
 ### Proton Layers (Bionic) 
 [**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/GameNative)
 
-###  Runtime Packages
+### Drivers
+**Qualcomm** - Coming soon  
+**Turnip - Stables** - Coming soon  
+
+### Runtime Packages
 [**Download Runtime Package**](https://huggingface.co/datasets/Xnick417x/Runtime-packages/resolve/main/Runtime-packages.7z?download=true)
 
 ---
@@ -100,6 +111,7 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 * REF4IK - Wine Layers [**REF4IK**](https://github.com/REF4IK/winlator-ref4ik-/releases/tag/1.0)
 * Pepelespooder - Bleeding Edge [**Pepelespooder**](https://github.com/Pepelespooder/proton-arm64-nightlies/releases)
 * Smuger - Proton Layers [**Smuger**](https://github.com/Smuger/proton-wine/releases)
+* The412Banner - Nightly Turnip [**The412Banner**](https://github.com/The412Banner/Banners-Turnip)
 
 ---
 
