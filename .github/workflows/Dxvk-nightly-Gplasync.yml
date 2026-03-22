@@ -167,7 +167,7 @@ jobs:
           gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
           select(startswith("dxvk-nightly-"))' \
           | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y' || true'
 
       - name: Checkout Dashboard
         if: env.SHOULD_BUILD == 'true'
@@ -463,7 +463,7 @@ jobs:
           gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
           select(startswith("dxvk-arm64ec-nightly-"))' \
           | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y' || true'
 
       - name: Checkout Dashboard
         if: env.SHOULD_BUILD == 'true'
