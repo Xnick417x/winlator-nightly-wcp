@@ -163,11 +163,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
           for TAG in $OLD_RELEASES; do
             echo "Deleting old release: $TAG"
-            gh release delete "$TAG" --cleanup-tag -y || true
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
             sleep 2
           done
 
@@ -459,11 +459,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-arm64ec-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-arm64ec-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
           for TAG in $OLD_RELEASES; do
             echo "Deleting old release: $TAG"
-            gh release delete "$TAG" --cleanup-tag -y || true
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
             sleep 2
           done
 
