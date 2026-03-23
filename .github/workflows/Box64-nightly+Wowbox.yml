@@ -30,12 +30,10 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 |
-            grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -103,8 +101,7 @@ jobs:
         run: |
           cd source
           wget -q "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/patch/pipetto-controller-fix.patch" -O my-patch.patch
-          patch -p1 < my-patch.patch ||
-          true
+          patch -p1 < my-patch.patch || true
 
       - name: Configure and Build
         if: env.SHOULD_BUILD == 'true'
@@ -137,7 +134,7 @@ jobs:
             "versionCode": 0,
             "description": "Box64-${{ env.FULL_VERSION }}",
             "files": [
-                {
+              {
                 "source": "box64",
                 "target": "\${bindir}/box64"
               }
@@ -170,12 +167,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("box64-nightly-"))' \
-          |
-          tail -n +9 \
-          |
-          xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("box64-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (Box64)
         if: env.SHOULD_BUILD == 'true'
@@ -192,18 +190,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/box64-nightly-${{ env.COMMIT_HASH }}/Box64-${{ env.FULL_VERSION }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
-          git checkout $BRANCH_NAME 2>/dev/null ||
-          git checkout -b $BRANCH_NAME
+          git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
              sed -i "/\*\*Box64\*\* (Standard)/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Box64 ${{ env.COMMIT_HASH }} [skip ci]" ||
-             echo "Nothing to commit"
-             if git push origin $BRANCH_NAME;
-             then exit 0; fi
+             git commit -m "Update dashboard for Box64 ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
           done
@@ -230,12 +225,10 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 |
-            grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -310,8 +303,7 @@ jobs:
         run: |
           cd source
           wget -q "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/patch/pipetto-controller-fix.patch" -O my-patch.patch
-          patch -p1 < my-patch.patch ||
-          true
+          patch -p1 < my-patch.patch || true
 
       - name: Configure and Build
         if: env.SHOULD_BUILD == 'true'
@@ -343,7 +335,7 @@ jobs:
             "versionCode": 0,
             "description": "WOWBox64-${{ env.FULL_VERSION }}",
             "files": [
-                {
+              {
                 "source": "wowbox64.dll",
                 "target": "\${system32}/wowbox64.dll"
               }
@@ -376,12 +368,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("wowbox64-nightly-"))' \
-          |
-          tail -n +9 \
-          |
-          xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("wowbox64-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (WOWBox64)
         if: env.SHOULD_BUILD == 'true'
@@ -398,18 +391,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/wowbox64-nightly-${{ env.COMMIT_HASH }}/WOWBox64-${{ env.FULL_VERSION }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
-          git checkout $BRANCH_NAME 2>/dev/null ||
-          git checkout -b $BRANCH_NAME
+          git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
              sed -i "/\*\*WOWBox64\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for WOWBox64 ${{ env.COMMIT_HASH }} [skip ci]" ||
-             echo "Nothing to commit"
-             if git push origin $BRANCH_NAME;
-             then exit 0; fi
+             git commit -m "Update dashboard for WOWBox64 ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
           done
