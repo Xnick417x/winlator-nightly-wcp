@@ -128,6 +128,9 @@ jobs:
     needs: build-turnip
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Download driver ZIPs
         uses: actions/download-artifact@v4
         with:
@@ -144,14 +147,12 @@ jobs:
           echo "base_name=${BASE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Publish Versioned Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create "${{ steps.ext.outputs.release_tag }}" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "${{ steps.ext.outputs.release_tag }}" \
-            --notes "Automated build of Turnip drivers. Includes standard and A8xx experimental variants." \
-            zips/*.zip
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.ext.outputs.release_tag }}
+          name: ${{ steps.ext.outputs.release_tag }}
+          body: "Automated build of Turnip drivers. Includes standard and A8xx experimental variants."
+          files: zips/*.zip
 
       - name: Cleanup Old Builds (Keep Last 8)
         env:
@@ -161,15 +162,8 @@ jobs:
           | tail -n +9 \
           | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y || true'
 
-      - name: Checkout Dashboard
-        uses: actions/checkout@v4
-        with:
-          path: dashboard
-          fetch-depth: 0
-
       - name: Push README Updates
         run: |
-          cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
