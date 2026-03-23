@@ -29,8 +29,7 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
@@ -96,8 +95,7 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          # LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "unknown")
-          LATEST_TAG="3.0b" # Manually forced until upstream fixes their tags
+          LATEST_TAG="3.0b"
           VERSION_NAME="${LATEST_TAG}-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
@@ -159,7 +157,6 @@ jobs:
           find src/build-x64 -name "d3d12core.dll" -exec cp -L {} final_package/system32/ \;
           find src/build-x86 -name "d3d12.dll" -exec cp -L {} final_package/syswow64/ \;
           find src/build-x86 -name "d3d12core.dll" -exec cp -L {} final_package/syswow64/ \;
-          
           cat <<EOF > final_package/profile.json
           {
             "type": "VKD3D",
@@ -212,10 +209,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("vk3dk-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("vk3dk-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (Standard)
         if: env.SHOULD_BUILD == 'true'
@@ -237,7 +237,7 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*Standard/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton.*Standard/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
              git commit -m "Update dashboard for Vk3dk ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
@@ -266,8 +266,7 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
@@ -352,8 +351,7 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          # LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "unknown")
-          LATEST_TAG="3.0b" # Manually forced until upstream fixes their tags
+          LATEST_TAG="3.0b"
           VERSION_NAME="${LATEST_TAG}-arm64ec-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
@@ -413,7 +411,6 @@ jobs:
           find src/build-ec -name "d3d12core.dll" -exec cp -L {} final_package/system32/ \;
           find src/build-x86 -name "d3d12.dll" -exec cp -L {} final_package/syswow64/ \;
           find src/build-x86 -name "d3d12core.dll" -exec cp -L {} final_package/syswow64/ \;
-          
           llvm-strip --strip-all final_package/system32/*.dll
           llvm-strip --strip-all final_package/syswow64/*.dll
           
@@ -472,10 +469,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("vk3dk-arm64ec-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("vk3dk-arm64ec-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (ARM64EC)
         if: env.SHOULD_BUILD == 'true'
@@ -497,7 +497,7 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*ARM64EC/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton.*ARM64EC/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
              git commit -m "Update dashboard for Vk3dk ARM64EC ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi

@@ -122,7 +122,6 @@ jobs:
           mkdir "$build_dir"
           cd "$build_dir"
           
-          # CMake will pick up ccache via CMAKE_<LANG>_COMPILER_LAUNCHER if configured
           cmake -G Ninja -Wno-dev \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -219,9 +218,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("fex-nightly-"))' \
-        | tail -n +9 \
-        | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+        OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("fex-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+        
+        for TAG in $OLD_RELEASES; do
+          echo "Deleting old release: $TAG"
+          gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+          sleep 2
+        done
 
     - name: Update README Dashboard
       if: env.SHOULD_BUILD == 'true'
