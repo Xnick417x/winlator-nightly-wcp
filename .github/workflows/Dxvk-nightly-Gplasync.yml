@@ -31,8 +31,7 @@ jobs:
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
@@ -164,10 +163,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("dxvk-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Checkout Dashboard
         if: env.SHOULD_BUILD == 'true'
@@ -223,8 +225,7 @@ jobs:
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
-          then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
             if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
@@ -355,7 +356,6 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dxvk
-          # Meson will use ccache automatically if in PATH and configured
           meson setup build-ec --cross-file ../arm64ec.txt -Dbuildtype=release -Dstrip=true
           meson setup build-x86 --cross-file ../x86.txt -Dbuildtype=release -Dstrip=true
           
@@ -452,7 +452,6 @@ jobs:
           name: "DXVK ARM64EC Nightly ${{ env.COMMIT_HASH }}"
           body: |
             Automated nightly build of DXVK (ARM64EC).
-            
             Commit: https://github.com/doitsujin/dxvk/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases (ARM64EC)
@@ -460,10 +459,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 500 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName |
-          select(startswith("dxvk-arm64ec-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("dxvk-arm64ec-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Checkout Dashboard
         if: env.SHOULD_BUILD == 'true'
