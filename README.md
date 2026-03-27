@@ -35,7 +35,7 @@ If Contents don't show up. Try turning phone to Landscape View
 
 | Component | Download | History |
 | :--- | :--- | :--- |
-| **Weekly Bundle** (All-in-One) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/Weekly-2026-03-20/Weekly-2026-03-20.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=Weekly&expanded=true) |
+| **Weekly Bundle** (All-in-One) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/Weekly-2026-03-27/Weekly-2026-03-27.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=Weekly&expanded=true) |
 | **DXVK** (GPLAsync) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nightly-1676dcaf/2.7.1-gplasync-1676dcaf.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
 | **DXVK** (ARM64EC) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-arm64ec-nightly-1676dcaf/2.7.1-arm64ec-1676dcaf.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-arm64ec-nightly+NOT+Weekly&expanded=true) |
 | **VKD3D-Proton** (Standard) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-e808096d/Vkd3d-3.0b-e808096d.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=vk3dk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
