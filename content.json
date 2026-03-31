@@ -175,6 +175,12 @@
   },
   {
     "type": "FEXCore",
+    "verName": "2601-Denuvo",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/2601-Denuvo.wcp"
+  },
+  {
+    "type": "FEXCore",
     "verName": "FEX-2601",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2601.wcp"
@@ -223,9 +229,9 @@
   },
   {
     "type": "Proton",
-    "verName": "Proton-BE-arm64ec-a77d91c",
+    "verName": "Proton-BE-arm64ec-cf54429",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-BE-arm64ec-a77d91c.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-BE-arm64ec-cf54429.wcp"
   },
   {
     "type": "Proton",
