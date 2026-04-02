@@ -175,15 +175,15 @@
   },
   {
     "type": "FEXCore",
-    "verName": "2601-Denuvo",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/2601-Denuvo.wcp"
-  },
-  {
-    "type": "FEXCore",
     "verName": "FEX-2601",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2601.wcp"
+  },
+  {
+    "type": "FEXCore",
+    "verName": "FEX-2601-Denuvo",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2601-Denuvo.wcp"
   },
   {
     "type": "FEXCore",
