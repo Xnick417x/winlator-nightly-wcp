@@ -62,8 +62,8 @@ If Contents don't show up. Try turning phone to Landscape View
 
 | Component | Download | History |
 | :--- | :--- | :--- |
-| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.1.0-580381d/Turnip-26.1.0-580381d.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
-| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.1.0-580381d/Turnip-26.1.0-580381d-A8xx.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.1.0-72e9f9a/Turnip-26.1.0-72e9f9a.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.1.0-72e9f9a/Turnip-26.1.0-72e9f9a-A8xx.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
 
 ### Wine Layers (Bionic)
 [**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Wine)
