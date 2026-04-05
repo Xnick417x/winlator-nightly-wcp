@@ -325,12 +325,6 @@
   },
   {
     "type": "VKD3D",
-    "verName": "vkd3d-proton-3.0b-RE9-Fix",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/vkd3d-proton-3.0b-RE9-Fix.wcp"
-  },
-  {
-    "type": "VKD3D",
     "verName": "Vk3dk-proton-2.14.1",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-proton-2.14.1.wcp"
