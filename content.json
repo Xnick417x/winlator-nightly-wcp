@@ -121,6 +121,12 @@
   },
   {
     "type": "DXVK",
+    "verName": "Dxvk-2.4.1.-special-d8",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-2.4.1.-special-d8.wcp"
+  },
+  {
+    "type": "DXVK",
     "verName": "Dxvk-2.3.1-gplasync",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-2.3.1-gplasync.wcp"
