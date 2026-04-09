@@ -163,6 +163,12 @@
   },
   {
     "type": "FEXCore",
+    "verName": "FEX-2604",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2604.wcp"
+  },
+  {
+    "type": "FEXCore",
     "verName": "FEX-2603",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2603.wcp"
@@ -340,12 +346,6 @@
     "verName": "Vk3dk-2.9",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-2.9.wcp"
-  },
-  {
-    "type": "VKD3D",
-    "verName": "Vkd3d-proton-2.4",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vkd3d-proton-2.4.wcp"
   },
   {
     "type": "WOWBox64",
