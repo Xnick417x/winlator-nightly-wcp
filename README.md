@@ -18,7 +18,8 @@ Copy the link below, open Winlator, and go to **Settings** -> **Downloadable Con
 
     https://raw.githubusercontent.com/Xnick417x/Winlator-Bionic-Nightly-wcp/refs/heads/main/content.json
 
-If Contents don't show up. Try turning phone to Landscape View
+If Contents don't show up. Try turning phone to Landscape View.
+
 For Driver manager URL. Paste main repo URL. 
 
 ---
