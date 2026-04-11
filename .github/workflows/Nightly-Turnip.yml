@@ -47,12 +47,12 @@ jobs:
         include:
           - variant: a6xx-a7xx
             suffix: ""
-            extra_patch: ""
-            extra_script: "patch/tu-fix.py"
+            extra_patch: "patch/tu8_kgsl.patch"
+            extra_script: ""
           - variant: a8xx
             suffix: "-A8xx"
             extra_patch: "patch/tu8_kgsl_26.patch"
-            extra_script: "patch/tu-fix.py:patch/fix_a8xx_dev_info.py:patch/apply_a8xx_gpus.py"
+            extra_script: ""
     env:
       COMMIT_HASH: ${{ needs.check-upstream.outputs.commit_hash }}
       MESA_VERSION: ${{ needs.check-upstream.outputs.mesa_version }}

@@ -59,29 +59,12 @@ build_lib_for_android(){
 	# Apply optional patch series if EXTRA_PATCH is set (e.g. patches/tu8_kgsl_26.patch)
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
 		echo "Applying patch series: $EXTRA_PATCH"
-		patch -p1 -N --fuzz=4 < "../../$EXTRA_PATCH" || echo -e "${red}Warning: partial patch failures, continuing...${nocolor}"
-	fi
-
-	# Apply optional Python scripts if EXTRA_SCRIPT is set (colon-separated list)
-	# freedreno_devices.py: reset if patch left it with syntax errors, then re-apply cleanly
-	if [ -n "$EXTRA_SCRIPT" ]; then
-		if ! python3 -c "compile(open('src/freedreno/common/freedreno_devices.py').read(),'f','exec')" 2>/dev/null; then
-			echo -e "${red}freedreno_devices.py has syntax errors after patching — resetting${nocolor}"
-			git checkout -- src/freedreno/common/freedreno_devices.py
+		if ! git apply --check "../../$EXTRA_PATCH"; then
+			echo -e "${red}Failed to apply $EXTRA_PATCH!${nocolor}"
+			exit 1
 		fi
-		IFS=':' read -ra SCRIPTS <<< "$EXTRA_SCRIPT"
-		for SCRIPT in "${SCRIPTS[@]}"; do
-			if [ -f "../../$SCRIPT" ]; then
-				echo "Running script: $SCRIPT"
-				python3 "../../$SCRIPT" || { echo -e "${red}Script $SCRIPT failed, aborting!${nocolor}"; exit 1; }
-			fi
-		done
+		git apply "../../$EXTRA_PATCH"
 	fi
-
-	# Preventive fixes for NDK r29 compilation
-	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
-	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
-	sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
 
 	mkdir -p "$workdir/bin"
 	ln -sf "$ndk/clang" "$workdir/bin/cc"
