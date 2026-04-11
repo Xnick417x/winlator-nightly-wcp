@@ -1,0 +1,150 @@
+{
+  "id": 5,
+  "name": "Halo 1 Controls",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_W", "KEY_D", "KEY_S", "KEY_A"],
+      "scale": 1.2,
+      "x": 0.23000000417232513,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_LEFT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.1192857176065445,
+      "y": 0.5333333611488342,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_SPACE", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.9200000166893005,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "CROUCH",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["KEY_CTRL_L", "NONE", "NONE", "NONE"],
+      "scale": 1.25,
+      "x": 0.818928599357605,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["KEY_R", "NONE", "NONE", "NONE"],
+      "scale": 1.3,
+      "x": 0.7092857360839844,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "RELOAD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_MIDDLE_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1.2,
+      "x": 0.8396428823471069,
+      "y": 0.4888888955116272,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_F", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.9200000166893005,
+      "y": 0.5333333611488342,
+      "toggleSwitch": false,
+      "text": "MELEE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["MOUSE_RIGHT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.9300000071525574,
+      "y": 0.911111164093018,
+      "toggleSwitch": false,
+      "text": "GRENADE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["KEY_ESC", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.3400000035762787,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "PAUSE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": ["KEY_E", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.4300000071525574,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": ["KEY_TAB", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.6100000143051147,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "WEAPON",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": ["KEY_ENTER", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.5192857384681702,
+      "y": 0.9555555820465088,
+      "toggleSwitch": false,
+      "text": "ENTER",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_Q", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.9200000166893005,
+      "y": 0.3333333432674408,
+      "toggleSwitch": false,
+      "text": "FLASHLIGHT",
+      "iconId": 0
+    }
+  ]
+}

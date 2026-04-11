@@ -1,0 +1,215 @@
+{
+  "id": 22,
+  "name": "Sleeping Dogs",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.1,
+      "x": 0.150000,
+      "y": 0.650000,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.35,
+      "x": 0.150000,
+      "y": 0.250000,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_CTRL_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.350000,
+      "y": 0.250000,
+      "toggleSwitch": false,
+      "text": "COVER",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.950000,
+      "y": 0.250000,
+      "toggleSwitch": false,
+      "text": "SPRINT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.750000,
+      "y": 0.250000,
+      "toggleSwitch": false,
+      "text": "HIJACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.760000,
+      "y": 0.630000,
+      "toggleSwitch": false,
+      "text": "ATTACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.850000,
+      "y": 0.760000,
+      "toggleSwitch": false,
+      "text": "SPACE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.850000,
+      "y": 0.500000,
+      "toggleSwitch": false,
+      "text": "GRAPPLE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.940000,
+      "y": 0.630000,
+      "toggleSwitch": false,
+      "text": "INTERACT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_R",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1,
+      "x": 0.050000,
+      "y": 0.890000,
+      "toggleSwitch": false,
+      "text": "RELOAD",
+      "iconId": 0
+    },
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_UP",
+        "KEY_M",
+        "KEY_DOWN",
+        "KEY_BKSP"
+      ],
+      "scale": 0.8,
+      "x": 0.250000,
+      "y": 0.850000,
+      "toggleSwitch": false,
+      "text": "D-PAD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.600000,
+      "y": 0.220000,
+      "toggleSwitch": false,
+      "text": "PAUSE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_TAB",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.400000,
+      "y": 0.220000,
+      "toggleSwitch": false,
+      "text": "MAP",
+      "iconId": 0
+    }
+  ]
+}

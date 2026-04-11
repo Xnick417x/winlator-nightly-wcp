@@ -1,0 +1,327 @@
+{
+  "id": 78,
+  "name": "Dying Light Analog",
+  "cursorSpeed": 1.0,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.0,
+      "x": 0.168317,
+      "y": 0.652174,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.049505,
+      "y": 0.369565,
+      "toggleSwitch": false,
+      "text": "SENSE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_T",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.049505,
+      "y": 0.456522,
+      "toggleSwitch": false,
+      "text": "LIGHT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_H",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.049505,
+      "y": 0.543478,
+      "toggleSwitch": false,
+      "text": "HEAL",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_1",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.148515,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "1",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_2",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.237624,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "2",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_3",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.326733,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "3",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_4",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.415842,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "4",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_M",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.594059,
+      "y": 0.043478,
+      "toggleSwitch": false,
+      "text": "MAP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_I",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.514852,
+      "y": 0.043478,
+      "toggleSwitch": false,
+      "text": "INV",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.435644,
+      "y": 0.043478,
+      "toggleSwitch": false,
+      "text": "ESC",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.900990,
+      "y": 0.456522,
+      "toggleSwitch": false,
+      "text": "ATTACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.782178,
+      "y": 0.478261,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.851485,
+      "y": 0.652174,
+      "toggleSwitch": false,
+      "text": "KICK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.1,
+      "x": 0.782178,
+      "y": 0.717391,
+      "toggleSwitch": false,
+      "text": "USE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.930693,
+      "y": 0.695652,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_C",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.1,
+      "x": 0.871287,
+      "y": 0.826087,
+      "toggleSwitch": false,
+      "text": "CROUCH",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "MOUSE_MIDDLE_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.821782,
+      "y": 0.282609,
+      "toggleSwitch": false,
+      "text": "EQUIP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_R",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.801980,
+      "y": 0.869565,
+      "toggleSwitch": false,
+      "text": "RLD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.1,
+      "x": 0.722772,
+      "y": 0.826087,
+      "toggleSwitch": true,
+      "text": "SPRINT",
+      "iconId": 0
+    }
+  ]
+}

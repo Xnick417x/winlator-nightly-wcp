@@ -1,0 +1,327 @@
+{
+  "id": 6,
+  "name": "Oblivion XInput",
+  "cursorSpeed": 1.0,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_LEFT_THUMB_UP",
+        "GAMEPAD_LEFT_THUMB_RIGHT",
+        "GAMEPAD_LEFT_THUMB_DOWN",
+        "GAMEPAD_LEFT_THUMB_LEFT"
+      ],
+      "scale": 1.1,
+      "x": 0.149806,
+      "y": 0.600000,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_L2",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.35,
+      "x": 0.149806,
+      "y": 0.299622,
+      "toggleSwitch": false,
+      "text": "BLOCK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_R2",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.4,
+      "x": 0.849763,
+      "y": 0.299622,
+      "toggleSwitch": false,
+      "text": "ATTACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_R1",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.079638,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "CAST",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_L1",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.919931,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "GRAB",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_A",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.841584,
+      "y": 0.760870,
+      "toggleSwitch": false,
+      "text": "USE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_Y",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.841584,
+      "y": 0.500000,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_X",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.772277,
+      "y": 0.630435,
+      "toggleSwitch": false,
+      "text": "DRAW",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_B",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.910891,
+      "y": 0.630435,
+      "toggleSwitch": false,
+      "text": "JRNL",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_L3",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.039604,
+      "y": 0.790000,
+      "toggleSwitch": true,
+      "text": "SNEAK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_BUTTON_R3",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.149806,
+      "y": 0.900000,
+      "toggleSwitch": false,
+      "text": "CAM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.673267,
+      "y": 0.782609,
+      "toggleSwitch": true,
+      "text": "RUN",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F5",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.613861,
+      "y": 0.152174,
+      "toggleSwitch": false,
+      "text": "QSAVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_START",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.455446,
+      "y": 0.152174,
+      "toggleSwitch": false,
+      "text": "PAUSE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_BUTTON_SELECT",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.534653,
+      "y": 0.152174,
+      "toggleSwitch": false,
+      "text": "WAIT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F9",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.85,
+      "x": 0.376238,
+      "y": 0.152174,
+      "toggleSwitch": false,
+      "text": "QLOAD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_DPAD_UP",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.380000,
+      "y": 0.950000,
+      "toggleSwitch": false,
+      "text": "1",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_DPAD_RIGHT",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.460000,
+      "y": 0.950000,
+      "toggleSwitch": false,
+      "text": "2",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_DPAD_DOWN",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.540000,
+      "y": 0.950000,
+      "toggleSwitch": false,
+      "text": "3",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "GAMEPAD_DPAD_LEFT",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.620000,
+      "y": 0.950000,
+      "toggleSwitch": false,
+      "text": "4",
+      "iconId": 0
+    }
+  ]
+}

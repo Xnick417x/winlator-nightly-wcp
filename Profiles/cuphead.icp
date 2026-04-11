@@ -1,0 +1,95 @@
+{
+  "id": 4,
+  "name": "cuphead",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_UP", "KEY_RIGHT", "KEY_DOWN", "KEY_LEFT"],
+      "scale": 1.45,
+      "x": 0.18958333134651184,
+      "y": 0.7111111283302307,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_Z", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8100000023841858,
+      "y": 0.8222222328186035,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_X", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.75,
+      "y": 0.6888889074325562,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_V", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8700000047683716,
+      "y": 0.6888889074325562,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_SHIFT_L", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8100000023841858,
+      "y": 0.5555555820465088,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_TAB", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.9100000262260437,
+      "y": 0.42222222685813904,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_ESC", "NONE", "NONE"],
+      "scale": 1.1,
+      "x": 0.05000000074505806,
+      "y": 0.08888888104127884,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_X", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8100000023841858,
+      "y": 0.17777778208255768,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    }
+  ]
+}

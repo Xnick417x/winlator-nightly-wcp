@@ -1,0 +1,247 @@
+{
+  "id": 28,
+  "name": "GTA 3 Classic",
+  "cursorSpeed": 1.0,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.1,
+      "x": 0.149806,
+      "y": 0.649338,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.35,
+      "x": 0.149806,
+      "y": 0.299622,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.4,
+      "x": 0.849763,
+      "y": 0.299622,
+      "toggleSwitch": false,
+      "text": "FIRE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_SCROLL_DOWN",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.079638,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "WEP -",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_SCROLL_UP",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.219974,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "WEP +",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.089109,
+      "y": 0.891304,
+      "toggleSwitch": false,
+      "text": "DRV L",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.257426,
+      "y": 0.891304,
+      "toggleSwitch": false,
+      "text": "DRV R",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.849763,
+      "y": 0.529301,
+      "toggleSwitch": true,
+      "text": "SPRINT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.849763,
+      "y": 0.769376,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.729660,
+      "y": 0.649338,
+      "toggleSwitch": false,
+      "text": "ENTER",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_V",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.969867,
+      "y": 0.649338,
+      "toggleSwitch": false,
+      "text": "CAM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F5",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.449849,
+      "y": 0.849716,
+      "toggleSwitch": false,
+      "text": "RADIO",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_TAB",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.549720,
+      "y": 0.849716,
+      "toggleSwitch": false,
+      "text": "HORN",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_CAPS_LOCK",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.722772,
+      "y": 0.891304,
+      "toggleSwitch": false,
+      "text": "LOOK B",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.499785,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "PAUSE",
+      "iconId": 0
+    }
+  ]
+}

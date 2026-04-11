@@ -1,0 +1,263 @@
+{
+  "id": 6,
+  "name": "Mini Ninjas",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.1,
+      "x": 0.149806,
+      "y": 0.649338,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.35,
+      "x": 0.149806,
+      "y": 0.299621,
+      "toggleSwitch": false,
+      "text": "BREAK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.4,
+      "x": 0.849763,
+      "y": 0.299621,
+      "toggleSwitch": false,
+      "text": "ATTACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_1",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.079638,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "FOLLOW",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_2",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.219974,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "QUICK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_3",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.949634,
+      "y": 0.149338,
+      "toggleSwitch": false,
+      "text": "INVT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.839862,
+      "y": 0.619092,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_ALT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.839862,
+      "y": 0.779773,
+      "toggleSwitch": true,
+      "text": "SPRINT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.719758,
+      "y": 0.699432,
+      "toggleSwitch": false,
+      "text": "ROLL",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.959965,
+      "y": 0.699432,
+      "toggleSwitch": false,
+      "text": "POWER",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.839862,
+      "y": 0.459357,
+      "toggleSwitch": false,
+      "text": "USE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_CTRL_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1,
+      "x": 0.049935,
+      "y": 0.889414,
+      "toggleSwitch": true,
+      "text": "STEALTH",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_4",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1,
+      "x": 0.227722,
+      "y": 0.891304,
+      "toggleSwitch": false,
+      "text": "HAT",
+      "iconId": 0
+    },
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_UP",
+        "KEY_RIGHT",
+        "KEY_DOWN",
+        "KEY_LEFT"
+      ],
+      "scale": 0.8,
+      "x": 0.349978,
+      "y": 0.849716,
+      "toggleSwitch": false,
+      "text": "D-PAD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.419715,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "ESC",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ENTER",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.579853,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "ENTER",
+      "iconId": 0
+    }
+  ]
+}
