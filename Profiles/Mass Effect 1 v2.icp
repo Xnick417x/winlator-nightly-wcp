@@ -1,0 +1,391 @@
+{
+  "id": 17,
+  "name": "Mass Effect 1",
+  "cursorSpeed": 1.0,
+  "elements": [
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.1,
+      "x": 0.158416,
+      "y": 0.695652,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.3,
+      "x": 0.851485,
+      "y": 0.630435,
+      "toggleSwitch": false,
+      "text": "FIRE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.079208,
+      "y": 0.500000,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.1,
+      "x": 0.851485,
+      "y": 0.804348,
+      "toggleSwitch": false,
+      "text": "HUD",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.1,
+      "x": 0.762376,
+      "y": 0.630435,
+      "toggleSwitch": false,
+      "text": "USE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_R",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.782178,
+      "y": 0.456522,
+      "toggleSwitch": false,
+      "text": "GRENADE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.940594,
+      "y": 0.630435,
+      "toggleSwitch": false,
+      "text": "HEAL",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.762376,
+      "y": 0.826087,
+      "toggleSwitch": true,
+      "text": "SPRINT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_CTRL_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.0,
+      "x": 0.247525,
+      "y": 0.500000,
+      "toggleSwitch": true,
+      "text": "CROUCH",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_H",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.920792,
+      "y": 0.478261,
+      "toggleSwitch": false,
+      "text": "HOLST",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.100000,
+      "y": 0.080000,
+      "toggleSwitch": false,
+      "text": "SQD 1",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.180000,
+      "y": 0.080000,
+      "toggleSwitch": false,
+      "text": "SQD 2",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_X",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.260000,
+      "y": 0.080000,
+      "toggleSwitch": false,
+      "text": "RALLY",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_N",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.340000,
+      "y": 0.080000,
+      "toggleSwitch": false,
+      "text": "NORM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F1",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.297030,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F1",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F2",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.376238,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F2",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F3",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.455446,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F3",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F4",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.534653,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F4",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F5",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.613861,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F5",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F9",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.693069,
+      "y": 0.956522,
+      "toggleSwitch": false,
+      "text": "F9",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.699957,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "ESC",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_M",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.779595,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "MAP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_I",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.859664,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "INV",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_J",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.8,
+      "x": 0.939733,
+      "y": 0.079395,
+      "toggleSwitch": false,
+      "text": "JRNL",
+      "iconId": 0
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "id": 5,
+  "name": "M&B",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "D_PAD",
+      "shape": "SQUARE",
+      "bindings": ["KEY_W", "KEY_D", "KEY_S", "KEY_A"],
+      "scale": 1,
+      "x": 0.1287499964237213,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 3
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_ESC", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.07000000029802322,
+      "y": 0.1111111119389534,
+      "toggleSwitch": false,
+      "text": "ZOOM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_TAB", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.07000000029802322,
+      "y": 0.2444444477558136,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_SHIFT_L", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.6800000071525574,
+      "y": 0.13333334028720856,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_CTRL_L", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.07000000029802322,
+      "y": 0.3777777850627899,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_ALT_L", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.12708333134651184,
+      "y": 0.2444444477558136,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "RANGE_BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["NONE", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8395833373069763,
+      "y": 0.20000000298023224,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0,
+      "range": "FROM_0_TO_9"
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_BKSP", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.1274999976158142,
+      "y": 0.3777777850627899,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_ENTER", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.12708333134651184,
+      "y": 0.1111111119389534,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "RANGE_BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["NONE", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8395833373069763,
+      "y": 0.08888889104127884,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0,
+      "range": "FROM_F1_TO_F12"
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_F", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8700000047683716,
+      "y": 0.6000000238418579,
+      "toggleSwitch": false,
+      "text": "ACTION",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_RIGHT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8100000023841858,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "DEFEND",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_SPACE", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8700000047683716,
+      "y": 0.8666666746139526,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_LEFT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9300000071525574,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "ATTACK",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["MOUSE_SCROLL_UP", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9200000166893005,
+      "y": 0.444444477558136,
+      "toggleSwitch": false,
+      "text": "WEAPON",
+      "iconId": 11
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["MOUSE_SCROLL_DOWN", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9200000166893005,
+      "y": 0.3333333432674408,
+      "toggleSwitch": false,
+      "text": "SHIELD",
+      "iconId": 9
+    }
+  ]
+}

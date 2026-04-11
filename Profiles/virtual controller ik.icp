@@ -1,0 +1,187 @@
+{
+  "id": 9,
+  "name": "Virtual Gamepad 1k",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_LEFT_THUMB_UP",
+        "GAMEPAD_LEFT_THUMB_RIGHT",
+        "GAMEPAD_LEFT_THUMB_DOWN",
+        "GAMEPAD_LEFT_THUMB_LEFT"
+      ],
+      "scale": 1,
+      "x": 0.15000000596046448,
+      "y": 0.7111111283302307,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["GAMEPAD_BUTTON_X", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8129166960716248,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["GAMEPAD_BUTTON_Y", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8600000143051147,
+      "y": 0.6222222447395325,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["GAMEPAD_BUTTON_A", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8600000143051147,
+      "y": 0.8444444537162781,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["GAMEPAD_BUTTON_B", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9100000262260437,
+      "y": 0.7333333492279053,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_R2", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9200000166893005,
+      "y": 0.13333334028720856,
+      "toggleSwitch": false,
+      "text": "RT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_R1", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9200000166893005,
+      "y": 0.244444477558136,
+      "toggleSwitch": false,
+      "text": "RB",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_L2", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.21833333295583725,
+      "y": 0.0888888955116272,
+      "toggleSwitch": false,
+      "text": "LS",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_L1", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.08000000357627869,
+      "y": 0.244444477558136,
+      "toggleSwitch": false,
+      "text": "LB",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_L2", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.08000000357627869,
+      "y": 0.13333334028720856,
+      "toggleSwitch": false,
+      "text": "LT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["GAMEPAD_BUTTON_R3", "NONE", "NONE", "NONE"],
+      "scale": 0.85,
+      "x": 0.7695833444595337,
+      "y": 0.8888888955116272,
+      "toggleSwitch": false,
+      "text": "RS",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_SELECT", "NONE", "NONE", "NONE"],
+      "scale": 0.85,
+      "x": 0.5383333563804626,
+      "y": 0.911111164093018,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "ROUND_RECT",
+      "bindings": ["GAMEPAD_BUTTON_START", "NONE", "NONE", "NONE"],
+      "scale": 0.85,
+      "x": 0.46041667461395264,
+      "y": 0.911111164093018,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_DPAD_UP",
+        "GAMEPAD_DPAD_RIGHT",
+        "GAMEPAD_DPAD_DOWN",
+        "GAMEPAD_DPAD_LEFT"
+      ],
+      "scale": 0.75,
+      "x": 0.0783333313465118,
+      "y": 0.4666666865348816,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "GAMEPAD_RIGHT_THUMB_UP",
+        "GAMEPAD_RIGHT_THUMB_RIGHT",
+        "GAMEPAD_RIGHT_THUMB_DOWN",
+        "GAMEPAD_RIGHT_THUMB_LEFT"
+      ],
+      "scale": 0.85,
+      "x": 0.9300000071525574,
+      "y": 0.444444477558136,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    }
+  ]
+}
