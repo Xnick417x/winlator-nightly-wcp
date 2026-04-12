@@ -165,7 +165,7 @@ jobs:
             "type": "VKD3D",
             "versionName": "${{ env.VERSION_NAME }}-x86_64",
             "versionCode": 0,
-            "description": "VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-x86_64",
+            "description": "VKD3D-Proton-${{ env.COMMIT_HASH }}-x86_64",
             "files": [
               {
                 "source": "system32/d3d12.dll",
@@ -187,7 +187,7 @@ jobs:
           }
           EOF
           cd final_package
-          tar -cJf ../VKD3D-Proton-${{ env.VERSION_NAME }}-Nightly-x86_64.wcp *
+          tar -cJf ../VKD3D-Proton-${{ env.VERSION_NAME }}-x86_64.wcp *
 
       - name: Upload Artifact (Standard)
         if: env.SHOULD_BUILD == 'true'
@@ -200,9 +200,9 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-86_64
+          tag_name: VKD3D-Proton-${{ env.COMMIT_HASH }}-x86_64
           files: '*.wcp'
-          name: "Vkd3d-Proton-${{ env.COMMIT_HASH }}-Nightly-86_64"
+          name: "Vkd3d-Proton-${{ env.COMMIT_HASH }}-x86_64"
           body: |
             Automated nightly build of Vkd3d(x86_64).
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
@@ -422,7 +422,7 @@ jobs:
             "type": "VKD3D",
             "versionName": "${{ env.VERSION_NAME }}-ARM64EC",
             "versionCode": 0,
-            "description": "VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-ARM64EC",
+            "description": "VKD3D-Proton-${{ env.COMMIT_HASH }}-ARM64EC",
             "files": [
               {
                 "source": "system32/d3d12.dll",
@@ -447,7 +447,7 @@ jobs:
           tar -cf ../archive.tar .
           cd ..
           xz -9 archive.tar
-          mv archive.tar.xz VKD3D-Proton-${{ env.VERSION_NAME }}-Nightly-ARM64EC.wcp
+          mv archive.tar.xz VKD3D-Proton-${{ env.VERSION_NAME }}-ARM64EC.wcp
 
       - name: Upload Artifact (ARM64EC)
         if: env.SHOULD_BUILD == 'true'
@@ -460,9 +460,9 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-ARM64EC
+          tag_name: VKD3D-Proton-${{ env.COMMIT_HASH }}-ARM64EC
           files: '*.wcp'
-          name: "VKD3D-Proton-${{ env.COMMIT_HASH }}-Nightly-ARM64EC"
+          name: "VKD3D-Proton-${{ env.COMMIT_HASH }}-ARM64EC"
           body: |
             Automated nightly build of Vkd3d(arm64ec).
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
