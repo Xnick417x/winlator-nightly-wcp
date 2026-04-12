@@ -43,7 +43,7 @@ If Contents don't show up. Try turning phone to Landscape View
 | **FEXCore** (ARM64EC) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-9681559d5/FEXCore-2604-9681559d5.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=fex-nightly+NOT+Weekly&expanded=true) |
 | **Box64** (Standard) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-13c9fdaa4/Box64-0.4.1-13c9fdaa4.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=box64-nightly+NOT+wowbox64+NOT+bionic+NOT+Weekly&expanded=true) |
 | **Box64** (Non standard - wip) | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-74fd2a0a5/Bionic-Box64-0.4.1-74fd2a0a5.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=bionic-box64-nightly+NOT+Weekly&expanded=true) |
-| **WOWBox64** | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-b99dde293/WOWBox64-0.4.1-b99dde293.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
+| **WOWBox64** | [**Download Latest**](https://github.com/42es/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-13c9fdaa4/WOWBox64-0.4.1-13c9fdaa4.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
 
 ### Stable Builds
 
