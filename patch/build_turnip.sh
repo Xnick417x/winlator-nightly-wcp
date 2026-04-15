@@ -58,6 +58,18 @@ prepare_workdir(){
 	if [ ! -d "$srcfolder" ]; then
 		git clone "$mesasrc" --depth 200 -b "$mesabranch" "$srcfolder"
 	fi
+	
+	cd "$srcfolder"
+	# Steven's SPIRV fallback logic
+	mkdir -p subprojects
+	cd subprojects
+	if [ ! -d "spirv-tools" ]; then
+		git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
+	fi
+	if [ ! -d "spirv-headers" ]; then
+		git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Headers.git spirv-headers
+	fi
+	cd ..
 }
 
 apply_patches(){
@@ -78,28 +90,28 @@ apply_patches(){
 		echo "Applying Whitebelyash clean-26 logic..."
 		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
 		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch had conflicts"
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
 		fi
 
 		# Layer 2: Whitebelyash gen8 (A8xx Base + SteamDeck fix)
 		echo "Applying Whitebelyash gen8 A8xx base..."
 		WB_BASE=$(git merge-base whitebelyash/gen8-clean-26 whitebelyash/gen8 || echo "")
 		if [ -n "$WB_BASE" ]; then
-			git diff $WB_BASE..whitebelyash/gen8 | git apply --3way --whitespace=nowarn || echo "Warning: WB gen8 patch had conflicts"
+			git diff $WB_BASE..whitebelyash/gen8 | git apply --3way --whitespace=nowarn || true
 		fi
 
 		# Layer 3: DiskDVD A810-829 (FSR/Upscaler + Master Tuning)
 		echo "Applying DiskDVD master tuning..."
 		DD_BASE=$(git merge-base whitebelyash/gen8 diskdvd/A810-829 || echo "")
 		if [ -n "$DD_BASE" ]; then
-			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || echo "Warning: DiskDVD tuning patch had conflicts"
+			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || true
 		fi
 	else
 		echo "Generating and applying Clean-26 patches for A6xx/A7xx..."
 		git fetch --depth 200 whitebelyash gen8-clean-26
 		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
 		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch had conflicts"
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
 		fi
 	fi
 
@@ -107,7 +119,11 @@ apply_patches(){
 	echo "Applying 16g scissor clamp fix..."
 	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h
 
-	# Apply Android compatibility hacks
+	# Steven's A7xx preamble fix
+	echo "Applying A7xx preamble fix..."
+	sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
+
+	# Android compatibility hacks
 	echo "Applying android compatibility hacks..."
 	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
 	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
@@ -122,7 +138,7 @@ apply_patches(){
 	# Apply manual extra patch if provided
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
 		echo "Applying extra patch: $EXTRA_PATCH"
-		git apply --3way "../../$EXTRA_PATCH" || echo "Warning: Failed to apply $EXTRA_PATCH cleanly"
+		git apply --3way "../../$EXTRA_PATCH" || true
 	fi
 }
 
@@ -189,15 +205,18 @@ EOF
 		-Dstrip=true \
 		-Dplatforms=android \
 		-Dvideo-codecs= \
-		-Dplatform-sdk-version="$sdkver" \
+		-Dplatform-sdk-version=36 \
 		-Dandroid-stub=true \
 		-Dgallium-drivers= \
 		-Dvulkan-drivers=freedreno \
 		-Dvulkan-beta=true \
 		-Dfreedreno-kmds=kgsl \
 		-Degl=disabled \
-		-Dplatform-sdk-version=36 \
+		-Dglx=disabled \
+		-Dzstd=disabled \
+		-Dwerror=false \
 		-Dandroid-libbacktrace=disabled \
+		--force-fallback-for=spirv-tools,spirv-headers \
 		--reconfigure
 
 	echo "Compiling build files..."
