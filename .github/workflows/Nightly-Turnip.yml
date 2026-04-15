@@ -47,12 +47,12 @@ jobs:
         include:
           - variant: a6xx-a7xx
             suffix: ""
-            extra_patch: "patch/tu8_kgsl.patch"
-            extra_script: ""
+            extra_patch: ""
+            display_name: "A6xx-A7xx Nightly"
           - variant: a8xx
             suffix: "-A8xx"
-            extra_patch: "patch/tu8_kgsl_26.patch"
-            extra_script: ""
+            extra_patch: ""
+            display_name: "A8xx Master"
     env:
       COMMIT_HASH: ${{ needs.check-upstream.outputs.commit_hash }}
       MESA_VERSION: ${{ needs.check-upstream.outputs.mesa_version }}
@@ -64,7 +64,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build patchelf unzip flex bison git perl python3-pip glslang-tools curl zip patch jq
+          sudo apt-get install -y ninja-build patchelf unzip flex bison git perl python3-pip glslang-tools curl zip patch jq wget
           pip3 install --break-system-packages meson mako
 
       - name: Cache Android NDK
@@ -84,10 +84,8 @@ jobs:
           fi
           
           export BUILD_VERSION="${{ github.run_number }}"
+          export VARIANT="${{ matrix.variant }}"
           [[ -n "${{ matrix.extra_patch }}" ]] && export EXTRA_PATCH="${{ matrix.extra_patch }}"
-          [[ -n "${{ matrix.extra_script }}" ]] && export EXTRA_SCRIPT="${{ matrix.extra_script }}"
-          
-          sed -i 's/"name": "Mesa Turnip.*/"name": "Mesa Turnip ${{ env.MESA_VERSION }}-${{ env.COMMIT_HASH }}${{ matrix.suffix }}",/g' patch/build_turnip.sh
           
           ./patch/build_turnip.sh
           
@@ -125,8 +123,11 @@ jobs:
           tag_name: nightly-${{ env.BASE_NAME }}
           name: nightly-${{ env.BASE_NAME }}
           body: |
-            Automated nightly build of Turnip drivers. Includes standard and A8xx experimental variants.
-            Commit: https://gitlab.freedesktop.org/mesa/mesa/-/commit/${{ env.COMMIT_HASH }}
+            Automated nightly build of Turnip drivers.
+            - **A6xx-A7xx**: Upstream Mesa + Whitebelyash clean-26 patches.
+            - **A8xx Master**: Upstream Mesa + Whitebelyash gen8-clean-26 + Whitebelyash gen8 + DiskDVD Upscaler logic.
+            
+            Base Commit: https://gitlab.freedesktop.org/mesa/mesa/-/commit/${{ env.COMMIT_HASH }}
           files: zips/*.zip
 
       - name: Cleanup Old Releases
@@ -165,4 +166,3 @@ jobs:
              n=$((n+1))
              sleep 15
           done
-          exit 1
