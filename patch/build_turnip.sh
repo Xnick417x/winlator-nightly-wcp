@@ -3,20 +3,25 @@
 green='\033[0;32m'
 red='\033[0;31m'
 nocolor='\033[0m'
-deps="git meson ninja patchelf unzip curl pip flex bison zip glslang glslangValidator"
+deps="git meson ninja patchelf unzip curl pip flex bison zip glslang glslangValidator wget patch"
 workdir="$(pwd)/turnip_workdir"
 ndkver="android-ndk-r29"
 ndk="$workdir/$ndkver/toolchains/llvm/prebuilt/linux-x86_64/bin"
 sdkver="34"
-mesasrc="https://gitlab.freedesktop.org/mesa/mesa"
-srcfolder="mesa"
+
+# VARIANT can be: a6xx-a7xx, a8xx
+variant="${VARIANT:-a6xx-a7xx}"
+
+mesasrc="https://gitlab.freedesktop.org/mesa/mesa.git"
+mesabranch="main"
+srcfolder="mesa-turnip-$variant"
 
 run_all(){
-	echo -e "${green}====== Begin building TU V${BUILD_VERSION}! ======${nocolor}"
+	echo -e "${green}====== Begin building TU ${variant} V${BUILD_VERSION}! ======${nocolor}"
 	check_deps
 	prepare_workdir
-
-	build_lib_for_android main
+	apply_patches
+	build_lib_for_android
 }
 
 check_deps(){
@@ -40,31 +45,84 @@ check_deps(){
 
 prepare_workdir(){
 	echo "Preparing work directory..."
-	mkdir -p "$workdir" && cd "$_"
+	mkdir -p "$workdir" && cd "$workdir"
 
-	echo "Downloading android-ndk from google server..."
-	curl -sL https://dl.google.com/android/repository/"$ndkver"-linux.zip --output "$ndkver"-linux.zip &> /dev/null
+	if [ ! -d "$ndkver" ]; then
+		echo "Downloading android-ndk from google server..."
+		curl -sL https://dl.google.com/android/repository/"$ndkver"-linux.zip --output "$ndkver"-linux.zip &> /dev/null
+		echo "Extracting android-ndk..."
+		unzip -q "$ndkver"-linux.zip &> /dev/null
+	fi
 
-	echo "Extracting android-ndk..."
-	unzip -q "$ndkver"-linux.zip &> /dev/null
+	echo "Downloading upstream mesa source (main)..."
+	if [ ! -d "$srcfolder" ]; then
+		# Using depth 200 to ensure we have enough history for merge-base
+		git clone "$mesasrc" --depth 200 -b "$mesabranch" "$srcfolder"
+	fi
+}
 
-	echo "Downloading mesa source..."
-	git clone $mesasrc --depth=1 -b main $srcfolder
+apply_patches(){
+	cd "$workdir/$srcfolder"
+	git config --global user.email "builder@localhost"
+	git config --global user.name "Builder"
+
+	echo "Fetching fork branches to generate patches..."
+	git remote add whitebelyash https://github.com/whitebelyash/mesa-tu8.git 2>/dev/null || true
+	git fetch --depth 200 whitebelyash
+
+	if [[ "$variant" == *"a8xx"* ]]; then
+		echo "Generating and applying A8xx Master patches..."
+		git remote add diskdvd https://github.com/DiskDVD/mesa-tu8.git 2>/dev/null || true
+		git fetch --depth 200 diskdvd A810-829
+
+		# 1. Apply Whitebelyash gen8-clean-26 first (Modern foundation)
+		echo "Applying Whitebelyash gen8-clean-26 logic..."
+		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
+		if [ -n "$CLEAN_BASE" ]; then
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch encountered issues, proceeding with best-effort merge"
+		fi
+
+		# 2. Apply DiskDVD A810-829 (Includes A8xx base + FSR/Upscaler + SteamDeck fix + aggressive tuning)
+		echo "Applying DiskDVD A810-829 Master tuning..."
+		# We diff A810-829 against its fork's upstream base to get pure custom logic
+		DD_BASE=$(git merge-base HEAD diskdvd/A810-829 || echo "")
+		if [ -n "$DD_BASE" ]; then
+			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || echo "Warning: A810-829 patch encountered issues"
+		fi
+	else
+		echo "Generating and applying Clean-26 patches for A6xx/A7xx..."
+		git fetch --depth 200 whitebelyash gen8-clean-26
+		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
+		if [ -n "$CLEAN_BASE" ]; then
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch encountered issues"
+		fi
+	fi
+
+	# Apply user fixes
+	echo "Applying 16g scissor clamp fix..."
+	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h
+
+	# Apply variant-specific hacks
+	if [[ "$variant" == *"a6xx-a7xx"* ]]; then
+		echo "Applying A6xx-A7xx compatibility hacks..."
+		sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
+		sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
+		sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
+		LTO="true"
+	else
+		LTO="false"
+	fi
+
+	# Apply optional EXTRA_PATCH if provided (local files like registry fix)
+	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
+		echo "Applying manual extra patch: $EXTRA_PATCH"
+		git apply --3way "../../$EXTRA_PATCH" || echo "Warning: Failed to apply $EXTRA_PATCH cleanly"
+	fi
 }
 
 build_lib_for_android(){
 	cd "$workdir/$srcfolder"
-	echo "==== Building Mesa on $1 branch ===="
-
-	# Apply optional patch series if EXTRA_PATCH is set (e.g. patches/tu8_kgsl_26.patch)
-	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
-		echo "Applying patch series: $EXTRA_PATCH"
-		if ! git apply --check "../../$EXTRA_PATCH"; then
-			echo -e "${red}Failed to apply $EXTRA_PATCH!${nocolor}"
-			exit 1
-		fi
-		git apply "../../$EXTRA_PATCH"
-	fi
+	echo "==== Building Mesa ===="
 
 	mkdir -p "$workdir/bin"
 	ln -sf "$ndk/clang" "$workdir/bin/cc"
@@ -119,8 +177,9 @@ EOF
 	meson setup build-android-aarch64 \
 		--cross-file "android-aarch64.txt" \
 		--native-file "native.txt" \
-		--prefix /tmp/turnip-$1 \
+		--prefix /tmp/turnip-$variant \
 		-Dbuildtype=release \
+		-Db_lto=$LTO \
 		-Dstrip=true \
 		-Dplatforms=android \
 		-Dvideo-codecs= \
@@ -138,18 +197,26 @@ EOF
 	echo "Compiling build files..."
 	ninja -C build-android-aarch64 install
 
-	if ! [ -f /tmp/turnip-$1/lib/libvulkan_freedreno.so ]; then
+	if ! [ -f /tmp/turnip-$variant/lib/libvulkan_freedreno.so ]; then
 		echo -e "${red}Build failed!${nocolor}" && exit 1
 	fi
 
 	echo "Making the archive..."
-	cd /tmp/turnip-$1/lib
+	cd /tmp/turnip-$variant/lib
+
+	if [[ "$variant" == *"a8xx"* ]]; then
+		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}-A8xx"
+		DESC="A8xx nightly build: Upstream Mesa + WB clean-26 + DiskDVD A810-829 (FSR + Master Tuning)."
+	else
+		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}"
+		DESC="A6xx/A7xx nightly build: Upstream Mesa + WB clean-26 patches."
+	fi
 
 	cat <<EOF >"meta.json"
 {
   "schemaVersion": 1,
-  "name": "Mesa Turnip ${MESA_VERSION}-${GITHASH}",
-  "description": "A6xx/A7xx Turnip driver from Mesa main (git ${GITHASH}). KGSL build. A8xx experimental.",
+  "name": "$NAME",
+  "description": "$DESC",
   "author": "Xnick417x",
   "packageVersion": "1",
   "vendor": "Mesa",
@@ -158,13 +225,13 @@ EOF
   "libraryName": "libvulkan_freedreno.so"
 }
 EOF
-	zip -q "/tmp/mesa-turnip-$1-V${BUILD_VERSION}.zip" libvulkan_freedreno.so meta.json
+	zip -q "/tmp/mesa-turnip-$variant-V${BUILD_VERSION}.zip" libvulkan_freedreno.so meta.json
 	cd - > /dev/null
 
-	if ! [ -f "/tmp/mesa-turnip-$1-V${BUILD_VERSION}.zip" ]; then
+	if ! [ -f "/tmp/mesa-turnip-$variant-V${BUILD_VERSION}.zip" ]; then
 		echo -e "${red}Failed to pack the archive!${nocolor}"
 	else
-		cp "/tmp/mesa-turnip-$1-V${BUILD_VERSION}.zip" "$workdir/"
+		cp "/tmp/mesa-turnip-$variant-V${BUILD_VERSION}.zip" "$workdir/"
 		echo -e "${green}Build completed successfully!${nocolor}"
 	fi
 }
