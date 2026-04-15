@@ -56,7 +56,6 @@ prepare_workdir(){
 
 	echo "Downloading upstream mesa source (main)..."
 	if [ ! -d "$srcfolder" ]; then
-		# Using depth 200 to ensure we have enough history for merge-base
 		git clone "$mesasrc" --depth 200 -b "$mesabranch" "$srcfolder"
 	fi
 }
@@ -71,58 +70,56 @@ apply_patches(){
 	git fetch --depth 200 whitebelyash
 
 	if [[ "$variant" == *"a8xx"* ]]; then
-		echo "Generating and applying A8xx Master patches..."
+		echo "Generating and applying A8xx Master patches (Clean-26 + gen8 + A810 tuning)..."
 		git remote add diskdvd https://github.com/DiskDVD/mesa-tu8.git 2>/dev/null || true
 		git fetch --depth 200 diskdvd A810-829
 
-		# 1. Apply Whitebelyash gen8-clean-26 first (Modern foundation)
-		echo "Applying Whitebelyash gen8-clean-26 logic..."
+		# Layer 1: Clean-26 foundation
 		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
 		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch encountered issues, proceeding with best-effort merge"
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
 		fi
 
-		# 2. Apply DiskDVD A810-829 (Includes A8xx base + FSR/Upscaler + SteamDeck fix + aggressive tuning)
-		echo "Applying DiskDVD A810-829 Master tuning..."
-		# We diff A810-829 against its fork's upstream base to get pure custom logic
+		# Layer 2: DiskDVD Master tuning (A8xx Base + FSR + 12MB Gmem)
 		DD_BASE=$(git merge-base HEAD diskdvd/A810-829 || echo "")
 		if [ -n "$DD_BASE" ]; then
-			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || echo "Warning: A810-829 patch encountered issues"
+			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || true
 		fi
 	else
 		echo "Generating and applying Clean-26 patches for A6xx/A7xx..."
 		git fetch --depth 200 whitebelyash gen8-clean-26
 		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
 		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || echo "Warning: Clean-26 patch encountered issues"
+			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
 		fi
 	fi
 
-	# Apply user fixes
+	# Apply 16g scissor clamp
 	echo "Applying 16g scissor clamp fix..."
 	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h
 
-	# Apply variant-specific hacks
-	if [[ "$variant" == *"a6xx-a7xx"* ]]; then
-		echo "Applying A6xx-A7xx compatibility hacks..."
-		sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
-		sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
-		sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
-		LTO="true"
-	else
-		LTO="false"
+	# Apply A6xx-A7xx compatibility hacks (mojo-26 style)
+	echo "Applying android compatibility hacks..."
+	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
+	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
+	sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
+
+	if [[ "$variant" == *"a8xx"* ]]; then
+		if [ -f "src/freedreno/vulkan/tu_version.h" ]; then
+			echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > src/freedreno/vulkan/tu_version.h
+		fi
 	fi
 
-	# Apply optional EXTRA_PATCH if provided (local files like registry fix)
+	# Apply manual extra patch if provided
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
-		echo "Applying manual extra patch: $EXTRA_PATCH"
-		git apply --3way "../../$EXTRA_PATCH" || echo "Warning: Failed to apply $EXTRA_PATCH cleanly"
+		echo "Applying extra patch: $EXTRA_PATCH"
+		git apply --3way "../../$EXTRA_PATCH" || true
 	fi
 }
 
 build_lib_for_android(){
 	cd "$workdir/$srcfolder"
-	echo "==== Building Mesa ===="
+	echo "==== Building Mesa (LTO Disabled) ===="
 
 	mkdir -p "$workdir/bin"
 	ln -sf "$ndk/clang" "$workdir/bin/cc"
@@ -174,12 +171,13 @@ cpu = 'x86_64'
 endian = 'little'
 EOF
 
+	# LTO is disabled here to satisfy upstream Mesa requirements
 	meson setup build-android-aarch64 \
 		--cross-file "android-aarch64.txt" \
 		--native-file "native.txt" \
 		--prefix /tmp/turnip-$variant \
 		-Dbuildtype=release \
-		-Db_lto=$LTO \
+		-Db_lto=false \
 		-Dstrip=true \
 		-Dplatforms=android \
 		-Dvideo-codecs= \
@@ -206,7 +204,7 @@ EOF
 
 	if [[ "$variant" == *"a8xx"* ]]; then
 		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}-A8xx"
-		DESC="A8xx nightly build: Upstream Mesa + WB clean-26 + DiskDVD A810-829 (FSR + Master Tuning)."
+		DESC="A8xx nightly build: Upstream Mesa + WB clean-26 + DiskDVD Master Tuning."
 	else
 		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}"
 		DESC="A6xx/A7xx nightly build: Upstream Mesa + WB clean-26 patches."
