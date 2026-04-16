@@ -12,15 +12,25 @@ sdkver="34"
 # VARIANT can be: a6xx-a7xx, a8xx
 variant="${VARIANT:-a6xx-a7xx}"
 
-mesasrc="https://gitlab.freedesktop.org/mesa/mesa.git"
-mesabranch="main"
-srcfolder="mesa-turnip-$variant"
+if [[ "$variant" == *"a8xx"* ]]; then
+	# A8xx Master: The most feature-complete source (Whitebelyash + DiskDVD FSR + A8xx)
+	mesasrc="https://github.com/DiskDVD/mesa-tu8.git"
+	mesabranch="A8XX"
+	srcfolder="mesa-a8xx-master"
+	desc_extra="DiskDVD A8XX (FSR + Master Tuning)"
+else
+	# A6xx-A7xx Nightly: The stable clean foundation
+	mesasrc="https://github.com/whitebelyash/mesa-tu8.git"
+	mesabranch="gen8-clean-26"
+	srcfolder="mesa-a6xx-a7xx-clean"
+	desc_extra="Whitebelyash Clean-26"
+fi
 
 run_all(){
 	echo -e "${green}====== Begin building TU ${variant} V${BUILD_VERSION}! ======${nocolor}"
 	check_deps
 	prepare_workdir
-	apply_patches
+	apply_master_fixes
 	build_lib_for_android
 }
 
@@ -54,97 +64,67 @@ prepare_workdir(){
 		unzip -q "$ndkver"-linux.zip &> /dev/null
 	fi
 
-	echo "Downloading upstream mesa source (main)..."
+	echo "Downloading source (${mesabranch})..."
 	if [ ! -d "$srcfolder" ]; then
-		git clone "$mesasrc" --depth 200 -b "$mesabranch" "$srcfolder"
+		# No shallow clone to allow local patching and history checks
+		git clone "$mesasrc" -b "$mesabranch" "$srcfolder"
+	else
+		cd "$srcfolder"
+		echo "Updating existing source..."
+		git fetch origin "$mesabranch"
+		git reset --hard "origin/$mesabranch"
+		cd ..
 	fi
 	
 	cd "$srcfolder"
-	# Steven's SPIRV fallback logic
+	# Ensure SPIRV subprojects are present (Steven's stability fix)
 	mkdir -p subprojects
 	cd subprojects
-	if [ ! -d "spirv-tools" ]; then
-		git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools
-	fi
-	if [ ! -d "spirv-headers" ]; then
-		git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Headers.git spirv-headers
-	fi
+	[ ! -d "spirv-tools" ] && git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools || true
+	[ ! -d "spirv-headers" ] && git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Headers.git spirv-headers || true
 	cd ..
 }
 
-apply_patches(){
+apply_master_fixes(){
 	cd "$workdir/$srcfolder"
-	git config --global user.email "builder@localhost"
-	git config --global user.name "Builder"
+	
+	# 1. 16g Scissor Clamp (User Fix)
+	echo "Applying 16g scissor clamp fix..."
+	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h || true
 
-	echo "Fetching fork branches to generate patches..."
-	git remote add whitebelyash https://github.com/whitebelyash/mesa-tu8.git 2>/dev/null || true
-	git fetch --depth 200 whitebelyash
+	# 2. Registry Size Fix: Force 128 down to 96 (User Fix)
+	echo "Applying registry size fix (128 -> 96)..."
+	sed -i 's/reg_size_vec4 = 128/reg_size_vec4 = 96/g' src/freedreno/common/freedreno_devices.py || true
 
-	if [[ "$variant" == *"a8xx"* ]]; then
-		echo "Generating and applying A8xx Master patches..."
-		git remote add diskdvd https://github.com/DiskDVD/mesa-tu8.git 2>/dev/null || true
-		git fetch --depth 200 diskdvd A810-829
-
-		# Layer 1: Whitebelyash gen8-clean-26
-		echo "Applying Whitebelyash clean-26 logic..."
-		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
-		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
-		fi
-
-		# Layer 2: Whitebelyash gen8 (A8xx Base + SteamDeck fix)
-		echo "Applying Whitebelyash gen8 A8xx base..."
-		WB_BASE=$(git merge-base whitebelyash/gen8-clean-26 whitebelyash/gen8 || echo "")
-		if [ -n "$WB_BASE" ]; then
-			git diff $WB_BASE..whitebelyash/gen8 | git apply --3way --whitespace=nowarn || true
-		fi
-
-		# Layer 3: DiskDVD A810-829 (FSR/Upscaler + Master Tuning)
-		echo "Applying DiskDVD master tuning..."
-		DD_BASE=$(git merge-base whitebelyash/gen8 diskdvd/A810-829 || echo "")
-		if [ -n "$DD_BASE" ]; then
-			git diff $DD_BASE..diskdvd/A810-829 | git apply --3way --whitespace=nowarn || true
-		fi
-	else
-		echo "Generating and applying Clean-26 patches for A6xx/A7xx..."
-		git fetch --depth 200 whitebelyash gen8-clean-26
-		CLEAN_BASE=$(git merge-base HEAD whitebelyash/gen8-clean-26 || echo "")
-		if [ -n "$CLEAN_BASE" ]; then
-			git diff $CLEAN_BASE..whitebelyash/gen8-clean-26 | git apply --3way --whitespace=nowarn || true
-		fi
+	# 3. A7xx Preamble Fix (Steven's Stability Fix)
+	if ! grep -q "has_early_preamble = False" src/freedreno/common/freedreno_devices.py; then
+		echo "Applying A7xx preamble fix..."
+		sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
 	fi
 
-	# Apply 16g scissor clamp
-	echo "Applying 16g scissor clamp fix..."
-	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h
-
-	# Steven's A7xx preamble fix
-	echo "Applying A7xx preamble fix..."
-	sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
-
-	# Android compatibility hacks
+	# 4. Android System Compatibility (The 'Mojo' style fixes)
 	echo "Applying android compatibility hacks..."
 	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
 	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
 	sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
 
+	# 5. SteamDeck fix (DECK_EMU) - Ensure it's active for A8xx
 	if [[ "$variant" == *"a8xx"* ]]; then
 		if [ -f "src/freedreno/vulkan/tu_version.h" ]; then
 			echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > src/freedreno/vulkan/tu_version.h
 		fi
 	fi
 
-	# Apply manual extra patch if provided
+	# 6. Apply manual extra patch if provided
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
-		echo "Applying extra patch: $EXTRA_PATCH"
+		echo "Applying manual extra patch: $EXTRA_PATCH"
 		git apply --3way "../../$EXTRA_PATCH" || true
 	fi
 }
 
 build_lib_for_android(){
 	cd "$workdir/$srcfolder"
-	echo "==== Building Mesa ===="
+	echo "==== Compiling Mesa (LTO Disabled for stability) ===="
 
 	mkdir -p "$workdir/bin"
 	ln -sf "$ndk/clang" "$workdir/bin/cc"
@@ -164,7 +144,6 @@ build_lib_for_android(){
 	GITHASH=$(git rev-parse --short HEAD)
 	MESA_VERSION=$(cat VERSION 2>/dev/null | sed 's/-devel.*//' | tr -d '[:space:]' || echo "unknown")
 
-	echo "Generating build files..."
 	cat <<EOF >"android-aarch64.txt"
 [binaries]
 ar = '$ndk/llvm-ar'
@@ -196,6 +175,7 @@ cpu = 'x86_64'
 endian = 'little'
 EOF
 
+	# LTO disabled to prevent build crashes
 	meson setup build-android-aarch64 \
 		--cross-file "android-aarch64.txt" \
 		--native-file "native.txt" \
@@ -229,13 +209,8 @@ EOF
 	echo "Making the archive..."
 	cd /tmp/turnip-$variant/lib
 
-	if [[ "$variant" == *"a8xx"* ]]; then
-		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}-A8xx"
-		DESC="A8xx nightly build: Upstream Mesa + WB clean-26 + WB gen8 + DiskDVD master tuning."
-	else
-		NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}"
-		DESC="A6xx/A7xx nightly build: Upstream Mesa + WB clean-26 patches."
-	fi
+	NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}"
+	DESC="Turnip Nightly build: ${desc_extra}. KGSL build. Standard naming."
 
 	cat <<EOF >"meta.json"
 {
