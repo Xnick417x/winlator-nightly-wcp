@@ -77,7 +77,7 @@ apply_patches(){
 	# 1. Apply Variant-Specific Community Logic
 	if [[ "$variant" == *"a8xx"* ]]; then
 		echo "Applying A8xx Master logic (Foundation + DiskDVD Upscaler)..."
-		# Apply A8xx support base
+		# Apply A8xx support base (Includes WB fixes)
 		git apply --3way --whitespace=nowarn "../../patch/a8xx_base.patch" || true
 		# Apply DiskDVD Upscaler extension
 		git apply --3way --whitespace=nowarn "../../patch/diskdvd_upscaler.patch" || true
@@ -86,27 +86,17 @@ apply_patches(){
 		git apply --3way --whitespace=nowarn "../../patch/a6xx_clean.patch" || true
 	fi
 
-	# 2. Apply Your Custom 16g Scissor Clamp fix
+	# 2. Apply 16g Scissor Clamp fix (Preserved as requested)
 	echo "Applying 16g scissor clamp fix..."
 	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h || true
 
-	# 3. Apply Your Custom Registry Size fix (128 -> 96)
-	echo "Applying registry size fix (128 -> 96)..."
-	sed -i 's/reg_size_vec4 = 128/reg_size_vec4 = 96/g' src/freedreno/common/freedreno_devices.py || true
-
-	# 4. Apply Steven's A7xx preamble fix
-	if ! grep -q "has_early_preamble = False" src/freedreno/common/freedreno_devices.py; then
-		echo "Applying A7xx preamble fix..."
-		sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
-	fi
-
-	# 5. Apply Android compatibility hacks
+	# 3. Android compatibility hacks
 	echo "Applying android compatibility hacks..."
 	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
 	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
 	sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
 
-	# 6. Apply manual extra patch if provided
+	# 4. Apply manual extra patch if provided
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
 		echo "Applying extra patch: $EXTRA_PATCH"
 		git apply --3way "../../$EXTRA_PATCH" || true
