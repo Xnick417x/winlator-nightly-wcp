@@ -139,6 +139,12 @@
   },
   {
     "type": "DXVK",
+    "verName": "Dxvk-sarek-1.12",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-sarek-1.12.wcp"
+  },
+  {
+    "type": "DXVK",
     "verName": "Dxvk-1.10.3-async",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-1.10.3-async.wcp"
