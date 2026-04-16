@@ -12,25 +12,16 @@ sdkver="34"
 # VARIANT can be: a6xx-a7xx, a8xx
 variant="${VARIANT:-a6xx-a7xx}"
 
-if [[ "$variant" == *"a8xx"* ]]; then
-	# A8xx Master: Use DiskDVD's branch which integrates WB's A8xx work + FSR + SteamDeck
-	mesasrc="https://github.com/DiskDVD/mesa-tu8.git"
-	mesabranch="A8XX"
-	srcfolder="mesa-a8xx-master"
-	desc_extra="DiskDVD A8XX Master (FSR + WB A8xx)"
-else
-	# A6xx-A7xx Nightly: Use WB's clean foundation directly for stability
-	mesasrc="https://github.com/whitebelyash/mesa-tu8.git"
-	mesabranch="gen8-clean-26"
-	srcfolder="mesa-a6xx-a7xx-clean"
-	desc_extra="Whitebelyash Clean-26"
-fi
+# MANDATE: ALWAYS pull absolute latest upstream Mesa main for true Nightlys
+mesasrc="https://gitlab.freedesktop.org/mesa/mesa.git"
+mesabranch="main"
+srcfolder="mesa-true-nightly-$variant"
 
 run_all(){
 	echo -e "${green}====== Begin building TU ${variant} V${BUILD_VERSION}! ======${nocolor}"
 	check_deps
 	prepare_workdir
-	apply_custom_fixes
+	apply_master_nightly_patches
 	build_lib_for_android
 }
 
@@ -64,19 +55,13 @@ prepare_workdir(){
 		unzip -q "$ndkver"-linux.zip &> /dev/null
 	fi
 
-	echo "Downloading source (${mesabranch})..."
+	echo "Downloading upstream Mesa source (main)..."
 	if [ ! -d "$srcfolder" ]; then
-		# Full clone to allow git operations
-		git clone "$mesasrc" -b "$mesabranch" "$srcfolder"
-	else
-		cd "$srcfolder"
-		git fetch origin "$mesabranch"
-		git reset --hard "origin/$mesabranch"
-		cd ..
+		git clone "$mesasrc" --depth 200 -b "$mesabranch" "$srcfolder"
 	fi
 	
 	cd "$srcfolder"
-	# Ensure SPIRV tools are present for stability
+	# Steven's SPIRV fallback logic for stability
 	mkdir -p subprojects
 	cd subprojects
 	[ ! -d "spirv-tools" ] && git clone --depth=1 https://github.com/KhronosGroup/SPIRV-Tools.git spirv-tools || true
@@ -84,40 +69,50 @@ prepare_workdir(){
 	cd ..
 }
 
-apply_custom_fixes(){
+apply_master_nightly_patches(){
 	cd "$workdir/$srcfolder"
 	git config --global user.email "builder@localhost"
 	git config --global user.name "Builder"
 
-	# 1. 16g Scissor Clamp (User Fix)
+	# 1. Apply COMPREHENSIVE Community Patches
+	if [[ "$variant" == *"a8xx"* ]]; then
+		echo "Applying COMPLETE Master A8xx Nightly patch (DiskDVD Extensions + WB Base)..."
+		git apply --3way --whitespace=nowarn "../../patch/a8xx_master_nightly.patch" || echo "Warning: A8xx patch applied with 3-way merge"
+	else
+		echo "Applying COMPLETE A6xx Clean Nightly patch (WB Clean-26 logic)..."
+		git apply --3way --whitespace=nowarn "../../patch/a6xx_clean_nightly.patch" || echo "Warning: A6xx patch applied with 3-way merge"
+	fi
+
+	# 2. Apply Your Custom 16g Scissor Clamp fix
 	echo "Applying 16g scissor clamp fix..."
 	sed -i 's/#define MAX_VIEWPORT_SIZE (1 << 14)/#define MAX_VIEWPORT_SIZE 16384/g' src/freedreno/vulkan/tu_common.h || true
 
-	# 2. Registry Size Fix (128 -> 96) (User Fix)
+	# 3. Apply Your Custom Registry Size fix (128 -> 96)
 	echo "Applying registry size fix (128 -> 96)..."
 	sed -i 's/reg_size_vec4 = 128/reg_size_vec4 = 96/g' src/freedreno/common/freedreno_devices.py || true
 
-	# 3. Android System Compatibility (The 'Mojo' style fixes)
+	# 4. Apply Steven's A7xx preamble fix
+	if ! grep -q "has_early_preamble = False" src/freedreno/common/freedreno_devices.py; then
+		echo "Applying A7xx preamble fix..."
+		sed -i '/a7xx_gen1 = GPUProps(/a \        has_early_preamble = False,' src/freedreno/common/freedreno_devices.py || true
+	fi
+
+	# 5. Apply Android compatibility hacks
 	echo "Applying android compatibility hacks..."
 	sed -i 's/typedef const native_handle_t\* buffer_handle_t;/typedef void\* buffer_handle_t;/g' include/android_stub/cutils/native_handle.h || true
 	sed -i 's/, hnd->handle/, (void \*)hnd->handle/g' src/util/u_gralloc/u_gralloc_fallback.c || true
 	sed -i 's/native_buffer->handle->/((const native_handle_t \*)native_buffer->handle)->/g' src/vulkan/runtime/vk_android.c || true
 
-	# 4. Version Injection
-	if [ -f "src/freedreno/vulkan/tu_version.h" ]; then
-		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > src/freedreno/vulkan/tu_version.h
-	fi
-
-	# 5. Apply manual extra patch if provided
+	# 6. Apply manual extra patch if provided (this covers your manual tweaks)
 	if [ -n "$EXTRA_PATCH" ] && [ -f "../../$EXTRA_PATCH" ]; then
-		echo "Applying extra patch: $EXTRA_PATCH"
+		echo "Applying manual extra patch: $EXTRA_PATCH"
 		git apply --3way "../../$EXTRA_PATCH" || true
 	fi
 }
 
 build_lib_for_android(){
 	cd "$workdir/$srcfolder"
-	echo "==== Compiling Mesa Master Build ===="
+	echo "==== Compiling True Upstream Nightly ===="
 
 	mkdir -p "$workdir/bin"
 	ln -sf "$ndk/clang" "$workdir/bin/cc"
@@ -202,7 +197,11 @@ EOF
 	cd /tmp/turnip-$variant/lib
 
 	NAME="Mesa Turnip ${MESA_VERSION}-${GITHASH}"
-	DESC="Turnip Master build: ${desc_extra}. KGSL build. Standard naming."
+	if [[ "$variant" == *"a8xx"* ]]; then
+		DESC="True Nightly: Upstream Mesa + DiskDVD Master Tuning + FSR extension."
+	else
+		DESC="True Nightly: Upstream Mesa + Whitebelyash Clean-26 logic."
+	fi
 
 	cat <<EOF >"meta.json"
 {
