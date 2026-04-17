@@ -277,15 +277,15 @@
   },
   {
     "type": "Proton",
-    "verName": "Sm.proton-10.4-x86_64",
+    "verName": "Proton-10.0-4-x86_64",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Sm.proton-10.4-x86_64.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10.0-4-x86_64.wcp"
   },
   {
     "type": "Proton",
-    "verName": "Sm.proton-10.4-arm64ec",
+    "verName": "Proton-10.0-4-arm64ec",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Sm.proton-10.4-arm64ec.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10.0-4-arm64ec.wcp"
   },
   {
     "type": "Proton",
@@ -298,18 +298,6 @@
     "verName": "Proton.9.0-arm64ec",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton.9.0-arm64ec.wcp"
-  },
-  {
-    "type": "Proton",
-    "verName": "GN-02.28-proton-10.0-4-x86_64",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/GN-02.28-proton-10.0-4-x86_64.wcp"
-  },
-  {
-    "type": "Proton",
-    "verName": "GN-02.28-proton-10.0-4-arm64ec",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/GN-02.28-proton-10.0-4-arm64ec.wcp"
   },
   {
     "type": "VKD3D",
