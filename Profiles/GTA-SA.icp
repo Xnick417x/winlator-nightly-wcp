@@ -1,0 +1,216 @@
+{
+  "id": 4,
+  "name": "GTA SA",
+  "cursorSpeed": 0.71,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_W", "KEY_D", "KEY_S", "KEY_A"],
+      "scale": 1,
+      "x": 0.18000000715255737,
+      "y": 0.7555555701255798,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_ESC", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.04916666820645332,
+      "y": 0.10648148506879807,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_ENTER", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.10000000149011612,
+      "y": 0.1111111119389534,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_TAB", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.05000000074505806,
+      "y": 0.3777777850627899,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_G", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9595833420753479,
+      "y": 0.08888889104127884,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_E", "NONE", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8195833563804626,
+      "y": 0.08888889104127884,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_V", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.15666666626930237,
+      "y": 0.1111111119389534,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_SHIFT_L", "NONE", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8195833563804626,
+      "y": 0.6666666865348816,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_LEFT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.75,
+      "y": 0.2222222238779068,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["MOUSE_RIGHT_BUTTON", "NONE", "NONE", "NONE"],
+      "scale": 1.5,
+      "x": 0.27000001072883606,
+      "y": 0.31111112236976624,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 6
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_SPACE", "NONE", "NONE", "NONE"],
+      "scale": 1.15,
+      "x": 0.8500000238418579,
+      "y": 0.8444444537162781,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_C", "NONE", "NONE", "NONE"],
+      "scale": 1.1,
+      "x": 0.7595833539962769,
+      "y": 0.8222222328186035,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_F", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.14000000059604645,
+      "y": 0.3777777850627899,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_W", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9300000071525574,
+      "y": 0.4027777910232544,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 3
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": ["KEY_S", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.8500000238418579,
+      "y": 0.4027777910232544,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 5
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_N", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.10000000149011612,
+      "y": 0.2444444477558136,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_CTRL_L", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.04916666820645332,
+      "y": 0.21296297813759613,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_KP_ADD", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.9004166722297668,
+      "y": 0.10833333432674408,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "SQUARE",
+      "bindings": ["KEY_H", "NONE", "NONE", "NONE"],
+      "scale": 1,
+      "x": 0.23000000417232513,
+      "y": 0.1111111119389534,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    }
+  ]
+}

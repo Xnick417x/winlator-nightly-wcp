@@ -2,7 +2,7 @@ name: Build FexCore Nightly
 
 on:
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '14 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -23,12 +23,17 @@ jobs:
 
     - name: Check for Updates
       id: check
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        cd src
+        SHORT_HASH=$(git rev-parse --short HEAD)
+        echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "SHOULD_BUILD=true" >> $GITHUB_ENV
         else
-          cd src
-          if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+          if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
             echo "SHOULD_BUILD=false" >> $GITHUB_ENV
           else
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -43,10 +48,18 @@ jobs:
           ca-certificates curl xz-utils jq git glslang-tools \
           build-essential python3 python3-venv python3-pip \
           pkg-config cmake ninja-build zstd dos2unix perl tar unzip \
-          llvm crossbuild-essential-arm64
+          llvm crossbuild-essential-arm64 ccache
+
+    - name: Cache llvm-mingw
+      if: env.SHOULD_BUILD == 'true'
+      id: cache-llvm-mingw
+      uses: actions/cache@v4
+      with:
+        path: /opt/llvm-mingw
+        key: llvm-mingw-20251104
 
     - name: Setup Toolchain
-      if: env.SHOULD_BUILD == 'true'
+      if: env.SHOULD_BUILD == 'true' && steps.cache-llvm-mingw.outputs.cache-hit != 'true'
       run: |
         LLVM_MINGW_TAG="20251104"
         TOOLCHAIN_DIR="/opt/llvm-mingw"
@@ -56,8 +69,29 @@ jobs:
         sudo rm -rf "$TOOLCHAIN_DIR"
         sudo mkdir -p "$TOOLCHAIN_DIR"
         sudo tar -C "$TOOLCHAIN_DIR" --strip-components=1 -xJf llvm.tar.xz
-        
-        echo "$TOOLCHAIN_DIR/bin" >> $GITHUB_PATH
+        rm llvm.tar.xz
+
+    - name: Set PATH
+      if: env.SHOULD_BUILD == 'true'
+      run: |
+        echo "/opt/llvm-mingw/bin" >> $GITHUB_PATH
+
+    - name: Setup ccache
+      if: env.SHOULD_BUILD == 'true'
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ccache-fexcore-${{ env.UPSTREAM_HASH }}
+        restore-keys: |
+          ccache-fexcore-
+
+    - name: Configure ccache
+      if: env.SHOULD_BUILD == 'true'
+      run: |
+        mkdir -p .ccache
+        echo "CCACHE_DIR=$PWD/.ccache" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=500M" >> $GITHUB_ENV
 
     - name: Generate Version Name
       if: env.SHOULD_BUILD == 'true'
@@ -89,6 +123,8 @@ jobs:
           cd "$build_dir"
           
           cmake -G Ninja -Wno-dev \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_TOOLCHAIN_FILE=../Data/CMake/toolchain_mingw.cmake \
             -DMINGW_TRIPLE="${triple}-w64-mingw32" \
@@ -110,6 +146,10 @@ jobs:
         
         build_arch "arm64ec" "../../stage-ec"
         build_arch "aarch64" "../../stage-wo"
+
+    - name: Show ccache stats
+      if: env.SHOULD_BUILD == 'true'
+      run: ccache -s
 
     - name: Package
       if: env.SHOULD_BUILD == 'true'
@@ -134,7 +174,7 @@ jobs:
         {
           "type": "FEXCore",
           "versionName": "${{ env.VERSION_NAME }}",
-          "versionCode": ${{ github.run_number }},
+          "versionCode": 0,
           "description": "${{ env.VERSION_NAME }}",
           "files": [
             {
@@ -178,9 +218,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("fex-nightly-"))' \
-        | tail -n +9 \
-        | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+        OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("fex-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+        
+        for TAG in $OLD_RELEASES; do
+          echo "Deleting old release: $TAG"
+          gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+          sleep 2
+        done
 
     - name: Update README Dashboard
       if: env.SHOULD_BUILD == 'true'

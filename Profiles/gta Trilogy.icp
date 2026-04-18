@@ -1,0 +1,231 @@
+{
+  "id": 99,
+  "name": "GTA Trilogy Analog",
+  "cursorSpeed": 1.0,
+  "elements": [
+    {
+      "type": "STICK",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_W",
+        "KEY_D",
+        "KEY_S",
+        "KEY_A"
+      ],
+      "scale": 1.1,
+      "x": 0.15,
+      "y": 0.65,
+      "toggleSwitch": false,
+      "text": "MOVE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_RIGHT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.35,
+      "x": 0.15,
+      "y": 0.30,
+      "toggleSwitch": false,
+      "text": "AIM",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "MOUSE_LEFT_BUTTON",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.4,
+      "x": 0.85,
+      "y": 0.30,
+      "toggleSwitch": false,
+      "text": "FIRE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_Q",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.08,
+      "y": 0.15,
+      "toggleSwitch": false,
+      "text": "WEP -",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_E",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.22,
+      "y": 0.15,
+      "toggleSwitch": false,
+      "text": "WEP +",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SHIFT_L",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.85,
+      "y": 0.53,
+      "toggleSwitch": true,
+      "text": "SPRINT",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.2,
+      "x": 0.85,
+      "y": 0.77,
+      "toggleSwitch": false,
+      "text": "JUMP",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_F",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.73,
+      "y": 0.65,
+      "toggleSwitch": false,
+      "text": "ENTER",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_C",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.15,
+      "x": 0.97,
+      "y": 0.65,
+      "toggleSwitch": false,
+      "text": "CROUCH",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_R",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.45,
+      "y": 0.85,
+      "toggleSwitch": false,
+      "text": "RADIO",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_H",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.95,
+      "x": 0.55,
+      "y": 0.85,
+      "toggleSwitch": false,
+      "text": "HORN",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_CAPS_LOCK",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.05,
+      "y": 0.85,
+      "toggleSwitch": false,
+      "text": "LOOK B",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.45,
+      "y": 0.15,
+      "toggleSwitch": false,
+      "text": "PAUSE",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_M",
+        "NONE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 0.9,
+      "x": 0.55,
+      "y": 0.15,
+      "toggleSwitch": false,
+      "text": "MAP",
+      "iconId": 0
+    }
+  ]
+}

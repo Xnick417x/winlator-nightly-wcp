@@ -1,0 +1,2914 @@
+diff --git a/.github/workflows/macos.yml b/.github/workflows/macos.yml
+deleted file mode 100644
+index 7a24ce1329b..00000000000
+--- a/.github/workflows/macos.yml
++++ /dev/null
+@@ -1,60 +0,0 @@
+-name: macOS-CI
+-on: push
+-
+-permissions:
+-  contents: read
+-
+-jobs:
+-  macOS-CI:
+-    strategy:
+-      matrix:
+-        glx_option: ['dri', 'xlib']
+-    runs-on: macos-11
+-    env:
+-      GALLIUM_DUMP_CPU: true
+-      MESON_EXEC: /Users/runner/Library/Python/3.11/bin/meson
+-    steps:
+-    - name: Checkout
+-      uses: actions/checkout@v3
+-    - name: Install Dependencies
+-      run: |
+-        cat > Brewfile <<EOL
+-        brew "bison"
+-        brew "expat"
+-        brew "gettext"
+-        brew "libx11"
+-        brew "libxcb"
+-        brew "libxdamage"
+-        brew "libxext"
+-        brew "molten-vk"
+-        brew "ninja"
+-        brew "pkg-config"
+-        brew "python@3.10"
+-        EOL
+-
+-        brew update
+-        brew bundle --verbose
+-    - name: Install Mako and meson
+-      run: pip3 install --user mako meson
+-    - name: Configure
+-      run: |
+-        cat > native_config <<EOL
+-        [binaries]
+-        llvm-config = '/usr/local/opt/llvm/bin/llvm-config'
+-        EOL
+-        $MESON_EXEC . build --native-file=native_config -Dmoltenvk-dir=$(brew --prefix molten-vk) -Dbuild-tests=true -Dgallium-drivers=swrast,zink -Dglx=${{ matrix.glx_option }}
+-    - name: Build
+-      run: $MESON_EXEC compile -C build
+-    - name: Test
+-      run: $MESON_EXEC test -C build --print-errorlogs
+-    - name: Install
+-      run: $MESON_EXEC install -C build --destdir $PWD/install
+-    - name: 'Upload Artifact'
+-      if: always()
+-      uses: actions/upload-artifact@v3
+-      with:
+-        name: macos-${{ matrix.glx_option }}-result
+-        path: |
+-          build/meson-logs/
+-          install/
+-        retention-days: 5
+diff --git a/.mr-label-maker.yml b/.mr-label-maker.yml
+index f9ecea2daad..b37a05724be 100644
+--- a/.mr-label-maker.yml
++++ b/.mr-label-maker.yml
+@@ -232,7 +232,7 @@ merge_requests:
+         '^src/gallium/targets/mediafoundation/': ['mediafoundation']
+         '^src/gallium/tests/': ['gallium']
+         '^src/gallium/tools/': ['gallium']
+-        '^src/gallium/winsys/amdgpu/': ['radeonsi']
++        # '^src/gallium/winsys/amdgpu/': ['']
+         '^src/gallium/winsys/crocus/': ['crocus']
+         '^src/gallium/winsys/d3d12/': ['d3d12']
+         '^src/gallium/winsys/etnaviv/': ['etnaviv']
+@@ -244,7 +244,7 @@ merge_requests:
+         '^src/gallium/winsys/lima/': ['lima']
+         '^src/gallium/winsys/nouveau/': ['nouveau']
+         '^src/gallium/winsys/panfrost/': ['panfrost']
+-        '^src/gallium/winsys/radeon/': ['r300', 'r600', 'radeonsi']
++        # '^src/gallium/winsys/radeon/': ['radeon']
+         '^src/gallium/winsys/svga/': ['svga']
+         # '^src/gallium/winsys/sw/': ['']
+         '^src/gallium/winsys/sw/gdi/': ['wgl']
+diff --git a/src/amd/common/nir/ac_nir.c b/src/amd/common/nir/ac_nir.c
+index 3860df8848a..ffdbbe4b472 100644
+--- a/src/amd/common/nir/ac_nir.c
++++ b/src/amd/common/nir/ac_nir.c
+@@ -1049,131 +1049,3 @@ ac_nir_opt_vectorize_cb(const nir_instr *instr, const void *data)
+ 
+    return target_width;
+ }
+-
+-/* The IO driver location is computed from shader_info masks using a prefix bitcount.
+- * Used by FS inputs, and radeonsi+LLVM also uses this for LS outputs to VGPRs and FS outputs.
+- *
+- * driver_location == nir_intrinsic_base == nir_variable::data::driver_location.
+- */
+-unsigned
+-ac_nir_get_io_driver_location(const nir_shader *nir, unsigned location, bool is_input)
+-{
+-   assert((nir->info.stage == MESA_SHADER_VERTEX && !is_input) ||
+-          nir->info.stage == MESA_SHADER_FRAGMENT);
+-   /* All "read" bits should also be set in "written" bits. */
+-   assert(!(nir->info.outputs_read & ~nir->info.outputs_written));
+-   assert(!(nir->info.outputs_read_16bit & nir->info.outputs_written_16bit));
+-
+-   /* Per-vertex masks. */
+-   uint64_t mask = is_input ? nir->info.inputs_read : nir->info.outputs_written;
+-   uint16_t mask16 = is_input ? nir->info.inputs_read_16bit : nir->info.outputs_written_16bit;
+-   uint64_t back_color_mask = 0;
+-
+-   /* Handle FS outputs first. */
+-   if (nir->info.stage == MESA_SHADER_FRAGMENT && !is_input) {
+-      assert(mask & BITFIELD64_BIT(location));
+-      return util_bitcount64(mask & BITFIELD64_MASK(location));
+-   }
+-
+-   /* Per-primitive masks. */
+-   uint64_t mask_maybe_per_prim = 0;
+-   uint64_t mask_per_prim = 0;
+-   uint16_t mask16_per_prim = 0;
+-   bool maybe_per_primitive = false;
+-   bool per_primitive = false;
+-
+-   /* Fragment shader input locations must be in this order: per-vertex, maybe per-prim, per-prim. */
+-   if (nir->info.stage == MESA_SHADER_FRAGMENT && is_input) {
+-      if (BITSET_TEST(nir->info.system_values_read, SYSTEM_VALUE_COLOR0_AMD))
+-         mask |= VARYING_BIT_COL0;
+-      if (BITSET_TEST(nir->info.system_values_read, SYSTEM_VALUE_COLOR1_AMD))
+-         mask |= VARYING_BIT_COL1;
+-
+-      /* TODO: back colors are broken with mesh shaders because they are always after per-primitive
+-       * inputs.
+-       */
+-      back_color_mask = mask & (VARYING_BIT_BFC0 | VARYING_BIT_BFC1);
+-
+-      assert(!(mask & VARYING_BIT_LAYER)); /* This should have been lowered. */
+-      mask_maybe_per_prim = mask & (VARYING_BIT_PRIMITIVE_ID | VARYING_BIT_VIEWPORT);
+-      mask_per_prim = mask & nir->info.per_primitive_inputs &
+-                      ~(VARYING_BIT_PRIMITIVE_ID | VARYING_BIT_VIEWPORT);
+-
+-      /* TODO: Add shader_info::per_primitive_inputs_16bit for separate GLES mesh shaders + mediump. */
+-      /*mask16_per_prim = mask & nir->info.per_primitive_inputs_16bit;*/
+-
+-      /* Make the masks disjoint. */
+-      mask &= ~(back_color_mask | mask_maybe_per_prim | mask_per_prim);
+-      mask16 &= ~mask16_per_prim;
+-
+-      if (location == VARYING_SLOT_PRIMITIVE_ID || location == VARYING_SLOT_VIEWPORT) {
+-         maybe_per_primitive = true;
+-      } else if (location >= VARYING_SLOT_VAR0_16BIT) {
+-         /* TODO: Add shader_info::per_primitive_inputs_16bit. */
+-         /*per_primitive = nir->info.per_primitive_inputs_16bit &
+-                         BITFIELD_BIT(location - VARYING_SLOT_VAR0_16BIT);*/
+-      } else {
+-         assert(location <= VARYING_SLOT_VAR31);
+-         per_primitive = nir->info.per_primitive_inputs & BITFIELD64_BIT(location);
+-      }
+-   }
+-
+-   enum {
+-      MASK,
+-      MASK16,
+-      MASK_MAYBE_PRIM_PRIM, /* always after per-vertex varyings (NUM_INTERP) */
+-      MASK_PER_PRIM,
+-      MASK16_PER_PRIM,
+-      BACK_COLOR_MASK, /* always after all other varyings */
+-      PARAM_GEN_MASK, /* PARAM_GEN is loaded at location (NUM_INTERP + NUM_PRIM_INTERP). */
+-   };
+-
+-   /* We'll compute a prefix bitcount from this bitset. */
+-   const uint64_t masks[] = {
+-      [MASK] = mask,
+-      [MASK16] = mask16,
+-      [MASK_MAYBE_PRIM_PRIM] = mask_maybe_per_prim,
+-      [MASK_PER_PRIM] = mask_per_prim,
+-      [MASK16_PER_PRIM] = mask16_per_prim,
+-      [BACK_COLOR_MASK] = back_color_mask,
+-      [PARAM_GEN_MASK] = 0,
+-   };
+-   unsigned location_mask_index;
+-
+-   /* Assign a mask index to the location, and make "location" relative to the beginning of its mask. */
+-   if (nir->info.stage == MESA_SHADER_FRAGMENT && is_input && location == VARYING_SLOT_PARAM_GEN_AMD)
+-      location_mask_index = PARAM_GEN_MASK;
+-   else if (nir->info.stage == MESA_SHADER_FRAGMENT && is_input &&
+-            (location == VARYING_SLOT_BFC0 || location == VARYING_SLOT_BFC1))
+-      location_mask_index = BACK_COLOR_MASK;
+-   else if (per_primitive)
+-      location_mask_index = location >= VARYING_SLOT_VAR0_16BIT ? MASK16_PER_PRIM : MASK_PER_PRIM;
+-   else if (maybe_per_primitive)
+-      location_mask_index = MASK_MAYBE_PRIM_PRIM;
+-   else
+-      location_mask_index = location >= VARYING_SLOT_VAR0_16BIT ? MASK16 : MASK;
+-
+-   /* Make "location" relative to its mask. */
+-   if (location >= VARYING_SLOT_VAR0_16BIT)
+-      location -= VARYING_SLOT_VAR0_16BIT;
+-
+-   /* Compute the prefix bitcount. */
+-   unsigned index = 0;
+-
+-   for (unsigned i = 0; i < location_mask_index; i++)
+-      index += util_bitcount64(masks[i]);
+-
+-   index += util_bitcount64(masks[location_mask_index] & BITFIELD64_MASK(location));
+-
+-#if 0 /* useful debug code */
+-   printf("location_mask_index=%u\n", location_mask_index);
+-   for (unsigned i = 0; i <= location_mask_index; i++)
+-      printf("mask[%u] = 0x%lx\n", i, masks[i]);
+-
+-   printf("index=%u, location=%u, %s, num=%u\n",
+-          index, location, is_input ? "input" : "output",
+-          is_input ? nir->num_inputs : nir->num_outputs);
+-#endif
+-
+-   return index;
+-}
+diff --git a/src/amd/common/nir/ac_nir.h b/src/amd/common/nir/ac_nir.h
+index eb785c3c84a..8578747d853 100644
+--- a/src/amd/common/nir/ac_nir.h
++++ b/src/amd/common/nir/ac_nir.h
+@@ -469,9 +469,6 @@ ac_nir_op_supports_packed_math_16bit(const nir_alu_instr* alu);
+ uint8_t
+ ac_nir_opt_vectorize_cb(const nir_instr *instr, const void *data);
+ 
+-unsigned
+-ac_nir_get_io_driver_location(const nir_shader *nir, unsigned location, bool is_input);
+-
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/src/amd/compiler/instruction_selection/aco_select_nir_intrinsics.cpp b/src/amd/compiler/instruction_selection/aco_select_nir_intrinsics.cpp
+index 34c85b115a5..704bf5b6d3b 100644
+--- a/src/amd/compiler/instruction_selection/aco_select_nir_intrinsics.cpp
++++ b/src/amd/compiler/instruction_selection/aco_select_nir_intrinsics.cpp
+@@ -1334,8 +1334,7 @@ visit_load_interpolated_input(isel_context* ctx, nir_intrinsic_instr* instr)
+ {
+    Temp dst = get_ssa_temp(ctx, &instr->def);
+    Temp coords = get_ssa_temp(ctx, instr->src[0].ssa);
+-   unsigned idx =
+-      ac_nir_get_io_driver_location(ctx->shader, nir_intrinsic_io_semantics(instr).location, true);
++   unsigned idx = nir_intrinsic_base(instr);
+    unsigned component = nir_intrinsic_component(instr);
+    bool high_16bits = nir_intrinsic_io_semantics(instr).high_16bits;
+    Temp prim_mask = get_arg(ctx, ctx->args->prim_mask);
+@@ -1471,10 +1470,9 @@ visit_load_fs_input(isel_context* ctx, nir_intrinsic_instr* instr)
+ 
+    Temp prim_mask = get_arg(ctx, ctx->args->prim_mask);
+ 
+-   nir_io_semantics sem = nir_intrinsic_io_semantics(instr);
+-   unsigned idx = ac_nir_get_io_driver_location(ctx->shader, sem.location, true);
++   unsigned idx = nir_intrinsic_base(instr);
+    unsigned component = nir_intrinsic_component(instr);
+-   bool high_16bits = sem.high_16bits;
++   bool high_16bits = nir_intrinsic_io_semantics(instr).high_16bits;
+    unsigned vertex_id = 0; /* P0 */
+ 
+    if (instr->intrinsic == nir_intrinsic_load_input_vertex)
+diff --git a/src/amd/llvm/ac_nir_to_llvm.c b/src/amd/llvm/ac_nir_to_llvm.c
+index 6d3c1622de8..0d4c897fd74 100644
+--- a/src/amd/llvm/ac_nir_to_llvm.c
++++ b/src/amd/llvm/ac_nir_to_llvm.c
+@@ -2035,8 +2035,7 @@ static LLVMValueRef visit_load_ubo_buffer(struct ac_nir_context *ctx, nir_intrin
+ 
+ static void visit_store_output(struct ac_nir_context *ctx, nir_intrinsic_instr *instr)
+ {
+-   nir_shader *nir = nir_cf_node_get_function(&instr->instr.block->cf_node)->function->shader;
+-   unsigned base = ac_nir_get_io_driver_location(nir, nir_intrinsic_io_semantics(instr).location, false);
++   unsigned base = nir_intrinsic_base(instr);
+    unsigned writemask = nir_intrinsic_write_mask(instr);
+    unsigned component = nir_intrinsic_component(instr);
+    LLVMValueRef src = ac_to_float(&ctx->ac, get_src(ctx, instr->src[0]));
+@@ -2613,9 +2612,12 @@ static LLVMValueRef load_interpolated_input(struct ac_nir_context *ctx, LLVMValu
+ 
+ static LLVMValueRef visit_load_input(struct ac_nir_context *ctx, nir_intrinsic_instr *instr)
+ {
+-   nir_io_semantics sem = nir_intrinsic_io_semantics(instr);
++   LLVMValueRef values[8];
++   LLVMTypeRef dest_type = get_def_type(ctx, &instr->def);
++   unsigned base = nir_intrinsic_base(instr);
+    unsigned component = nir_intrinsic_component(instr);
+-   ASSERTED nir_src offset = *nir_get_io_offset_src(instr);
++   unsigned count = instr->def.num_components;
++   nir_src offset = *nir_get_io_offset_src(instr);
+ 
+    assert(instr->def.bit_size == 16 || instr->def.bit_size == 32);
+    /* No indirect indexing allowed. */
+@@ -2623,9 +2625,16 @@ static LLVMValueRef visit_load_input(struct ac_nir_context *ctx, nir_intrinsic_i
+ 
+    /* This is used to load TCS inputs from VGPRs in radeonsi. */
+    if (ctx->stage == MESA_SHADER_TESS_CTRL) {
+-      return ctx->abi->load_tess_varyings(ctx->abi, instr->def.num_components,
+-                                          instr->def.bit_size, sem.location,
+-                                          component, sem.high_16bits);
++      LLVMTypeRef component_type = LLVMGetTypeKind(dest_type) == LLVMVectorTypeKind ?
++                                      LLVMGetElementType(dest_type) : dest_type;
++
++      LLVMValueRef result = ctx->abi->load_tess_varyings(ctx->abi, component_type,
++                                                         base, component, count);
++      if (instr->def.bit_size == 16) {
++         result = ac_to_integer(&ctx->ac, result);
++         result = LLVMBuildTrunc(ctx->ac.builder, result, dest_type, "");
++      }
++      return LLVMBuildBitCast(ctx->ac.builder, result, dest_type, "");
+    }
+ 
+    assert(ctx->stage == MESA_SHADER_FRAGMENT);
+@@ -2634,25 +2643,22 @@ static LLVMValueRef visit_load_input(struct ac_nir_context *ctx, nir_intrinsic_i
+    if (instr->intrinsic == nir_intrinsic_load_input_vertex)
+       vertex_id = nir_src_as_uint(instr->src[0]);
+ 
+-   nir_shader *nir = nir_cf_node_get_function(&instr->instr.block->cf_node)->function->shader;
+-   unsigned base = ac_nir_get_io_driver_location(nir, sem.location, true);
+    LLVMValueRef attr_number = LLVMConstInt(ctx->ac.i32, base, false);
+-   LLVMTypeRef dest_type = get_def_type(ctx, &instr->def);
+-   LLVMValueRef values[8];
+ 
+-   for (unsigned chan = 0; chan < instr->def.num_components; chan++) {
++   for (unsigned chan = 0; chan < count; chan++) {
+       LLVMValueRef llvm_chan = LLVMConstInt(ctx->ac.i32, (component + chan) % 4, false);
+       values[chan] = ac_build_fs_interp_mov(&ctx->ac, vertex_id, llvm_chan, attr_number,
+                                             ac_get_arg(&ctx->ac, ctx->args->prim_mask));
+       values[chan] = LLVMBuildBitCast(ctx->ac.builder, values[chan], ctx->ac.i32, "");
+-      if (instr->def.bit_size == 16 && sem.high_16bits)
++      if (instr->def.bit_size == 16 &&
++          nir_intrinsic_io_semantics(instr).high_16bits)
+          values[chan] = LLVMBuildLShr(ctx->ac.builder, values[chan], LLVMConstInt(ctx->ac.i32, 16, 0), "");
+       values[chan] =
+          LLVMBuildTruncOrBitCast(ctx->ac.builder, values[chan],
+                                  instr->def.bit_size == 16 ? ctx->ac.i16 : ctx->ac.i32, "");
+    }
+ 
+-   LLVMValueRef result = ac_build_gather_values(&ctx->ac, values, instr->def.num_components);
++   LLVMValueRef result = ac_build_gather_values(&ctx->ac, values, count);
+    return LLVMBuildBitCast(ctx->ac.builder, result, dest_type, "");
+ }
+ 
+@@ -2824,9 +2830,7 @@ static bool visit_intrinsic(struct ac_nir_context *ctx, nir_intrinsic_instr *ins
+       assert(offset[0].i32 == 0);
+ 
+       LLVMValueRef interp_param = get_src(ctx, instr->src[0]);
+-      nir_shader *nir = nir_cf_node_get_function(&instr->instr.block->cf_node)->function->shader;
+-      unsigned index =
+-         ac_nir_get_io_driver_location(nir, nir_intrinsic_io_semantics(instr).location, true);
++      unsigned index = nir_intrinsic_base(instr);
+       unsigned component = nir_intrinsic_component(instr);
+       result = load_interpolated_input(ctx, interp_param, index, component,
+                                        instr->def.num_components, instr->def.bit_size,
+diff --git a/src/amd/llvm/ac_shader_abi.h b/src/amd/llvm/ac_shader_abi.h
+index 820415c95ba..24c36583959 100644
+--- a/src/amd/llvm/ac_shader_abi.h
++++ b/src/amd/llvm/ac_shader_abi.h
+@@ -25,10 +25,9 @@ struct ac_shader_abi {
+    LLVMValueRef outputs[AC_LLVM_MAX_OUTPUTS * 4];
+    bool is_16bit[AC_LLVM_MAX_OUTPUTS * 4];
+ 
+-   /* The result must be either scalar or vector i16 or i32. */
+-   LLVMValueRef (*load_tess_varyings)(struct ac_shader_abi *abi, unsigned num_components,
+-                                      unsigned bit_size, gl_varying_slot slot, unsigned component,
+-                                      bool high_16bits);
++   LLVMValueRef (*load_tess_varyings)(struct ac_shader_abi *abi, LLVMTypeRef type,
++                                      unsigned driver_location, unsigned component,
++                                      unsigned num_components);
+ 
+    LLVMValueRef (*load_ubo)(struct ac_shader_abi *abi, LLVMValueRef index);
+ 
+diff --git a/src/amd/vulkan/nir/radv_nir.h b/src/amd/vulkan/nir/radv_nir.h
+index 082cfbbd622..b0a8317adc3 100644
+--- a/src/amd/vulkan/nir/radv_nir.h
++++ b/src/amd/vulkan/nir/radv_nir.h
+@@ -61,6 +61,8 @@ bool radv_nir_export_multiview(nir_shader *nir);
+ 
+ unsigned radv_map_io_driver_location(unsigned semantic);
+ 
++bool radv_recompute_fs_input_bases(nir_shader *nir);
++
+ void radv_nir_lower_io(struct radv_device *device, nir_shader *nir);
+ 
+ bool radv_nir_lower_io_to_mem(struct radv_device *device, struct radv_shader_stage *stage);
+diff --git a/src/amd/vulkan/nir/radv_nir_lower_io.c b/src/amd/vulkan/nir/radv_nir_lower_io.c
+index 3243c9b2a88..61c248b06e0 100644
+--- a/src/amd/vulkan/nir/radv_nir_lower_io.c
++++ b/src/amd/vulkan/nir/radv_nir_lower_io.c
+@@ -21,6 +21,85 @@ type_size_vec4(const struct glsl_type *type, bool bindless)
+    return glsl_count_attribute_slots(type, false);
+ }
+ 
++typedef struct {
++   uint64_t always_per_vertex;
++   uint64_t potentially_per_primitive;
++   uint64_t always_per_primitive;
++   unsigned num_always_per_vertex;
++   unsigned num_potentially_per_primitive;
++} radv_recompute_fs_input_bases_state;
++
++static bool
++radv_recompute_fs_input_bases_callback(UNUSED nir_builder *b, nir_intrinsic_instr *intrin, void *data)
++{
++   const radv_recompute_fs_input_bases_state *s = (const radv_recompute_fs_input_bases_state *)data;
++
++   /* Filter possible FS input intrinsics */
++   switch (intrin->intrinsic) {
++   case nir_intrinsic_load_input:
++   case nir_intrinsic_load_per_primitive_input:
++   case nir_intrinsic_load_interpolated_input:
++   case nir_intrinsic_load_input_vertex:
++      break;
++   default:
++      return false;
++   }
++
++   const nir_io_semantics sem = nir_intrinsic_io_semantics(intrin);
++   const uint64_t location_bit = BITFIELD64_BIT(sem.location);
++   const uint64_t location_mask = BITFIELD64_MASK(sem.location);
++   const unsigned old_base = nir_intrinsic_base(intrin);
++   unsigned new_base = 0;
++
++   if (location_bit & s->always_per_vertex) {
++      new_base = util_bitcount64(s->always_per_vertex & location_mask);
++   } else if (location_bit & s->potentially_per_primitive) {
++      new_base = s->num_always_per_vertex;
++
++      switch (location_bit) {
++      case VARYING_BIT_VIEWPORT:
++         break;
++      case VARYING_BIT_PRIMITIVE_ID:
++         new_base += !!(s->potentially_per_primitive & VARYING_BIT_VIEWPORT);
++         break;
++      }
++   } else if (location_bit & s->always_per_primitive) {
++      new_base = s->num_always_per_vertex + s->num_potentially_per_primitive +
++                 util_bitcount64(s->always_per_primitive & location_mask);
++   } else {
++      UNREACHABLE("invalid FS input");
++   }
++
++   if (new_base != old_base) {
++      nir_intrinsic_set_base(intrin, new_base);
++      return true;
++   }
++
++   return false;
++}
++
++bool
++radv_recompute_fs_input_bases(nir_shader *nir)
++{
++   const uint64_t always_per_vertex = nir->info.inputs_read & ~nir->info.per_primitive_inputs &
++                                      ~(VARYING_BIT_PRIMITIVE_ID | VARYING_BIT_VIEWPORT | VARYING_BIT_LAYER);
++
++   const uint64_t potentially_per_primitive = nir->info.inputs_read & (VARYING_BIT_PRIMITIVE_ID | VARYING_BIT_VIEWPORT);
++
++   const uint64_t always_per_primitive = nir->info.inputs_read & nir->info.per_primitive_inputs &
++                                         ~(VARYING_BIT_PRIMITIVE_ID | VARYING_BIT_VIEWPORT | VARYING_BIT_LAYER);
++
++   radv_recompute_fs_input_bases_state s = {
++      .always_per_vertex = always_per_vertex,
++      .potentially_per_primitive = potentially_per_primitive,
++      .always_per_primitive = always_per_primitive,
++      .num_always_per_vertex = util_bitcount64(always_per_vertex),
++      .num_potentially_per_primitive = util_bitcount64(potentially_per_primitive),
++   };
++
++   return nir_shader_intrinsics_pass(nir, radv_recompute_fs_input_bases_callback, nir_metadata_control_flow, &s);
++}
++
+ void
+ radv_nir_lower_io(struct radv_device *device, nir_shader *nir)
+ {
+diff --git a/src/amd/vulkan/radv_pipeline_graphics.c b/src/amd/vulkan/radv_pipeline_graphics.c
+index 356b39dd091..568cd5f20f4 100644
+--- a/src/amd/vulkan/radv_pipeline_graphics.c
++++ b/src/amd/vulkan/radv_pipeline_graphics.c
+@@ -1563,6 +1563,10 @@ radv_graphics_shaders_link_varyings(struct radv_shader_stage *stages, enum amd_g
+        */
+       nir_shader_gather_info(shader, nir_shader_get_entrypoint(shader));
+ 
++      /* Recompute intrinsic bases of PS inputs in order to remove gaps. */
++      if (s == MESA_SHADER_FRAGMENT)
++         radv_recompute_fs_input_bases(shader);
++
+       /* Recreate XFB info from intrinsics (nir_opt_varyings may have changed it). */
+       if (shader->xfb_info) {
+          nir_gather_xfb_info_from_intrinsics(shader);
+@@ -2713,6 +2717,13 @@ radv_graphics_shaders_compile(struct radv_device *device, struct vk_pipeline_cac
+ 
+       radv_optimize_nir(stages[i].nir, stages[i].key.optimisations_disabled);
+ 
++      if (i == MESA_SHADER_FRAGMENT) {
++         /* Recompute FS input intrinsic bases to assign a location to each FS input.
++          * The computed base will match the index of each input in SPI_PS_INPUT_CNTL_n.
++          */
++         radv_recompute_fs_input_bases(stages[i].nir);
++      }
++
+       stages[i].feedback.duration += os_time_get_nano() - stage_start;
+    }
+ 
+diff --git a/src/amd/vulkan/radv_shader.c b/src/amd/vulkan/radv_shader.c
+index da5914efebc..0e3c0647779 100644
+--- a/src/amd/vulkan/radv_shader.c
++++ b/src/amd/vulkan/radv_shader.c
+@@ -799,12 +799,8 @@ radv_shader_spirv_to_nir(struct radv_device *device, struct radv_shader_stage *s
+       NIR_PASS(progress, nir, nir_lower_flrp, lower_flrp, false /* always precise */);
+ 
+    if (stage->key.descriptor_heap) {
+-      const vk_nir_lower_descriptor_heaps_options heap_options = {
+-         .lower_shader_record_index_to_non_uniform = true,
+-      };
+-
+       progress = false;
+-      NIR_PASS(progress, nir, vk_nir_lower_descriptor_heaps, stage->layout.mapping, &heap_options, &embedded_samplers);
++      NIR_PASS(progress, nir, vk_nir_lower_descriptor_heaps, stage->layout.mapping, &embedded_samplers);
+       if (progress) {
+          NIR_PASS(_, nir, nir_remove_dead_variables, nir_var_uniform | nir_var_image, NULL);
+          NIR_PASS(_, nir, nir_opt_dce);
+diff --git a/src/amd/vulkan/radv_shader_info.c b/src/amd/vulkan/radv_shader_info.c
+index 4296c59ee8c..1b443e24936 100644
+--- a/src/amd/vulkan/radv_shader_info.c
++++ b/src/amd/vulkan/radv_shader_info.c
+@@ -69,7 +69,7 @@ gather_load_fs_input_info(const nir_shader *nir, const nir_intrinsic_instr *intr
+ {
+    const nir_io_semantics io_sem = nir_intrinsic_io_semantics(intrin);
+    const unsigned location = io_sem.location;
+-   const unsigned mapped_location = ac_nir_get_io_driver_location(nir, io_sem.location, true);
++   const unsigned mapped_location = nir_intrinsic_base(intrin);
+    const unsigned attrib_count = io_sem.num_slots;
+    const unsigned component = nir_intrinsic_component(intrin);
+ 
+diff --git a/src/compiler/nir/nir.c b/src/compiler/nir/nir.c
+index a77820d115d..2de5614bc18 100644
+--- a/src/compiler/nir/nir.c
++++ b/src/compiler/nir/nir.c
+@@ -2583,10 +2583,6 @@ nir_intrinsic_from_system_value(gl_system_value val)
+       return nir_intrinsic_load_warp_id_arm;
+    case SYSTEM_VALUE_WARP_MAX_ID_ARM:
+       return nir_intrinsic_load_warp_max_id_arm;
+-   case SYSTEM_VALUE_COLOR0_AMD:
+-      return nir_intrinsic_load_color0_amd;
+-   case SYSTEM_VALUE_COLOR1_AMD:
+-      return nir_intrinsic_load_color1_amd;
+    default:
+       return nir_num_intrinsics;
+    }
+@@ -2773,10 +2769,6 @@ nir_system_value_from_intrinsic(nir_intrinsic_op intrin)
+       return SYSTEM_VALUE_WARP_ID_ARM;
+    case nir_intrinsic_load_warp_max_id_arm:
+       return SYSTEM_VALUE_WARP_MAX_ID_ARM;
+-   case nir_intrinsic_load_color0_amd:
+-      return SYSTEM_VALUE_COLOR0_AMD;
+-   case nir_intrinsic_load_color1_amd:
+-      return SYSTEM_VALUE_COLOR1_AMD;
+    default:
+       return SYSTEM_VALUE_MAX;
+    }
+diff --git a/src/compiler/nir/nir.h b/src/compiler/nir/nir.h
+index 7d12cf3a7e2..e6d56aed97f 100644
+--- a/src/compiler/nir/nir.h
++++ b/src/compiler/nir/nir.h
+@@ -5458,6 +5458,7 @@ bool nir_remove_unused_io_vars(nir_shader *shader, nir_variable_mode mode,
+                                uint64_t *used_by_other_stage_patches);
+ void nir_compact_varyings(nir_shader *producer, nir_shader *consumer,
+                           bool default_to_smooth_interp);
++void nir_link_xfb_varyings(nir_shader *producer, nir_shader *consumer);
+ bool nir_link_opt_varyings(nir_shader *producer, nir_shader *consumer);
+ void nir_link_varying_precision(nir_shader *producer, nir_shader *consumer);
+ nir_variable *nir_clone_uniform_variable(nir_shader *nir,
+diff --git a/src/compiler/nir/nir_gather_info.c b/src/compiler/nir/nir_gather_info.c
+index f1f2b1cf0fb..862a4d198e0 100644
+--- a/src/compiler/nir/nir_gather_info.c
++++ b/src/compiler/nir/nir_gather_info.c
+@@ -781,8 +781,6 @@ gather_intrinsic_info(nir_intrinsic_instr *instr, nir_shader *shader)
+    case nir_intrinsic_load_tcs_header_ir3:
+    case nir_intrinsic_load_ray_triangle_vertex_positions:
+    case nir_intrinsic_load_layer_id:
+-   case nir_intrinsic_load_color0_amd:
+-   case nir_intrinsic_load_color1_amd:
+       BITSET_SET(shader->info.system_values_read,
+                  nir_system_value_from_intrinsic(instr->intrinsic));
+       break;
+diff --git a/src/compiler/nir/nir_linking_helpers.c b/src/compiler/nir/nir_linking_helpers.c
+index ff0a47d21b6..f2d849975b7 100644
+--- a/src/compiler/nir/nir_linking_helpers.c
++++ b/src/compiler/nir/nir_linking_helpers.c
+@@ -952,6 +952,39 @@ nir_compact_varyings(nir_shader *producer, nir_shader *consumer,
+                       default_to_smooth_interp);
+ }
+ 
++/*
++ * Mark XFB varyings as always_active_io in the consumer so the linking opts
++ * don't touch them.
++ */
++void
++nir_link_xfb_varyings(nir_shader *producer, nir_shader *consumer)
++{
++   nir_variable *input_vars[MAX_VARYING][4] = { 0 };
++
++   nir_foreach_shader_in_variable(var, consumer) {
++      if (var->data.location >= VARYING_SLOT_VAR0 &&
++          var->data.location - VARYING_SLOT_VAR0 < MAX_VARYING) {
++
++         unsigned location = var->data.location - VARYING_SLOT_VAR0;
++         input_vars[location][var->data.location_frac] = var;
++      }
++   }
++
++   nir_foreach_shader_out_variable(var, producer) {
++      if (var->data.location >= VARYING_SLOT_VAR0 &&
++          var->data.location - VARYING_SLOT_VAR0 < MAX_VARYING) {
++
++         if (!var->data.always_active_io)
++            continue;
++
++         unsigned location = var->data.location - VARYING_SLOT_VAR0;
++         if (input_vars[location][var->data.location_frac]) {
++            input_vars[location][var->data.location_frac]->data.always_active_io = true;
++         }
++      }
++   }
++}
++
+ static bool
+ does_varying_match(nir_variable *out_var, nir_variable *in_var)
+ {
+diff --git a/src/compiler/shader_enums.c b/src/compiler/shader_enums.c
+index bf712880338..1d5a2bc2438 100644
+--- a/src/compiler/shader_enums.c
++++ b/src/compiler/shader_enums.c
+@@ -459,8 +459,6 @@ gl_system_value_name(gl_system_value sysval)
+      ENUM(SYSTEM_VALUE_CORE_MAX_ID_ARM),
+      ENUM(SYSTEM_VALUE_WARP_ID_ARM),
+      ENUM(SYSTEM_VALUE_WARP_MAX_ID_ARM),
+-     ENUM(SYSTEM_VALUE_COLOR0_AMD),
+-     ENUM(SYSTEM_VALUE_COLOR1_AMD),
+    };
+    STATIC_ASSERT(ARRAY_SIZE(names) == SYSTEM_VALUE_MAX);
+    return NAME(sysval);
+diff --git a/src/compiler/shader_enums.h b/src/compiler/shader_enums.h
+index 8b42304a029..a45fda6458a 100644
+--- a/src/compiler/shader_enums.h
++++ b/src/compiler/shader_enums.h
+@@ -376,7 +376,6 @@ typedef enum
+ 
+    VARYING_SLOT_GS_HEADER_IR3 = VARYING_SLOT_BOUNDING_BOX0, /* VS/TES output and GS input */
+    VARYING_SLOT_GS_VERTEX_FLAGS_IR3 = VARYING_SLOT_BOUNDING_BOX1, /* GS output */
+-   VARYING_SLOT_PARAM_GEN_AMD = VARYING_SLOT_BOUNDING_BOX0, /* Only appears as FS input. */
+ 
+    VARYING_SLOT_VAR0 = 32, /* First generic varying slot */
+    /* the remaining are simply for the benefit of gl_varying_slot_name()
+@@ -970,9 +969,6 @@ typedef enum
+    SYSTEM_VALUE_WARP_ID_ARM,
+    SYSTEM_VALUE_WARP_MAX_ID_ARM,
+ 
+-   SYSTEM_VALUE_COLOR0_AMD,
+-   SYSTEM_VALUE_COLOR1_AMD,
+-
+    SYSTEM_VALUE_MAX             /**< Number of values */
+ } gl_system_value;
+ 
+diff --git a/src/freedreno/common/freedreno_dev_info.h b/src/freedreno/common/freedreno_dev_info.h
+index a1299a0dc09..c9581baf394 100644
+--- a/src/freedreno/common/freedreno_dev_info.h
++++ b/src/freedreno/common/freedreno_dev_info.h
+@@ -468,12 +468,15 @@ struct fd_dev_info {
+        * expected:
+        */
+       bool has_salu_int_narrowing_quirk;
+-
+       /* Whether the device supports the image processing opcode */
+       bool has_image_processing;
+-
+       /* The amount of valid draw state IDs. */
+       uint32_t max_draw_states;
++      /* If GMEM needs to be disabled for this GPU */
++      bool disable_gmem;
++
++      /* GMEM size in bytes */
++      uint32_t gmem_size;
+    } props;
+ };
+ 
+diff --git a/src/freedreno/common/freedreno_devices.py b/src/freedreno/common/freedreno_devices.py
+index 80bc917221c..577aa9fc864 100644
+--- a/src/freedreno/common/freedreno_devices.py
++++ b/src/freedreno/common/freedreno_devices.py
+@@ -967,6 +967,53 @@ a740_raw_magic_regs = [
+         [A6XXRegs.REG_A6XX_UCHE_UNKNOWN_0E12, 0],
+     ]
+ 
++
++# Adreno 710/720 are not supported by the upstream, but some hacks float on the internet adding their support.
++# These hacks simply reuse A730 entry with different ids and looks like it works in some extent
++# Let's do the same in our patchset
++add_gpus([
++        GPUId(chip_id=0x07010000, name="FD710"), # KGSL, no speedbin data
++        GPUId(chip_id=0xffff07010000, name="FD710"), # Default no-speedbin fallback
++    ], A6xxGPUInfo(
++        CHIP.A7XX,
++        [a7xx_base, a7xx_gen1],
++        num_ccu = 4,
++        tile_align_w = 64,
++        tile_align_h = 32,
++        tile_max_w = 1024,
++        tile_max_h = 1024,
++        num_vsc_pipes = 32,
++        cs_shared_mem_size = 32 * 1024,
++        wave_granularity = 2,
++        fibers_per_sp = 128 * 2 * 16,
++        highest_bank_bit = 16,
++        magic_regs = a730_magic_regs,
++        raw_magic_regs = a730_raw_magic_regs,
++    ))
++
++# Adreno 720
++add_gpus([
++        GPUId(chip_id=0x43020000, name="FD720"), # KGSL, no speedbin data
++        GPUId(chip_id=0xffff43020000, name="FD720"), # Default no-speedbin fallback
++    ], A6xxGPUInfo(
++        CHIP.A7XX,
++        [a7xx_base, a7xx_gen1],
++        num_ccu = 4,
++        tile_align_w = 64,
++        tile_align_h = 32,
++        tile_max_w = 1024,
++        tile_max_h = 1024,
++        num_vsc_pipes = 32,
++        cs_shared_mem_size = 32 * 1024,
++        wave_granularity = 2,
++        fibers_per_sp = 128 * 2 * 16,
++        highest_bank_bit = 16,
++        magic_regs = a730_magic_regs,
++        raw_magic_regs = a730_raw_magic_regs,
++    ))
++
++
++
+ add_gpus([
+         # These are named as Adreno730v3 or Adreno725v1.
+         GPUId(chip_id=0x07030002, name="FD725"),
+@@ -1250,11 +1297,50 @@ add_gpus([
+     ))
+ 
+ a8xx_base = GPUProps(
++        prim_alloc_threshold = 0x7,
++        vs_max_inputs_count = 32,
++        max_sets = 8,
++        instr_cache_size = 127,
++        tess_use_shared = True,
++        has_per_view_viewport = True,
++        has_gmem_vpc_attr_buf = True,
++        has_lpac = True,
++        has_getfiberid = True,
++        has_movs = True,
++        has_dp4acc = True,
++        has_compliant_dp4acc = True,
++        has_scalar_alu = True,
++        has_scalar_predicates = True,
++        has_sad = True,
++        has_ssbo_imm_offsets = True,
++        has_64b_ssbo_atomics = True,
++        ubwc_unorm_snorm_int_compatible = True,
++        ubwc_all_formats_compatible = True,
++        supports_uav_ubwc = True,
++        has_ubwc_linear_mipmap_fallback = True,
++        supports_linear_mipmap_threshold_in_blocks = True,
++        has_early_preamble = True,
++        load_shader_consts_via_preamble = True,
++        load_inline_uniforms_via_preamble_ldgk = True,
++        r8g8_faulty_fast_clear_quirk = True,
++        gs_vpc_adjacency_quirk = True,
++        has_gmem_fast_clear = True,
++        has_hw_multiview = True,
++        has_fs_tex_prefetch = True,
++        has_sampler_minmax = True,
++        has_astc_hdr = True,
++        has_z24uint_s8uint = True,
++        has_sample_locations = True,
++        has_attachment_shading_rate = True,
++        has_primitive_shading_rate = True,
++        has_generic_clear = True,
++        has_alias_rt = True,
+         has_dp2acc = False,
+         reg_size_vec4 = 96,
+         has_rt_workaround = False,
+-        supports_double_threadsize = False,
++        supports_double_threadsize = True,
+         has_dual_wave_dispatch = True,
++        has_salu_int_narrowing_quirk = False,
+     )
+ 
+ # For a8xx, the chicken bit and most other non-ctx reg
+@@ -1334,18 +1420,41 @@ add_gpus([
+        GPUId(chip_id=0xffff44010000, name="Adreno (TM) 810"),
+     ], A6xxGPUInfo(
+         CHIP.A8XX,
+-        [a7xx_base, a7xx_gen3, a8xx_base, a8xx_gen1, GPUProps(
++        [a7xx_base, a7xx_gen3, a8xx_base, a8xx_gen2, GPUProps(
++            # Sysmem буфферы
++            sysmem_vpc_attr_buf_size = 131072, 
++            sysmem_vpc_pos_buf_size = 65536,
++            sysmem_vpc_bv_pos_buf_size = 32768,
++# глубины цветов sysmem
++            sysmem_ccu_color_cache_fraction = CCUColorCacheFraction.FULL.value,
++            sysmem_per_ccu_color_cache_size = 64 * 1024,
++            sysmem_ccu_depth_cache_fraction = CCUColorCacheFraction.THREE_QUARTER.value,
++            sysmem_per_ccu_depth_cache_size = 64 * 1024,
++#Gmem глубина и цвет 
++            gmem_ccu_color_cache_fraction = CCUColorCacheFraction.EIGHTH.value,
++            gmem_per_ccu_color_cache_size = 32 * 1024,
++            gmem_ccu_depth_cache_fraction = CCUColorCacheFraction.FULL.value,
++            gmem_per_ccu_depth_cache_size = 48 * 1024,
++            
++            #Gmem буфферы
+             gmem_vpc_attr_buf_size = 16384,
+             gmem_vpc_pos_buf_size = 12288,
+             gmem_vpc_bv_pos_buf_size = 20480,
+-            # This is possibly also needed for a830 (and all of a8xx),
+-            # move to a8xx_base if confirmed needed for a830.
++
++            reg_size_vec4 = 96, # Для 810 лучше подходить 96, хоть оно и относится ко 2 поколению
++            disable_gmem = False,
++            gmem_size = 576 * 1024, # Слишком мало...
++            has_ray_intersection = False,
++            has_sw_fuse = False,
++            has_coherent_ubwc_flag_caches = True,
+             has_fs_tex_prefetch = False,
++            has_salu_int_narrowing_quirk = True,
++            shading_rate_matches_vk = True,
+         )],
+         num_ccu = 1,
+         num_slices = 1,
+-        tile_align_w = 32,
+-        tile_align_h = 16,
++        tile_align_w = 64,
++        tile_align_h = 32,
+         tile_max_w = 16384,
+         tile_max_h = 16384,
+         num_vsc_pipes = 32,
+@@ -1376,14 +1485,90 @@ add_gpus([
+         raw_magic_regs = a8xx_base_raw_magic_regs,
+     ))
+ 
++# gen8_6_0
++add_gpus([
++        GPUId(chip_id=0x44030000, name="Adreno (TM) 825"),
++    ], A6xxGPUInfo(
++        CHIP.A8XX,
++        [a7xx_base, a7xx_gen3, a8xx_base, a8xx_gen1, GPUProps(
++            #Gmem глубина и цвет
++            gmem_ccu_color_cache_fraction = CCUColorCacheFraction.HALF.value,
++            gmem_per_ccu_color_cache_size = 128 * 1024,
++            gmem_ccu_depth_cache_fraction = CCUColorCacheFraction.HALF.value,
++            gmem_per_ccu_depth_cache_size = 128 * 1024,
++            #sysmem глубина и цвета 
++            # This is probably not an optimal config for gmem/sysmem, but it was working before and I don't have any a825 device to test (neither I have any trace info)
++
++            sysmem_ccu_color_cache_fraction = CCUColorCacheFraction.FULL.value,
++            sysmem_per_ccu_color_cache_size = 128 * 1024,
++            sysmem_ccu_depth_cache_fraction = CCUColorCacheFraction.THREE_QUARTER.value,
++            sysmem_per_ccu_depth_cache_size = 96 * 1024,
++            #Sysmem кэши 
++             sysmem_vpc_attr_buf_size  = 131072,
++            
++            # Gmem кэши
++            gmem_vpc_attr_buf_size = 65536,              # 64 KB 
++            gmem_vpc_pos_buf_size = 32768,                # 32 KB
++            gmem_vpc_bv_pos_buf_size = 32768,
++
++            
++            disable_gmem = False,
++            gmem_size = 2 * 1024 * 1024,
++            shading_rate_matches_vk = True, #Экспериментально!!!
++            has_ray_intersection = False, 
++            enable_tp_ubwc_flag_hint = True,
++        )],
++        num_ccu = 4,
++        num_slices = 2,
++        tile_align_w = 64,
++        tile_align_h = 32,
++        tile_max_w = 16416,
++        tile_max_h = 16384,
++        num_vsc_pipes = 32,
++        cs_shared_mem_size = 32 * 1024,
++        wave_granularity = 2,
++        fibers_per_sp = 128 * 2 * 16,
++        magic_regs = dict(),
++        raw_magic_regs = a8xx_base_raw_magic_regs,
++    ))
++
+ add_gpus([
+         GPUId(chip_id=0x44030a20, name="Adreno (TM) 829"), # KGSL
+     ], A6xxGPUInfo(
+         CHIP.A8XX,
+         [a7xx_base, a7xx_gen3, a8xx_base, a8xx_gen2,
+          GPUProps(
+-            shading_rate_matches_vk = True,  # TODO confirm this
+-            sysmem_vpc_bv_pos_buf_size = 24576,
++            # Sysmem кэши.
++             sysmem_vpc_attr_buf_size  = 131072,
++             sysmem_vpc_pos_buf_size = 65536,
++             sysmem_vpc_bv_pos_buf_size =  24576, # Значение стандартное, чтобы минимизировать артефакты 
++            # Sysmem глубина и цвет
++             sysmem_ccu_color_cache_fraction = CCUColorCacheFraction.FULL.value,
++             sysmem_per_ccu_color_cache_size = 128 * 1024,
++             sysmem_ccu_depth_cache_fraction = CCUColorCacheFraction.HALF.value,
++             sysmem_per_ccu_depth_cache_size = 128 * 1024,
++
++            # Gmem кэши (VPC)
++             gmem_vpc_attr_buf_size = 49152,
++             gmem_vpc_pos_buf_size = 24576,     
++             gmem_vpc_bv_pos_buf_size = 16384,  
++    
++    # Gmem глубина и цвет 
++              gmem_ccu_color_cache_fraction = CCUColorCacheFraction.HALF.value,
++              gmem_per_ccu_color_cache_size = 128 * 1024, 
++              gmem_ccu_depth_cache_fraction = CCUColorCacheFraction.HALF.value,
++              gmem_per_ccu_depth_cache_size = 128 * 1024,
++
++    # Оптимизации и фичи
++             has_ray_intersection = False, # По просьбе группы
++             has_sw_fuse = False,
++             has_coherent_ubwc_flag_caches = True,
++             has_fs_tex_prefetch = False,
++             has_salu_int_narrowing_quirk = True,
++             shading_rate_matches_vk = True, 
++             disable_gmem = False, 
++             gmem_size = 2 * 1024 * 1024,
++            enable_tp_ubwc_flag_hint = True,
+          )],
+         num_ccu = 4,
+         num_slices = 2,
+diff --git a/src/freedreno/drm-shim/freedreno_noop.c b/src/freedreno/drm-shim/freedreno_noop.c
+index 5541c6cd90e..73fd3d6ff4f 100644
+--- a/src/freedreno/drm-shim/freedreno_noop.c
++++ b/src/freedreno/drm-shim/freedreno_noop.c
+@@ -286,6 +286,21 @@ static const struct msm_device_info device_infos[] = {
+       .chip_id = 0x44050000,
+       .gmem_size = 12 * 1024 * 1024,
+    },
++   {
++      .gpu_id = 825,
++      .chip_id = 0x44030000,
++      .gmem_size = 2 * 1024 * 1024,
++   },
++   {
++      .gpu_id = 829,
++      .chip_id = 0x44030A20,
++      .gmem_size = 2 * 1024 * 1024,
++   },
++   {
++      .gpu_id = 810,
++      .chip_id = 0x44010000,
++      .gmem_size = 576 * 1024,
++   }
+ };
+ 
+ static void
+diff --git a/src/freedreno/ir3/ir3_preamble.c b/src/freedreno/ir3/ir3_preamble.c
+index 475d77c792d..70400a8dadc 100644
+--- a/src/freedreno/ir3/ir3_preamble.c
++++ b/src/freedreno/ir3/ir3_preamble.c
+@@ -47,5 +47,6 @@ ir3_imm_const_to_preamble(struct ir3 *ir, struct ir3_shader_variant *so)
+       ir3_store_const(so, &build, src, dst);
+    }
+ 
++   imms->count = 0;
+    return true;
+ }
+diff --git a/src/freedreno/ir3/ir3_shader.h b/src/freedreno/ir3/ir3_shader.h
+index ec04ae8170b..a6d7be5676c 100644
+--- a/src/freedreno/ir3/ir3_shader.h
++++ b/src/freedreno/ir3/ir3_shader.h
+@@ -1085,7 +1085,7 @@ static inline unsigned
+ ir3_constlen(const struct ir3_shader_variant *v)
+ {
+    return ir3_const_state(v)->allocs.max_const_offset_vec4 +
+-          DIV_ROUND_UP(v->imm_state.count, 4);
++          v->imm_state.size / 4;
+ }
+ 
+ static inline unsigned
+diff --git a/src/freedreno/perfcntrs/fd8_perfcntr.c b/src/freedreno/perfcntrs/fd8_perfcntr.c
+new file mode 100644
+index 00000000000..51955e07996
+--- /dev/null
++++ b/src/freedreno/perfcntrs/fd8_perfcntr.c
+@@ -0,0 +1,134 @@
++/*
++ * Copyright © 2026 Igalia S.L.
++ * SPDX-License-Identifier: MIT
++ */
++
++#include "util/u_math.h"
++
++#include "fd6_hw.h"
++
++#include "freedreno_perfcntr.h"
++
++#define REG8(_x) REG_A8XX_##_x
++
++#define FD8_COUNTER(_sel, _offset) COUNTER_BASE(_sel, _offset+0, _offset+1)
++#define FD8_COUNTABLE(_sel) COUNTABLE_BASE(#_sel, A7XX_##_sel, UINT64, AVERAGE)
++
++/* FIXME: this is a limited listing of perfcntr counter groups on a8xx,
++ * only specifying the CP group counter registers and countable values
++ * which are used by the new autotuner implementation. The perfcntr data
++ * will also be autogenerated in the near future, so adding complete a8xx
++ * support should be done under that effort.
++ *
++ * CP counter registers have changed on a8xx, but we can reuse the a7xx
++ * countable list since we don't have the a8xx-specific list yet, and the
++ * autotuner is only interested in countables that should be common between
++ * a7xx and a8xx.
++ */
++
++static const struct fd_perfcntr_counter cp_counters[] = {
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(0)), REG8(RBBM_PERFCTR_CP(0))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(1)), REG8(RBBM_PERFCTR_CP(1))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(2)), REG8(RBBM_PERFCTR_CP(2))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(3)), REG8(RBBM_PERFCTR_CP(3))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(4)), REG8(RBBM_PERFCTR_CP(4))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(5)), REG8(RBBM_PERFCTR_CP(5))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(6)), REG8(RBBM_PERFCTR_CP(6))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(7)), REG8(RBBM_PERFCTR_CP(7))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(8)), REG8(RBBM_PERFCTR_CP(8))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(9)), REG8(RBBM_PERFCTR_CP(9))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(10)), REG8(RBBM_PERFCTR_CP(10))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(11)), REG8(RBBM_PERFCTR_CP(11))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(12)), REG8(RBBM_PERFCTR_CP(12))),
++      FD8_COUNTER(REG8(CP_PERFCTR_CP_SEL(13)), REG8(RBBM_PERFCTR_CP(13))),
++};
++
++static const struct fd_perfcntr_countable cp_countables[] = {
++      FD8_COUNTABLE(PERF_CP_ALWAYS_COUNT),
++      FD8_COUNTABLE(PERF_CP_BUSY_GFX_CORE_IDLE),
++      FD8_COUNTABLE(PERF_CP_BUSY_CYCLES),
++      FD8_COUNTABLE(PERF_CP_NUM_PREEMPTIONS),
++      FD8_COUNTABLE(PERF_CP_PREEMPTION_REACTION_DELAY),
++      FD8_COUNTABLE(PERF_CP_PREEMPTION_SWITCH_OUT_TIME),
++      FD8_COUNTABLE(PERF_CP_PREEMPTION_SWITCH_IN_TIME),
++      FD8_COUNTABLE(PERF_CP_DEAD_DRAWS_IN_BIN_RENDER),
++      FD8_COUNTABLE(PERF_CP_PREDICATED_DRAWS_KILLED),
++      FD8_COUNTABLE(PERF_CP_MODE_SWITCH),
++      FD8_COUNTABLE(PERF_CP_ZPASS_DONE),
++      FD8_COUNTABLE(PERF_CP_CONTEXT_DONE),
++      FD8_COUNTABLE(PERF_CP_CACHE_FLUSH),
++      FD8_COUNTABLE(PERF_CP_LONG_PREEMPTIONS),
++      FD8_COUNTABLE(PERF_CP_SQE_I_CACHE_STARVE),
++      FD8_COUNTABLE(PERF_CP_SQE_IDLE),
++      FD8_COUNTABLE(PERF_CP_SQE_PM4_STARVE_RB_IB),
++      FD8_COUNTABLE(PERF_CP_SQE_PM4_STARVE_SDS),
++      FD8_COUNTABLE(PERF_CP_SQE_MRB_STARVE),
++      FD8_COUNTABLE(PERF_CP_SQE_RRB_STARVE),
++      FD8_COUNTABLE(PERF_CP_SQE_VSD_STARVE),
++      FD8_COUNTABLE(PERF_CP_VSD_DECODE_STARVE),
++      FD8_COUNTABLE(PERF_CP_SQE_PIPE_OUT_STALL),
++      FD8_COUNTABLE(PERF_CP_SQE_SYNC_STALL),
++      FD8_COUNTABLE(PERF_CP_SQE_PM4_WFI_STALL),
++      FD8_COUNTABLE(PERF_CP_SQE_SYS_WFI_STALL),
++      FD8_COUNTABLE(PERF_CP_SQE_T4_EXEC),
++      FD8_COUNTABLE(PERF_CP_SQE_LOAD_STATE_EXEC),
++      FD8_COUNTABLE(PERF_CP_SQE_SAVE_SDS_STATE),
++      FD8_COUNTABLE(PERF_CP_SQE_DRAW_EXEC),
++      FD8_COUNTABLE(PERF_CP_SQE_CTXT_REG_BUNCH_EXEC),
++      FD8_COUNTABLE(PERF_CP_SQE_EXEC_PROFILED),
++      FD8_COUNTABLE(PERF_CP_MEMORY_POOL_EMPTY),
++      FD8_COUNTABLE(PERF_CP_MEMORY_POOL_SYNC_STALL),
++      FD8_COUNTABLE(PERF_CP_MEMORY_POOL_ABOVE_THRESH),
++      FD8_COUNTABLE(PERF_CP_AHB_WR_STALL_PRE_DRAWS),
++      FD8_COUNTABLE(PERF_CP_AHB_STALL_SQE_GMU),
++      FD8_COUNTABLE(PERF_CP_AHB_STALL_SQE_WR_OTHER),
++      FD8_COUNTABLE(PERF_CP_AHB_STALL_SQE_RD_OTHER),
++      FD8_COUNTABLE(PERF_CP_CLUSTER0_EMPTY),
++      FD8_COUNTABLE(PERF_CP_CLUSTER1_EMPTY),
++      FD8_COUNTABLE(PERF_CP_CLUSTER2_EMPTY),
++      FD8_COUNTABLE(PERF_CP_CLUSTER3_EMPTY),
++      FD8_COUNTABLE(PERF_CP_CLUSTER4_EMPTY),
++      FD8_COUNTABLE(PERF_CP_CLUSTER5_EMPTY),
++      FD8_COUNTABLE(PERF_CP_PM4_DATA),
++      FD8_COUNTABLE(PERF_CP_PM4_HEADERS),
++      FD8_COUNTABLE(PERF_CP_VBIF_READ_BEATS),
++      FD8_COUNTABLE(PERF_CP_VBIF_WRITE_BEATS),
++      FD8_COUNTABLE(PERF_CP_SQE_INSTR_COUNTER),
++      FD8_COUNTABLE(PERF_CP_RESERVED_50),
++      FD8_COUNTABLE(PERF_CP_RESERVED_51),
++      FD8_COUNTABLE(PERF_CP_RESERVED_52),
++      FD8_COUNTABLE(PERF_CP_RESERVED_53),
++      FD8_COUNTABLE(PERF_CP_RESERVED_54),
++      FD8_COUNTABLE(PERF_CP_RESERVED_55),
++      FD8_COUNTABLE(PERF_CP_RESERVED_56),
++      FD8_COUNTABLE(PERF_CP_RESERVED_57),
++      FD8_COUNTABLE(PERF_CP_RESERVED_58),
++      FD8_COUNTABLE(PERF_CP_RESERVED_59),
++      FD8_COUNTABLE(PERF_CP_CLUSTER0_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER1_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER2_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER3_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER4_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER5_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER6_FULL),
++      FD8_COUNTABLE(PERF_CP_CLUSTER6_EMPTY),
++      FD8_COUNTABLE(PERF_CP_ICACHE_MISSES),
++      FD8_COUNTABLE(PERF_CP_ICACHE_HITS),
++      FD8_COUNTABLE(PERF_CP_ICACHE_STALL),
++      FD8_COUNTABLE(PERF_CP_DCACHE_MISSES),
++      FD8_COUNTABLE(PERF_CP_DCACHE_HITS),
++      FD8_COUNTABLE(PERF_CP_DCACHE_STALLS),
++      FD8_COUNTABLE(PERF_CP_AQE_SQE_STALL),
++      FD8_COUNTABLE(PERF_CP_SQE_AQE_STARVE),
++      FD8_COUNTABLE(PERF_CP_PREEMPT_LATENCY),
++      FD8_COUNTABLE(PERF_CP_SQE_MD8_STALL_CYCLES),
++      FD8_COUNTABLE(PERF_CP_SQE_MESH_EXEC_CYCLES),
++      FD8_COUNTABLE(PERF_CP_AQE_NUM_AS_CHUNKS),
++      FD8_COUNTABLE(PERF_CP_AQE_NUM_MS_CHUNKS),
++};
++
++const struct fd_perfcntr_group a8xx_perfcntr_groups[] = {
++      GROUP("CP", cp_counters, cp_countables),
++};
++
++const unsigned a8xx_num_perfcntr_groups = ARRAY_SIZE(a8xx_perfcntr_groups);
+diff --git a/src/freedreno/perfcntrs/freedreno_perfcntr.c b/src/freedreno/perfcntrs/freedreno_perfcntr.c
+index 7c615e930f4..b8db821be69 100644
+--- a/src/freedreno/perfcntrs/freedreno_perfcntr.c
++++ b/src/freedreno/perfcntrs/freedreno_perfcntr.c
+@@ -22,6 +22,9 @@ extern const unsigned a6xx_num_perfcntr_groups;
+ extern const struct fd_perfcntr_group a7xx_perfcntr_groups[];
+ extern const unsigned a7xx_num_perfcntr_groups;
+ 
++extern const struct fd_perfcntr_group a8xx_perfcntr_groups[];
++extern const unsigned a8xx_num_perfcntr_groups;
++
+ const struct fd_perfcntr_group *
+ fd_perfcntrs(const struct fd_dev_id *id, unsigned *count)
+ {
+@@ -38,6 +41,9 @@ fd_perfcntrs(const struct fd_dev_id *id, unsigned *count)
+    case 7:
+       *count = a7xx_num_perfcntr_groups;
+       return a7xx_perfcntr_groups;
++   case 8:
++      *count = a8xx_num_perfcntr_groups;
++      return a8xx_perfcntr_groups;
+    default:
+       *count = 0;
+       return NULL;
+diff --git a/src/freedreno/perfcntrs/meson.build b/src/freedreno/perfcntrs/meson.build
+index bef5ec72520..5b0dbf8a0d2 100644
+--- a/src/freedreno/perfcntrs/meson.build
++++ b/src/freedreno/perfcntrs/meson.build
+@@ -6,6 +6,7 @@ libfreedreno_perfcntrs_files = files(
+   'fd5_perfcntr.c',
+   'fd6_perfcntr.c',
+   'fd7_perfcntr.c',
++  'fd8_perfcntr.c',
+   'freedreno_dt.c',
+   'freedreno_dt.h',
+   'freedreno_perfcntr.c',
+diff --git a/src/freedreno/vulkan/tu_cmd_buffer.cc b/src/freedreno/vulkan/tu_cmd_buffer.cc
+index ddcc34382a4..965c767c47e 100644
+--- a/src/freedreno/vulkan/tu_cmd_buffer.cc
++++ b/src/freedreno/vulkan/tu_cmd_buffer.cc
+@@ -1323,6 +1323,12 @@ use_sysmem_rendering(struct tu_cmd_buffer *cmd,
+       return true;
+    }
+ 
++   bool no_gmem = cmd->device->physical_device->dev_info.props.disable_gmem;
++   if (no_gmem) {
++       cmd->state.rp.gmem_disable_reason = "Unsupported GPU";
++       return true;
++    }
++
+    /* can't fit attachments into gmem */
+    if (!cmd->state.tiling->possible) {
+       cmd->state.rp.gmem_disable_reason = "Can't fit attachments into gmem";
+@@ -8733,7 +8739,7 @@ tu_CmdDrawIndirect(VkCommandBuffer commandBuffer,
+ 
+    tu6_emit_empty_vs_params<CHIP>(cmd);
+ 
+-   if (cmd->device->physical_device->info->props.indirect_draw_wfm_quirk)
++   if (cmd->device->physical_device->info->props.indirect_draw_wfm_quirk || CHIP >= A8XX)
+       draw_wfm(cmd);
+ 
+    tu6_draw_common<CHIP>(cmd, cs, false, 0);
+@@ -8764,7 +8770,7 @@ tu_CmdDrawIndexedIndirect(VkCommandBuffer commandBuffer,
+ 
+    tu6_emit_empty_vs_params<CHIP>(cmd);
+ 
+-   if (cmd->device->physical_device->info->props.indirect_draw_wfm_quirk)
++   if (cmd->device->physical_device->info->props.indirect_draw_wfm_quirk || CHIP >= A8XX)
+       draw_wfm(cmd);
+ 
+    tu6_draw_common<CHIP>(cmd, cs, true, 0);
+diff --git a/src/freedreno/vulkan/tu_device.cc b/src/freedreno/vulkan/tu_device.cc
+index 7ac080b6dca..8b57ace0fc6 100644
+--- a/src/freedreno/vulkan/tu_device.cc
++++ b/src/freedreno/vulkan/tu_device.cc
+@@ -42,6 +42,9 @@
+ #include "tu_tracepoints.h"
+ #include "tu_wsi.h"
+ 
++#include "git_sha1.h"
++#include "tu_version.h"
++
+ #if DETECT_OS_ANDROID
+ #include <vndk/hardware_buffer.h>
+ #endif
+@@ -951,6 +954,12 @@ tu_get_physical_device_properties_1_2(struct tu_physical_device *pdevice,
+       };
+    }
+ 
++   if (TU_DEBUG(DECK_EMU)) {
++      p->driverID = VK_DRIVER_ID_MESA_RADV;
++      memset(p->driverName, 0, sizeof(p->driverName));
++      snprintf(p->driverName, VK_MAX_DRIVER_NAME_SIZE, "radv");
++   }
++
+    p->denormBehaviorIndependence =
+       VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL;
+    p->roundingModeIndependence =
+@@ -1233,17 +1242,35 @@ tu_get_properties(struct tu_physical_device *pdevice,
+    props->optimalBufferCopyRowPitchAlignment = 128;
+    props->nonCoherentAtomSize = 64;
+ 
+-   props->apiVersion =
++   /* HACK: Expose Vulkan 1.3 on devices without multiview.
++    * Current Minecraft renderer checks for VK1.2 presence and refuses to
++    * start on VK1.0 exposed here in the case if the device has no multiview
++    * This makes it boot on these devices. This is not conformant, but I don't
++    * care. Sigh.
++    */
++
++   /*props->apiVersion =
+       tu_has_multiview(pdevice) ?
+          ((pdevice->info->chip >= 7) ? TU_API_VERSION :
+             VK_MAKE_VERSION(1, 3, VK_HEADER_VERSION))
+          : VK_MAKE_VERSION(1, 0, VK_HEADER_VERSION);
++   */
++
++   props->apiVersion = pdevice->info->chip >= 7 ?
++      TU_API_VERSION : // expose current api on gen7 devices anyway
++      VK_MAKE_VERSION(1, 3, VK_HEADER_VERSION);
++
+    props->driverVersion = vk_get_driver_version();
+    props->vendorID = pdevice->instance->force_vk_vendor != 0 ?
+                      pdevice->instance->force_vk_vendor : 0x5143;
+    props->deviceID = pdevice->dev_id.chip_id;
+    props->deviceType = VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+ 
++   if (TU_DEBUG(DECK_EMU)) {
++      props->vendorID = 0x1002;
++      props->deviceID = 0x163F;
++   }
++
+    /* Vulkan 1.4 */
+    props->dynamicRenderingLocalReadDepthStencilAttachments = true;
+    props->dynamicRenderingLocalReadMultisampledAttachments = true;
+@@ -1255,9 +1282,16 @@ tu_get_properties(struct tu_physical_device *pdevice,
+    props->sparseResidencyAlignedMipSize = false;
+    props->sparseResidencyNonResidentStrict = true;
+ 
+-   strcpy(props->deviceName, pdevice->name);
++   char devname[128];
++   strcpy(devname, pdevice->name);
++   strcat(devname, MESA_GIT_SHA1 "/" TUGEN8_DRV_VERSION);
++   strcpy(props->deviceName, devname);
+    memcpy(props->pipelineCacheUUID, pdevice->cache_uuid, VK_UUID_SIZE);
+ 
++   if (TU_DEBUG(DECK_EMU)) {
++      strcpy(props->deviceName, "AMD Custom GPU 0405 (RADV VANGOGH)");
++   }
++
+    tu_get_physical_device_properties_1_1(pdevice, props);
+    tu_get_physical_device_properties_1_2(pdevice, props);
+    tu_get_physical_device_properties_1_3(pdevice, props);
+@@ -2776,8 +2810,6 @@ tu_CreateDevice(VkPhysicalDevice physicalDevice,
+          &dispatch_table, &tu_device_entrypoints_a7xx, false);
+       break;
+    case 8:
+-      /* gen8 TODO: */
+-      tu_env.debug |= TU_DEBUG_FLUSHALL;  /* dEQP-VK.draw.\*from_compute\* */
+       vk_device_dispatch_table_from_entrypoints(
+          &dispatch_table, &tu_device_entrypoints_a8xx, false);
+    }
+diff --git a/src/freedreno/vulkan/tu_shader.cc b/src/freedreno/vulkan/tu_shader.cc
+index 0347db46acd..ac0bae6bda9 100644
+--- a/src/freedreno/vulkan/tu_shader.cc
++++ b/src/freedreno/vulkan/tu_shader.cc
+@@ -1576,8 +1576,7 @@ tu_xs_get_immediates_packet_size_dwords(const struct ir3_shader_variant *xs)
+    const struct ir3_const_state *const_state = ir3_const_state(xs);
+    uint32_t base = const_state->allocs.max_const_offset_vec4;
+    const struct ir3_imm_const_state *imm_state = &xs->imm_state;
+-   int32_t size = xs->compiler->info->props.load_shader_consts_via_preamble ?
+-      0 : DIV_ROUND_UP(imm_state->count, 4);
++   int32_t size = DIV_ROUND_UP(imm_state->count, 4);
+ 
+    /* truncate size to avoid writing constants that shader
+     * does not use:
+diff --git a/src/freedreno/vulkan/tu_util.cc b/src/freedreno/vulkan/tu_util.cc
+index f0c19c3465d..40dbfe063eb 100644
+--- a/src/freedreno/vulkan/tu_util.cc
++++ b/src/freedreno/vulkan/tu_util.cc
+@@ -56,6 +56,7 @@ static const struct debug_control tu_debug_options[] = {
+    { "nofdm", TU_DEBUG_NOFDM },
+    { "nocb", TU_DEBUG_NO_CONCURRENT_BINNING },
+    { "forcecb", TU_DEBUG_FORCE_CONCURRENT_BINNING },
++   { "deck_emu", TU_DEBUG_DECK_EMU },
+    { NULL, 0 }
+ };
+ 
+diff --git a/src/freedreno/vulkan/tu_util.h b/src/freedreno/vulkan/tu_util.h
+index cfa18f34978..44a2d1ff2c5 100644
+--- a/src/freedreno/vulkan/tu_util.h
++++ b/src/freedreno/vulkan/tu_util.h
+@@ -74,6 +74,7 @@ enum tu_debug_flags : uint64_t
+    TU_DEBUG_NOFDM                    = BITFIELD64_BIT(34),
+    TU_DEBUG_NO_CONCURRENT_BINNING    = BITFIELD64_BIT(35),
+    TU_DEBUG_FORCE_CONCURRENT_BINNING = BITFIELD64_BIT(36),
++   TU_DEBUG_DECK_EMU                 = BITFIELD64_BIT(37),
+ };
+ 
+ struct tu_env {
+diff --git a/src/freedreno/vulkan/tu_version.h b/src/freedreno/vulkan/tu_version.h
+new file mode 100644
+index 00000000000..e7c9e688c49
+--- /dev/null
++++ b/src/freedreno/vulkan/tu_version.h
+@@ -0,0 +1 @@
++#define TUGEN8_DRV_VERSION "unknown"
+diff --git a/src/gallium/drivers/freedreno/ir3/ir3_const.h b/src/gallium/drivers/freedreno/ir3/ir3_const.h
+index c9081f65333..2d42e21a27a 100644
+--- a/src/gallium/drivers/freedreno/ir3/ir3_const.h
++++ b/src/gallium/drivers/freedreno/ir3/ir3_const.h
+@@ -302,8 +302,7 @@ ir3_emit_immediates(const struct ir3_shader_variant *v,
+ {
+    const struct ir3_const_state *const_state = ir3_const_state(v);
+    uint32_t base = const_state->allocs.max_const_offset_vec4;
+-   int size = v->compiler->info->props.load_shader_consts_via_preamble ? 0 :
+-      DIV_ROUND_UP(v->imm_state.count, 4);
++   int size = DIV_ROUND_UP(v->imm_state.count, 4);
+ 
+    /* truncate size to avoid writing constants that shader
+     * does not use:
+diff --git a/src/gallium/drivers/radeonsi/si_nir_lower_abi.c b/src/gallium/drivers/radeonsi/si_nir_lower_abi.c
+index 2fce5c1a554..c4a4aeb1a81 100644
+--- a/src/gallium/drivers/radeonsi/si_nir_lower_abi.c
++++ b/src/gallium/drivers/radeonsi/si_nir_lower_abi.c
+@@ -592,8 +592,8 @@ static bool lower_intrinsic(nir_builder *b, nir_instr *instr, struct lower_abi_s
+       /* Load point coordinates (x, y) which are written by the hw after the interpolated inputs */
+       nir_def *baryc = intrin->src[0].ssa;
+       replacement = nir_load_interpolated_input(b, 2, 32, baryc, nir_imm_int(b, 0),
+-                                                .component = 2,
+-                                                .io_semantics.location = VARYING_SLOT_PARAM_GEN_AMD);
++                                                .base = si_get_ps_num_interp(shader),
++                                                .component = 2);
+       break;
+    }
+    case nir_intrinsic_load_poly_line_smooth_enabled:
+diff --git a/src/gallium/drivers/radeonsi/si_nir_lower_color_flatshade_twoside.c b/src/gallium/drivers/radeonsi/si_nir_lower_color_flatshade_twoside.c
+index 330bf843e9c..4af6db3a3e1 100644
+--- a/src/gallium/drivers/radeonsi/si_nir_lower_color_flatshade_twoside.c
++++ b/src/gallium/drivers/radeonsi/si_nir_lower_color_flatshade_twoside.c
+@@ -21,16 +21,9 @@ static nir_def *load_input(nir_builder *b, nir_intrinsic_instr *orig,
+    }
+ }
+ 
+-typedef struct {
+-   struct si_shader *shader;
+-   bool front_color_removed[2];
+-   bool back_color_added[2];
+-} lower_color_state;
+-
+ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, void *data)
+ {
+-   lower_color_state *state = (lower_color_state *)data;
+-   struct si_shader *shader = state->shader;
++   struct si_shader *shader = (struct si_shader *)data;
+ 
+    if (intr->intrinsic != nir_intrinsic_load_input &&
+        intr->intrinsic != nir_intrinsic_load_interpolated_input)
+@@ -69,8 +62,6 @@ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, v
+             sem.location = VARYING_SLOT_BFC0 + i;
+             nir_intrinsic_set_io_semantics(intr, sem);
+             progress = true;
+-            state->front_color_removed[i] = true;
+-            state->back_color_added[i] = true;
+          } else if (shader->key.ps.opt.force_front_face_input == 0) {
+             /* The front face flag is non-constant. Load the back color too and select between them. */
+             b->cursor = nir_after_instr(&intr->instr);
+@@ -78,7 +69,6 @@ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, v
+                                      load_input(b, intr, VARYING_SLOT_BFC0 + i, true));
+             nir_def_rewrite_uses_after_instr(&intr->def, def, nir_def_instr(def));
+             progress = true;
+-            state->back_color_added[i] = true;
+          }
+       }
+    } else {
+@@ -102,8 +92,6 @@ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, v
+             sem.location = VARYING_SLOT_BFC0 + i;
+             nir_intrinsic_set_io_semantics(intr, sem);
+             progress = true;
+-            state->front_color_removed[i] = true;
+-            state->back_color_added[i] = true;
+          } else if (shader->key.ps.opt.force_front_face_input == 0) {
+             /* The front face flag is non-constant. Load the back color too and select between them. */
+             b->cursor = nir_after_instr(&intr->instr);
+@@ -111,7 +99,6 @@ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, v
+                                      load_input(b, intr, VARYING_SLOT_BFC0 + i, false));
+             nir_def_rewrite_uses_after_instr(&intr->def, def, nir_def_instr(def));
+             progress = true;
+-            state->back_color_added[i] = true;
+          }
+       }
+    }
+@@ -121,22 +108,6 @@ static bool lower_flatshade_twoside(nir_builder *b, nir_intrinsic_instr *intr, v
+ 
+ bool si_nir_lower_color_flatshade_twoside(nir_shader *nir, struct si_shader *shader)
+ {
+-   lower_color_state state = {.shader = shader};
+-
+-   bool progress = nir_shader_intrinsics_pass(nir, lower_flatshade_twoside,
+-                                              nir_metadata_control_flow, &state);
+-
+-   for (unsigned i = 0; i < 2; i++) {
+-      if (state.front_color_removed[i] && nir->info.inputs_read & (VARYING_BIT_COL0 << i)) {
+-         nir->info.inputs_read &= ~(VARYING_BIT_COL0 << i);
+-         nir->num_inputs--;
+-      }
+-
+-      if (state.back_color_added[i] && !(nir->info.inputs_read & (VARYING_BIT_BFC0 << i))) {
+-         nir->info.inputs_read |= VARYING_BIT_BFC0 << i;
+-         nir->num_inputs++;
+-      }
+-   }
+-
+-   return progress;
++   return nir_shader_intrinsics_pass(nir, lower_flatshade_twoside,
++                                     nir_metadata_control_flow, shader);
+ }
+diff --git a/src/gallium/drivers/radeonsi/si_nir_lower_vs_inputs.c b/src/gallium/drivers/radeonsi/si_nir_lower_vs_inputs.c
+index f9468c2c624..6bd3e1e6264 100644
+--- a/src/gallium/drivers/radeonsi/si_nir_lower_vs_inputs.c
++++ b/src/gallium/drivers/radeonsi/si_nir_lower_vs_inputs.c
+@@ -89,7 +89,7 @@ get_vertex_index_for_all_inputs(nir_shader *nir, struct lower_vs_inputs_state *s
+          si_nir_load_internal_binding(sel->screen, b, s->args, SI_VS_CONST_INSTANCE_DIVISORS, 4);
+    }
+ 
+-   for (int i = 0; i < sel->info.num_vs_inputs; i++)
++   for (int i = 0; i < sel->info.num_inputs; i++)
+       s->vertex_index[i] = get_vertex_index(b, i, s);
+ }
+ 
+@@ -589,7 +589,7 @@ si_nir_lower_vs_inputs(nir_shader *nir, struct si_shader *shader, struct si_shad
+    const struct si_shader_selector *sel = shader->selector;
+ 
+    /* no inputs to lower */
+-   if (!sel->info.num_vs_inputs && !nir->info.vs.blit_sgprs_amd)
++   if (!sel->info.num_inputs)
+       return false;
+ 
+    struct lower_vs_inputs_state state = {
+diff --git a/src/gallium/drivers/radeonsi/si_shader.c b/src/gallium/drivers/radeonsi/si_shader.c
+index dce68368e4a..8ccb24db0af 100644
+--- a/src/gallium/drivers/radeonsi/si_shader.c
++++ b/src/gallium/drivers/radeonsi/si_shader.c
+@@ -546,6 +546,8 @@ static void si_nir_assign_param_offsets(nir_shader *nir, struct si_shader *shade
+          if (nir_slot_is_varying(sem.location, MESA_SHADER_FRAGMENT) && !sem.no_varying &&
+              (sem.gs_streams & 0x3) == 0 &&
+              temp_info->vs_output_param_offset[sem.location] == AC_EXP_PARAM_UNDEFINED) {
++            /* The semantic and the base should be the same as in si_shader_info. */
++            assert(sem.location == sel->info.output_semantic[nir_intrinsic_base(intr)]);
+             /* It must not be remapped (duplicated). */
+             assert(slot_remap[sem.location] == -1);
+ 
+@@ -1319,6 +1321,12 @@ static void get_nir_shaders(struct si_shader *shader, struct si_linked_shaders *
+ 
+    /* TODO: run linking optimizations here if we have LS+HS or ES+GS */
+ 
++   /* Remove holes after removed PS inputs by renumbering them. Holes can only occur with
++    * monolithic PS.
++    */
++   if (shader->selector->stage == MESA_SHADER_FRAGMENT && shader->is_monolithic)
++      NIR_PASS(_, linked->consumer.nir, nir_recompute_io_bases, nir_var_shader_in);
++
+    for (unsigned i = 0; i < SI_NUM_LINKED_SHADERS; i++) {
+       if (linked->shader[i].nir) {
+          si_get_shader_variant_info(shader, &linked->shader[i].temp_info, linked->shader[i].nir);
+@@ -1483,17 +1491,13 @@ bool si_compile_shader(struct si_screen *sscreen, struct ac_llvm_compiler *compi
+        !shader->key.ge.as_ls && !shader->key.ge.as_es) {
+       uint8_t *vs_output_param_offset = linked.consumer.temp_info.vs_output_param_offset;
+ 
+-      /* We must use the original shader info before the removal of duplicated shader outputs.
+-       * If any output is eliminated by shader variants, it will set DEFAULT_VAL.
+-       *
+-       * VS and TES must set VARYING_BIT_PRIMITIVE_ID if they export it.
+-       */
+-      uint64_t outputs_written = sel->info.base.outputs_written |
+-                                 (shader->key.ge.mono.u.vs_export_prim_id ?
+-                                     VARYING_BIT_PRIMITIVE_ID : 0);
++      /* We must use the original shader info before the removal of duplicated shader outputs. */
++      /* VS and TES should also set primitive ID output if it's used. */
++      unsigned num_outputs_with_prim_id = sel->info.num_outputs +
++                                          shader->key.ge.mono.u.vs_export_prim_id;
+ 
+-      u_foreach_bit64_two_masks(semantic, outputs_written,
+-                                VARYING_SLOT_VAR0_16BIT, sel->info.base.outputs_written_16bit) {
++      for (unsigned i = 0; i < num_outputs_with_prim_id; i++) {
++         unsigned semantic = sel->info.output_semantic[i];
+          unsigned offset = vs_output_param_offset[semantic];
+          unsigned ps_input_cntl;
+ 
+diff --git a/src/gallium/drivers/radeonsi/si_shader_info.c b/src/gallium/drivers/radeonsi/si_shader_info.c
+index d552cf52b05..a6e85e9234d 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_info.c
++++ b/src/gallium/drivers/radeonsi/si_shader_info.c
+@@ -202,11 +202,35 @@ static void gather_io_instrinsic(const nir_shader *nir, struct si_shader_info *i
+       }
+    }
+ 
++   if (nir->info.stage == MESA_SHADER_FRAGMENT && !is_input) {
++      /* Never use FRAG_RESULT_COLOR directly. */
++      if (semantic == FRAG_RESULT_COLOR)
++         semantic = FRAG_RESULT_DATA0;
++   }
++
++   unsigned driver_location = nir_intrinsic_base(intr);
+    unsigned num_slots = indirect ? nir_intrinsic_io_semantics(intr).num_slots : 1;
+ 
+-   if (!is_input) {
++   if (is_input) {
++      assert(driver_location + num_slots <= ARRAY_SIZE(info->input_semantic));
++
++      for (unsigned i = 0; i < num_slots; i++) {
++         unsigned loc = driver_location + i;
++
++         /* No 2 inputs can use the same driver location. */
++         assert((info->input_semantic[loc] == semantic + i ||
++                 info->input_semantic[loc] == NUM_TOTAL_VARYING_SLOTS) &&
++                "nir_recompute_io_bases wasn't called");
++
++         info->input_semantic[loc] = semantic + i;
++
++         if (mask)
++            info->num_inputs = MAX2(info->num_inputs, loc + 1);
++      }
++   } else {
+       /* Outputs. */
+       for (unsigned i = 0; i < num_slots; i++) {
++         unsigned loc = driver_location + i;
+          unsigned slot_semantic = semantic + i;
+ 
+          /* Call the translation functions to validate the semantic (call assertions in them). */
+@@ -229,6 +253,13 @@ static void gather_io_instrinsic(const nir_shader *nir, struct si_shader_info *i
+             }
+          }
+ 
++         /* No 2 outputs can use the same driver location. */
++         assert((info->output_semantic[loc] == slot_semantic ||
++                 info->output_semantic[loc] == NUM_TOTAL_VARYING_SLOTS) &&
++                "nir_recompute_io_bases wasn't called");
++
++         info->output_semantic[loc] = slot_semantic;
++
+          if (!is_output_load && mask) {
+             /* Output stores. */
+             unsigned gs_streams = (uint32_t)nir_intrinsic_io_semantics(intr).gs_streams <<
+@@ -242,6 +273,7 @@ static void gather_io_instrinsic(const nir_shader *nir, struct si_shader_info *i
+             }
+ 
+             info->gs_writes_stream0 |= writes_stream0;
++            info->num_outputs = MAX2(info->num_outputs, loc + 1);
+ 
+             switch (nir->info.stage) {
+             case MESA_SHADER_TESS_CTRL:
+@@ -485,8 +517,6 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+    info->base.num_ubos = nir->info.num_ubos;
+    info->base.num_ssbos = nir->info.num_ssbos;
+    info->base.num_images = nir->info.num_images;
+-   info->base.outputs_written = nir->info.outputs_written;
+-   info->base.outputs_written_16bit = nir->info.outputs_written_16bit;
+    info->base.textures_used = nir->info.textures_used[0];
+ 
+    info->base.task_payload_size = nir->info.task_payload_size;
+@@ -558,6 +588,14 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+       }
+    }
+ 
++   /* Initialize all IO slots to an invalid value. We use this to prevent 2 different
++    * inputs/outputs from using the same IO slot.
++    */
++   for (unsigned i = 0; i < ARRAY_SIZE(info->input_semantic); i++)
++      info->input_semantic[i] = NUM_TOTAL_VARYING_SLOTS;
++   for (unsigned i = 0; i < ARRAY_SIZE(info->output_semantic); i++)
++      info->output_semantic[i] = NUM_TOTAL_VARYING_SLOTS;
++
+    if (nir->info.stage == MESA_SHADER_FRAGMENT) {
+       /* Both flat and non-flat can occur with nir_io_mix_convergent_flat_with_interpolated,
+        * but we want to save only the non-flat interp mode in that case.
+@@ -635,6 +673,14 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+          gather_instruction(nir, info, instr);
+    }
+ 
++   if (nir->info.stage == MESA_SHADER_VERTEX || nir->info.stage == MESA_SHADER_TESS_EVAL) {
++      /* Add the PrimitiveID output, but don't increment num_outputs.
++       * The driver inserts PrimitiveID only when it's used by the pixel shader,
++       * and si_emit_spi_map uses this unconditionally when such a pixel shader is used.
++       */
++      info->output_semantic[info->num_outputs] = VARYING_SLOT_PRIMITIVE_ID;
++   }
++
+    if (nir->info.stage == MESA_SHADER_FRAGMENT) {
+       info->output_z_equals_input_z &= !info->output_z_is_not_input_z;
+       info->allow_flat_shading = !(info->uses_sysval_persp_center || info->uses_sysval_persp_centroid ||
+@@ -649,14 +695,28 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+                                    BITSET_TEST(nir->info.system_values_read, SYSTEM_VALUE_SAMPLE_POS) ||
+                                    BITSET_TEST(nir->info.system_values_read, SYSTEM_VALUE_SAMPLE_MASK_IN) ||
+                                    BITSET_TEST(nir->info.system_values_read, SYSTEM_VALUE_HELPER_INVOCATION));
++
++      /* Add back color inputs. */
++      unsigned num_inputs_with_colors = info->num_inputs;
++      for (unsigned i = 0; i < 2; i++) {
++         if ((info->colors_read >> (i * 4)) & 0xf) {
++            unsigned index = num_inputs_with_colors;
++
++            info->input_semantic[index] = VARYING_SLOT_BFC0 + i;
++            num_inputs_with_colors++;
++
++            /* Back-face colors don't increment num_inputs. si_emit_spi_map will use
++             * back-face colors conditionally only when they are needed.
++             */
++         }
++      }
+    }
+ 
+-   info->num_inputs = nir->num_inputs;
+    info->has_divergent_loop = nir_has_divergent_loop(nir);
+ 
+    if (nir->info.stage == MESA_SHADER_VERTEX) {
+-      info->num_vs_inputs = nir->info.stage == MESA_SHADER_VERTEX && !nir->info.vs.blit_sgprs_amd ?
+-                               nir->num_inputs : 0;
++      info->num_vs_inputs =
++         nir->info.stage == MESA_SHADER_VERTEX && !nir->info.vs.blit_sgprs_amd ? info->num_inputs : 0;
+       unsigned num_vbos_in_sgprs = si_num_vbos_in_user_sgprs_inline(sscreen->info.gfx_level);
+       info->num_vbos_in_user_sgprs = MIN2(info->num_vs_inputs, num_vbos_in_sgprs);
+    }
+@@ -694,9 +754,21 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+                             nir->info.clip_distance_array_size ||
+                             nir->info.cull_distance_array_size;
+ 
++   /* There should be no holes in slots except VS inputs. */
++   if (nir->info.stage != MESA_SHADER_VERTEX) {
++      for (unsigned i = 0; i < info->num_inputs; i++)
++         assert(info->input_semantic[i] != NUM_TOTAL_VARYING_SLOTS &&
++                "nir_recompute_io_bases wasn't called");
++   }
++   for (unsigned i = 0; i < info->num_outputs; i++) {
++      assert(info->output_semantic[i] != NUM_TOTAL_VARYING_SLOTS &&
++             "nir_recompute_io_bases wasn't called");
++   }
++
+    if (nir->info.stage == MESA_SHADER_FRAGMENT) {
+-      u_foreach_bit64_two_masks(semantic, nir->info.inputs_read,
+-                                VARYING_SLOT_VAR0_16BIT, nir->info.inputs_read_16bit) {
++      for (unsigned i = 0; i < info->num_inputs; i++) {
++         unsigned semantic = info->input_semantic[i];
++
+          if ((semantic <= VARYING_SLOT_VAR31 || semantic >= VARYING_SLOT_VAR0_16BIT) &&
+              semantic != VARYING_SLOT_PNTC) {
+             info->inputs_read |= 1ull << si_shader_io_get_unique_index(semantic);
+@@ -707,10 +779,15 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+          if (info->colors_written & (1 << i))
+             info->colors_written_4bit |= 0xf << (4 * i);
+ 
+-      if (nir->info.inputs_read & VARYING_BIT_COL0)
+-         info->color_attr_index[0] = ac_nir_get_io_driver_location(nir, VARYING_SLOT_COL0, true);
+-      if (nir->info.inputs_read & VARYING_BIT_COL1)
+-         info->color_attr_index[1] = ac_nir_get_io_driver_location(nir, VARYING_SLOT_COL1, true);
++      for (unsigned i = 0; i < info->num_inputs; i++) {
++         /* If any FS input is POS (0), the input slot is unused, which should never happen. */
++         assert(info->input_semantic[i] != VARYING_SLOT_POS);
++
++         if (info->input_semantic[i] == VARYING_SLOT_COL0)
++            info->color_attr_index[0] = i;
++         else if (info->input_semantic[i] == VARYING_SLOT_COL1)
++            info->color_attr_index[1] = i;
++      }
+    }
+ 
+    switch (nir->info.stage) {
+@@ -729,7 +806,7 @@ void si_nir_gather_info(struct si_screen *sscreen, struct nir_shader *nir,
+                                 sscreen->info.gfx_level <= GFX10_3 &&
+                                 (nir->info.gs.invocations * nir->info.gs.vertices_out > 256 ||
+                                  nir->info.gs.invocations * nir->info.gs.vertices_out *
+-                                 (nir->num_outputs * 4 + 1) > 6500 /* max dw per GS primitive */);
++                                 (info->num_outputs * 4 + 1) > 6500 /* max dw per GS primitive */);
+       break;
+ 
+    case MESA_SHADER_VERTEX:
+diff --git a/src/gallium/drivers/radeonsi/si_shader_info.h b/src/gallium/drivers/radeonsi/si_shader_info.h
+index 60520b0272e..829e92c3256 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_info.h
++++ b/src/gallium/drivers/radeonsi/si_shader_info.h
+@@ -30,9 +30,6 @@ struct si_shader_info {
+       uint8_t num_images;
+       uint32_t textures_used;
+ 
+-      uint64_t outputs_written;
+-      uint16_t outputs_written_16bit;
+-
+       unsigned task_payload_size;
+       uint16_t workgroup_size[3];
+       bool workgroup_size_variable:1;
+@@ -93,6 +90,10 @@ struct si_shader_info {
+    uint32_t options; /* bitmask of SI_PROFILE_* */
+ 
+    uint8_t num_inputs;
++   uint8_t num_outputs;
++   uint8_t input_semantic[PIPE_MAX_SHADER_INPUTS];
++   uint8_t output_semantic[PIPE_MAX_SHADER_OUTPUTS];
++
+    uint8_t num_vs_inputs;
+    uint8_t num_vbos_in_user_sgprs;
+    uint16_t enabled_streamout_buffer_mask;
+diff --git a/src/gallium/drivers/radeonsi/si_shader_llvm.c b/src/gallium/drivers/radeonsi/si_shader_llvm.c
+index 2e38b3813c9..2655a62d408 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_llvm.c
++++ b/src/gallium/drivers/radeonsi/si_shader_llvm.c
+@@ -554,7 +554,7 @@ static bool si_llvm_translate_nir(struct si_shader_context *ctx, struct si_shade
+    switch (ctx->stage) {
+    case MESA_SHADER_VERTEX:
+       if (shader->key.ge.as_ls)
+-         si_llvm_ls_build_end(ctx, nir);
++         si_llvm_ls_build_end(ctx);
+       else if (shader->key.ge.as_es)
+          si_llvm_es_build_end(ctx);
+       break;
+@@ -571,7 +571,7 @@ static bool si_llvm_translate_nir(struct si_shader_context *ctx, struct si_shade
+ 
+    case MESA_SHADER_FRAGMENT:
+       if (!shader->is_monolithic)
+-         si_llvm_ps_build_end(ctx, nir);
++         si_llvm_ps_build_end(ctx);
+       break;
+ 
+    default:
+diff --git a/src/gallium/drivers/radeonsi/si_shader_llvm.h b/src/gallium/drivers/radeonsi/si_shader_llvm.h
+index 88abdc90538..f87e520fa5a 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_llvm.h
++++ b/src/gallium/drivers/radeonsi/si_shader_llvm.h
+@@ -60,12 +60,12 @@ void si_llvm_es_build_end(struct si_shader_context *ctx);
+ void si_llvm_gs_build_end(struct si_shader_context *ctx);
+ 
+ /* si_shader_llvm_tess.c */
+-void si_llvm_ls_build_end(struct si_shader_context *ctx, const nir_shader *nir);
++void si_llvm_ls_build_end(struct si_shader_context *ctx);
+ void si_llvm_init_tcs_callbacks(struct si_shader_context *ctx);
+ 
+ /* si_shader_llvm_ps.c */
+ void si_llvm_build_ps_prolog(struct si_shader_context *ctx, union si_shader_part_key *key);
+ void si_llvm_build_ps_epilog(struct si_shader_context *ctx, union si_shader_part_key *key);
+-void si_llvm_ps_build_end(struct si_shader_context *ctx, const nir_shader *nir);
++void si_llvm_ps_build_end(struct si_shader_context *ctx);
+ 
+ #endif
+diff --git a/src/gallium/drivers/radeonsi/si_shader_llvm_ps.c b/src/gallium/drivers/radeonsi/si_shader_llvm_ps.c
+index 4e2054ebd3a..316693d3b0e 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_llvm_ps.c
++++ b/src/gallium/drivers/radeonsi/si_shader_llvm_ps.c
+@@ -8,7 +8,6 @@
+ #include "si_shader_internal.h"
+ #include "si_shader_llvm.h"
+ #include "sid.h"
+-#include "nir.h"
+ 
+ static LLVMValueRef si_build_fs_interp(struct si_shader_context *ctx, unsigned attr_index,
+                                        unsigned chan, LLVMValueRef prim_mask, LLVMValueRef i,
+@@ -347,10 +346,12 @@ static void si_export_mrt_color(struct si_shader_context *ctx, LLVMValueRef *col
+  *
+  * The alpha-ref SGPR is returned via its original location.
+  */
+-void si_llvm_ps_build_end(struct si_shader_context *ctx, const nir_shader *nir)
++void si_llvm_ps_build_end(struct si_shader_context *ctx)
+ {
++   struct si_shader *shader = ctx->shader;
++   struct si_shader_info *info = &shader->selector->info;
+    LLVMBuilderRef builder = ctx->ac.builder;
+-   unsigned j, vgpr;
++   unsigned i, j, vgpr;
+ 
+    LLVMValueRef color[8][4] = {};
+    uint8_t color_output_mask = 0, is_16bit_mask = 0;
+@@ -358,8 +359,8 @@ void si_llvm_ps_build_end(struct si_shader_context *ctx, const nir_shader *nir)
+    LLVMValueRef ret;
+ 
+    /* Read the output values. */
+-   u_foreach_bit(semantic, (uint32_t)nir->info.outputs_written) {
+-      unsigned i = ac_nir_get_io_driver_location(nir, semantic, false);
++   for (i = 0; i < info->num_outputs; i++) {
++      unsigned semantic = info->output_semantic[i];
+ 
+       switch (semantic) {
+       case FRAG_RESULT_DEPTH:
+@@ -372,7 +373,7 @@ void si_llvm_ps_build_end(struct si_shader_context *ctx, const nir_shader *nir)
+          samplemask = LLVMBuildLoad2(builder, ctx->ac.f32, ctx->abi.outputs[4 * i + 0], "");
+          break;
+       default:
+-         if (semantic == FRAG_RESULT_COLOR || semantic >= FRAG_RESULT_DATA0) {
++         if (semantic >= FRAG_RESULT_DATA0) {
+             int index = mesa_frag_result_get_color_index(semantic);
+ 
+             for (j = 0; j < 4; j++) {
+diff --git a/src/gallium/drivers/radeonsi/si_shader_llvm_tess.c b/src/gallium/drivers/radeonsi/si_shader_llvm_tess.c
+index a413bf0df09..78c4e8c7822 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_llvm_tess.c
++++ b/src/gallium/drivers/radeonsi/si_shader_llvm_tess.c
+@@ -8,37 +8,31 @@
+ #include "si_shader_internal.h"
+ #include "si_shader_llvm.h"
+ #include "sid.h"
+-#include "nir.h"
+ 
+-static LLVMValueRef si_nir_load_tcs_varyings(struct ac_shader_abi *abi, unsigned num_components,
+-                                             unsigned bit_size, gl_varying_slot slot,
+-                                             unsigned component, bool high_16bits)
++static LLVMValueRef si_nir_load_tcs_varyings(struct ac_shader_abi *abi, LLVMTypeRef type,
++                                             unsigned driver_location, unsigned component,
++                                             unsigned num_components)
+ {
+    struct si_shader_context *ctx = si_shader_context_from_abi(abi);
++   struct si_shader_info *info = &ctx->shader->selector->info;
+ 
+    assert(ctx->shader->key.ge.opt.same_patch_vertices);
+-   assert(bit_size == 16 || bit_size == 32);
+ 
++   uint8_t semantic = info->input_semantic[driver_location];
+    /* Load the TCS input from a VGPR. */
+    unsigned func_param = ctx->args->ac.tcs_rel_ids.arg_index + 1 +
+-                         si_shader_io_get_unique_index(slot) * 4;
+-   LLVMValueRef *value = alloca(sizeof(LLVMValueRef) * num_components);
++      si_shader_io_get_unique_index(semantic) * 4;
+ 
+-   for (unsigned i = 0; i < num_components; i++) {
+-      value[i] = LLVMGetParam(ctx->main_fn.value, func_param + component + i);
+-
+-      if (bit_size == 16) {
+-         /* Extract low or high 16 bits from the value. */
+-         value[i] = LLVMBuildBitCast(ctx->ac.builder, value[i], ctx->ac.v2i16, "");
+-         value[i] = LLVMBuildExtractElement(ctx->ac.builder, value[i],
+-                                            LLVMConstInt(ctx->ac.i32, high_16bits, 0), "");
+-      }
++   LLVMValueRef value[4];
++   for (unsigned i = component; i < component + num_components; i++) {
++      value[i] = LLVMGetParam(ctx->main_fn.value, func_param + i);
++      value[i] = LLVMBuildBitCast(ctx->ac.builder, value[i], type, "");
+    }
+ 
+-   return ac_build_gather_values(&ctx->ac, value, num_components);
++   return ac_build_gather_values(&ctx->ac, value + component, num_components);
+ }
+ 
+-void si_llvm_ls_build_end(struct si_shader_context *ctx, const nir_shader *nir)
++void si_llvm_ls_build_end(struct si_shader_context *ctx)
+ {
+    struct si_shader *shader = ctx->shader;
+    bool same_thread_count = shader->key.ge.opt.same_patch_vertices;
+@@ -81,15 +75,13 @@ void si_llvm_ls_build_end(struct si_shader_context *ctx, const nir_shader *nir)
+ 
+       struct si_shader_info *info = &shader->selector->info;
+ 
+-      u_foreach_bit64_two_masks(semantic, nir->info.outputs_written,
+-                                VARYING_SLOT_VAR0_16BIT, nir->info.outputs_written_16bit) {
++      for (unsigned i = 0; i < info->num_outputs; i++) {
++         unsigned semantic = info->output_semantic[i];
+          int param = si_shader_io_get_unique_index(semantic);
+ 
+          if (!(info->ls_es_outputs_written & BITFIELD64_BIT(param)))
+             continue;
+ 
+-         unsigned i = ac_nir_get_io_driver_location(nir, semantic, false);
+-
+          for (unsigned chan = 0; chan < 4; chan++) {
+             if (!ctx->abi.outputs[4 * i + chan])
+                continue;
+diff --git a/src/gallium/drivers/radeonsi/si_shader_nir.c b/src/gallium/drivers/radeonsi/si_shader_nir.c
+index 9a4c394167a..d2f7f82ac94 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_nir.c
++++ b/src/gallium/drivers/radeonsi/si_shader_nir.c
+@@ -111,11 +111,16 @@ void si_finalize_nir(struct pipe_screen *screen, struct nir_shader *nir,
+                      bool optimize)
+ {
+    struct si_screen *sscreen = (struct si_screen *)screen;
++   nir_variable_mode recompute_io_bases = 0;
+ 
+    if (nir->info.io_lowered) {
+       nir_foreach_variable_with_modes(var, nir, nir_var_shader_in | nir_var_shader_out) {
+          UNREACHABLE("no IO variables should be present with lowered IO");
+       }
++
++      /* Not all places recompute FS input bases, but we need them to be up to date. */
++      if (nir->info.stage == MESA_SHADER_FRAGMENT)
++         recompute_io_bases = nir_var_shader_in | nir_var_shader_out;
+    } else {
+       /* This always recomputes FS output bases. */
+       nir_lower_io_passes(nir, false);
+@@ -142,6 +147,9 @@ void si_finalize_nir(struct pipe_screen *screen, struct nir_shader *nir,
+    NIR_PASS_ASSERT_NO_PROGRESS(nir, nir_opt_intrinsics);
+    NIR_PASS_ASSERT_NO_PROGRESS(nir, nir_lower_system_values);
+ 
++   if (recompute_io_bases)
++      NIR_PASS(_, nir, nir_recompute_io_bases, recompute_io_bases);
++
+    /* Remove uniforms because those should have been lowered to UBOs already. */
+    nir_foreach_variable_with_modes_safe(var, nir, nir_var_uniform) {
+       if (!glsl_type_get_image_count(var->type) &&
+diff --git a/src/gallium/drivers/radeonsi/si_shader_variant_info.c b/src/gallium/drivers/radeonsi/si_shader_variant_info.c
+index f2ab5e9f674..d2872456107 100644
+--- a/src/gallium/drivers/radeonsi/si_shader_variant_info.c
++++ b/src/gallium/drivers/radeonsi/si_shader_variant_info.c
+@@ -184,7 +184,7 @@ void si_get_shader_variant_info(struct si_shader *shader,
+                   shader->info.uses_vmem_load_other = true;
+                } else if (nir->info.stage == MESA_SHADER_FRAGMENT) {
+                   nir_io_semantics sem = nir_intrinsic_io_semantics(intr);
+-                  unsigned index = ac_nir_get_io_driver_location(nir, sem.location, true);
++                  unsigned index = nir_intrinsic_base(intr);
+                   assert(sem.num_slots == 1);
+ 
+                   shader->info.num_ps_inputs = MAX2(shader->info.num_ps_inputs, index + 1);
+@@ -204,21 +204,13 @@ void si_get_shader_variant_info(struct si_shader *shader,
+                break;
+             }
+             case nir_intrinsic_load_color0_amd:
+-            case nir_intrinsic_load_color1_amd: {
+-               assert(!shader->is_monolithic && nir->info.stage == MESA_SHADER_FRAGMENT);
+-               unsigned col_index = intr->intrinsic == nir_intrinsic_load_color1_amd;
+-               shader->info.ps_colors_read |= nir_def_components_read(&intr->def) << (col_index * 4);
+-
+-               gl_varying_slot location = VARYING_SLOT_COL0 + col_index;
+-               unsigned index = ac_nir_get_io_driver_location(nir, location, true);
+-               unsigned interp = shader->selector->info.color_interpolate[col_index];
+-
+-               shader->info.num_ps_inputs = MAX2(shader->info.num_ps_inputs, index + 1);
+-               shader->info.ps_inputs[index].semantic = location;
+-               shader->info.ps_inputs[index].interpolate =
+-                  interp == INTERP_MODE_NONE ? INTERP_MODE_COLOR : interp;
++               assert(!shader->is_monolithic);
++               shader->info.ps_colors_read |= nir_def_components_read(&intr->def);
++               break;
++            case nir_intrinsic_load_color1_amd:
++               assert(!shader->is_monolithic);
++               shader->info.ps_colors_read |= nir_def_components_read(&intr->def) << 4;
+                break;
+-            }
+             case nir_intrinsic_load_ubo:
+                if (intr->src[1].ssa->divergent)
+                   shader->info.uses_vmem_load_other = true;
+@@ -341,19 +333,28 @@ void si_get_shader_variant_info(struct si_shader *shader,
+    }
+ 
+    if (nir->info.stage == MESA_SHADER_FRAGMENT) {
+-      /* Add back color inputs. */
++      /* Add both front and back color inputs. */
+       if (!shader->is_monolithic) {
+          unsigned index = shader->info.num_ps_inputs;
+ 
+-         for (unsigned i = 0; i < 2; i++) {
+-            if ((shader->info.ps_colors_read >> (i * 4)) & 0xf) {
+-               assert(index < ARRAY_SIZE(shader->info.ps_inputs));
+-               shader->info.ps_inputs[index].semantic = VARYING_SLOT_BFC0 + i;
++         for (unsigned back = 0; back < 2; back++) {
++            for (unsigned i = 0; i < 2; i++) {
++               if ((shader->info.ps_colors_read >> (i * 4)) & 0xf) {
++                  assert(index < ARRAY_SIZE(shader->info.ps_inputs));
++                  shader->info.ps_inputs[index].semantic =
++                     (back ? VARYING_SLOT_BFC0 : VARYING_SLOT_COL0) + i;
++
++                  enum glsl_interp_mode mode = shader->selector->info.color_interpolate[i];
++                  shader->info.ps_inputs[index].interpolate =
++                     mode == INTERP_MODE_NONE ? INTERP_MODE_COLOR : mode;
++                  index++;
+ 
+-               enum glsl_interp_mode mode = shader->selector->info.color_interpolate[i];
+-               shader->info.ps_inputs[index].interpolate =
+-                  mode == INTERP_MODE_NONE ? INTERP_MODE_COLOR : mode;
+-               index++;
++                  /* Back-face colors don't increment num_ps_inputs. si_emit_spi_map will use
++                   * back-face colors conditionally only when needed.
++                   */
++                  if (!back)
++                     shader->info.num_ps_inputs++;
++               }
+             }
+          }
+       }
+diff --git a/src/gallium/drivers/radeonsi/si_shaderlib_nir.c b/src/gallium/drivers/radeonsi/si_shaderlib_nir.c
+index 2cbaf4a05b1..ab7404957eb 100644
+--- a/src/gallium/drivers/radeonsi/si_shaderlib_nir.c
++++ b/src/gallium/drivers/radeonsi/si_shaderlib_nir.c
+@@ -171,16 +171,14 @@ void *si_create_clear_buffer_rmw_cs(struct si_context *sctx)
+ void *si_create_passthrough_tcs(struct si_context *sctx)
+ {
+    unsigned locations[PIPE_MAX_SHADER_OUTPUTS];
+-   unsigned num_outputs = 0;
+-   struct si_shader_info *info = &sctx->shader.vs.cso->info;
+ 
+-   u_foreach_bit64_two_masks(slot, info->base.outputs_written,
+-                             VARYING_SLOT_VAR0_16BIT, info->base.outputs_written_16bit) {
+-      locations[num_outputs++] = slot;
++   struct si_shader_info *info = &sctx->shader.vs.cso->info;
++   for (unsigned i = 0; i < info->num_outputs; i++) {
++      locations[i] = info->output_semantic[i];
+    }
+ 
+    nir_shader *tcs = nir_create_passthrough_tcs_impl(sctx->screen->nir_options, locations,
+-                                                     num_outputs, sctx->patch_vertices);
++                                                     info->num_outputs, sctx->patch_vertices);
+    NIR_PASS(_, tcs, nir_lower_system_values);
+ 
+    return si_create_shader_state(sctx, tcs);
+diff --git a/src/gallium/drivers/radeonsi/si_state_shaders.cpp b/src/gallium/drivers/radeonsi/si_state_shaders.cpp
+index 2d33138e66d..735b8c49f58 100644
+--- a/src/gallium/drivers/radeonsi/si_state_shaders.cpp
++++ b/src/gallium/drivers/radeonsi/si_state_shaders.cpp
+@@ -2322,7 +2322,7 @@ void si_vs_key_update_inputs(struct si_context *sctx)
+    key->ge.mono.instance_divisor_is_fetched = elts->instance_divisor_is_fetched;
+    key->ge.opt.prefer_mono = elts->instance_divisor_is_fetched;
+ 
+-   unsigned count_mask = (1 << vs->info.num_vs_inputs) - 1;
++   unsigned count_mask = (1 << vs->info.num_inputs) - 1;
+    unsigned fix = elts->fix_fetch_always & count_mask;
+    unsigned opencode = elts->fix_fetch_opencode & count_mask;
+ 
+diff --git a/src/gallium/drivers/v3d/v3d_bufmgr.c b/src/gallium/drivers/v3d/v3d_bufmgr.c
+index e82fd069b18..dea5e72b9d7 100644
+--- a/src/gallium/drivers/v3d/v3d_bufmgr.c
++++ b/src/gallium/drivers/v3d/v3d_bufmgr.c
+@@ -537,7 +537,6 @@ v3d_bo_map(struct v3d_bo *bo)
+                 mesa_loge("BO wait for map failed");
+                 abort();
+         }
+-        VG(VALGRIND_MAKE_MEM_DEFINED(map, bo->size));
+ 
+         return map;
+ }
+diff --git a/src/gallium/include/frontend/api.h b/src/gallium/include/frontend/api.h
+index 1cd11c2989a..e95814ad64a 100644
+--- a/src/gallium/include/frontend/api.h
++++ b/src/gallium/include/frontend/api.h
+@@ -99,20 +99,6 @@ enum st_attachment_type {
+ #define ST_INVALIDATE_VS_CONSTBUF0        (1 << 2)
+ #define ST_INVALIDATE_VERTEX_BUFFERS      (1 << 3)
+ #define ST_INVALIDATE_FB_STATE            (1 << 4)
+-#define ST_INVALIDATE_VIEWPORT            (1 << 5)
+-#define ST_INVALIDATE_VS_STATE            (1 << 6)
+-#define ST_INVALIDATE_GS_STATE            (1 << 7)
+-#define ST_INVALIDATE_TCS_STATE           (1 << 8)
+-#define ST_INVALIDATE_TES_STATE           (1 << 9)
+-#define ST_INVALIDATE_MESH_STATE          (1 << 10)
+-#define ST_INVALIDATE_RASTERIZER          (1 << 11)
+-#define ST_INVALIDATE_FS_SAMPLERS         (1 << 12)
+-#define ST_INVALIDATE_FS_STATE            (1 << 13)
+-#define ST_INVALIDATE_BLEND               (1 << 14)
+-#define ST_INVALIDATE_DSA                 (1 << 15)
+-#define ST_INVALIDATE_SAMPLE_MASK         (1 << 16)
+-#define ST_INVALIDATE_SAMPLE_SHADING      (1 << 17)
+-#define ST_INVALIDATE_FS_IMAGES           (1 << 18)
+ 
+ /**
+  * Value to pipe_frontend_streen::get_param function.
+diff --git a/src/gallium/winsys/amdgpu/drm/amdgpu_winsys.c b/src/gallium/winsys/amdgpu/drm/amdgpu_winsys.c
+index 8fd2739cab9..10775cf2288 100644
+--- a/src/gallium/winsys/amdgpu/drm/amdgpu_winsys.c
++++ b/src/gallium/winsys/amdgpu/drm/amdgpu_winsys.c
+@@ -394,7 +394,7 @@ amdgpu_winsys_create(int fd, const struct pipe_screen_config *config,
+ {
+    struct amdgpu_screen_winsys *sws;
+    struct amdgpu_winsys *aws;
+-   ac_drm_device *dev;
++   ac_drm_device *dev = NULL;
+    uint32_t drm_major, drm_minor;
+    int r;
+ 
+@@ -412,8 +412,7 @@ amdgpu_winsys_create(int fd, const struct pipe_screen_config *config,
+ 
+    /* Initialize the amdgpu device. This should always return the same pointer
+     * for the same fd. */
+-   r = ac_drm_device_initialize(fd, is_virtio, &drm_major, &drm_minor, &dev);
+-   if (r == -EACCES && drmGetNodeTypeFromFd(fd) != DRM_NODE_RENDER) {
++   if (drmGetNodeTypeFromFd(fd) != DRM_NODE_RENDER) {
+       char *render_device = drmGetRenderDeviceNameFromFd(fd);
+ 
+       if (render_device) {
+@@ -432,9 +431,12 @@ amdgpu_winsys_create(int fd, const struct pipe_screen_config *config,
+       }
+    }
+ 
+-   if (r) {
+-      mesa_loge("amdgpu: amd%s_device_initialize failed.\n", is_virtio ? "vgpu" : "gpu");
+-      goto fail;
++   if (!dev) {
++      r = ac_drm_device_initialize(fd, is_virtio, &drm_major, &drm_minor, &dev);
++      if (r) {
++         mesa_loge("amdgpu: amd%s_device_initialize failed.\n", is_virtio ? "vgpu" : "gpu");
++         goto fail;
++      }
+    }
+ 
+    /* Lookup a winsys if we have already created one for this device. */
+diff --git a/src/intel/vulkan/bvh/copy.comp b/src/intel/vulkan/bvh/copy.comp
+index f50513b2b3f..d61a6f160bb 100644
+--- a/src/intel/vulkan/bvh/copy.comp
++++ b/src/intel/vulkan/bvh/copy.comp
+@@ -37,10 +37,10 @@ layout(push_constant) uniform CONSTS {
+  * dEQP-VK.ray_tracing_pipeline.acceleration_structures.header_bottom_address.*
+  * is doing.
+  *
+- * Therefore, if the application updates the handles, we need to replace the
+- * old handles in anv_instance_leaf with the new one. To access
++ * Therefore, if the application updates the handles, we need to replace
++ * the old handles in anv_instance_leaf with the new one. To access
+  * anv_instance_leaf without traversing the TLAS, pointers to these
+- * anv_instance_leaf are stored at instance_leaves_offset in BVH layout,
++ * anv_instance_leaf are stored right after anv_accel_struct_header,
+  * allowing us to know where they are in the TLAS instantly.
+  *
+  * Although, the fact that the application can swap/replace new handles
+@@ -52,7 +52,7 @@ main(void)
+ {
+    uint32_t global_id = gl_GlobalInvocationID.x;
+    uint32_t lanes = gl_NumWorkGroups.x * 128;
+-   uint32_t increment = lanes * 16;
++   uint32_t increment = lanes * 8;
+ 
+    uint64_t copy_src_addr = args.src_addr;
+    uint64_t copy_dst_addr = args.dst_addr;
+@@ -99,33 +99,27 @@ main(void)
+    }
+ 
+    uint64_t size = DEREF(header).compacted_size;
+-   for (uint64_t offset = global_id * 16; offset < size; offset += increment) {
+-      DEREF(REF(uvec4)(copy_dst_addr + offset)) =
+-         DEREF(REF(uvec4)(copy_src_addr + offset));
++   for (uint64_t offset = global_id * 8; offset < size; offset += increment) {
++      /* copy 8 bytes per iteration */
++      DEREF(REF(uint64_t)(copy_dst_addr + offset)) =
++         DEREF(REF(uint64_t)(copy_src_addr + offset));
+ 
+       /* Do the adjustment inline in the same invocation that copies the data so that we don't have
+        * to synchronize.
+        */
+-      for (int i = 0; i < 2; i++) {
+-         uint64_t sub_offset = offset + i * 8;
++      if (offset < instance_end && offset >= instance_offset &&
++          (offset - instance_offset) % SIZEOF(uint64_t) == 0) {
++         uint64_t idx = (offset - instance_offset) / SIZEOF(uint64_t);
+ 
+-         /* Check if access to instance leave addresses are bounds. */
+-         if (sub_offset < instance_offset || sub_offset >= instance_end)
+-            continue;
+-
+-         if ((sub_offset - instance_offset) % SIZEOF(uint64_t) != 0)
+-            continue;
+-
+-         uint64_t idx = (sub_offset - instance_offset) / SIZEOF(uint64_t);
+          if (args.mode == ANV_COPY_MODE_SERIALIZE) {
+             /* Indirectly access the anv_instance_leaf, and store the blas_ptrs after ser_header */
+-            uint64_t instance_leaf_addr = DEREF(REF(uint64_t)(copy_src_addr + sub_offset));
++            uint64_t instance_leaf_addr = DEREF(REF(uint64_t)(copy_src_addr + offset));
+             REF(anv_instance_leaf) instance_leaf = REF(anv_instance_leaf)(instance_leaf_addr);
+             uint64_t blas_ptr = DEREF(instance_leaf).part1.bvh_ptr;
+             DEREF(INDEX(uint64_t, instance_base, idx)) = blas_ptr;
+          } else { /* ANV_COPY_MODE_DESERIALIZE */
+             /* Indirectly access the anv_instance_leaf, and replace the bvh_ptr with the ones after ser_header */
+-            uint64_t instance_leaf_addr = DEREF(REF(uint64_t)(copy_dst_addr + sub_offset));
++            uint64_t instance_leaf_addr = DEREF(REF(uint64_t)(copy_dst_addr + offset));
+             REF(anv_instance_leaf) instance_leaf = REF(anv_instance_leaf)(instance_leaf_addr);
+             uint64_t blas_ptr = DEREF(INDEX(uint64_t, instance_base, idx));
+             DEREF(instance_leaf).part1.bvh_ptr = blas_ptr;
+diff --git a/src/intel/vulkan/bvh/header.comp b/src/intel/vulkan/bvh/header.comp
+index 4235a1025c0..6819d1a7296 100644
+--- a/src/intel/vulkan/bvh/header.comp
++++ b/src/intel/vulkan/bvh/header.comp
+@@ -34,11 +34,11 @@ main(void)
+    DEREF(args.dst).instance_count = args.instance_count;
+    DEREF(args.dst).instance_leaves_offset = args.instance_leaves_offset;
+ 
+-   /* 128 is local_size_x in copy.comp shader, 16bytes is the amount of data
++   /* 128 is local_size_x in copy.comp shader, 8 is the amount of data
+     * copied by each iteration of that shader's loop
+     */
+    DEREF(args.dst).copy_dispatch_size[0] =
+-      uint32_t(DIV_ROUND_UP(compacted_size, 16 * 128));
++      uint32_t(DIV_ROUND_UP(compacted_size, 8 * 128));
+    DEREF(args.dst).copy_dispatch_size[1] = 1;
+    DEREF(args.dst).copy_dispatch_size[2] = 1;
+ #if GFX_VERx10 >= 300
+diff --git a/src/mesa/state_tracker/st_cb_bitmap.c b/src/mesa/state_tracker/st_cb_bitmap.c
+index dd8ac5a7631..02fffa735ae 100644
+--- a/src/mesa/state_tracker/st_cb_bitmap.c
++++ b/src/mesa/state_tracker/st_cb_bitmap.c
+@@ -204,8 +204,13 @@ setup_render_state(struct gl_context *ctx,
+       COPY_4V(ctx->Current.Attrib[VERT_ATTRIB_COLOR0], colorSave);
+    }
+ 
+-   /* Save only states that have no st_atom — they can't be re-derived. */
+-   cso_save_state(cso, CSO_BIT_STREAM_OUTPUTS);
++   cso_save_state(cso, (CSO_BIT_RASTERIZER |
++                        CSO_BIT_FRAGMENT_SAMPLERS |
++                        CSO_BIT_VIEWPORT |
++                        CSO_BIT_STREAM_OUTPUTS |
++                        CSO_BIT_VERTEX_ELEMENTS |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BITS_VERTEX_PIPE_SHADERS));
+ 
+ 
+    /* rasterizer state: just scissor */
+@@ -276,26 +281,14 @@ restore_render_state(struct gl_context *ctx)
+    struct st_context *st = st_context(ctx);
+    struct cso_context *cso = st->cso_context;
+ 
+-   /* Unbind sampler views that were bound directly on the pipe.
+-    * Restore atomless states (stream outputs) via CSO.
++   /* Unbind all because st/mesa won't do it if the current shader doesn't
++    * use them.
+     */
+    cso_restore_state(cso, CSO_UNBIND_FS_SAMPLERVIEWS);
+    st->state.num_sampler_views[MESA_SHADER_FRAGMENT] = 0;
+ 
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_RASTERIZER |
+-                               ST_INVALIDATE_FS_SAMPLERS |
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_FS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   ctx->Array.NewVertexElements = true;
++   ST_SET_STATE2(ctx->NewDriverState, ST_NEW_VERTEX_ARRAYS, ST_NEW_FS_SAMPLER_VIEWS);
+ }
+ 
+ 
+diff --git a/src/mesa/state_tracker/st_cb_clear.c b/src/mesa/state_tracker/st_cb_clear.c
+index 9d83ce47862..c35e23aa9c3 100644
+--- a/src/mesa/state_tracker/st_cb_clear.c
++++ b/src/mesa/state_tracker/st_cb_clear.c
+@@ -216,9 +216,18 @@ clear_with_quad(struct gl_context *ctx, unsigned clear_buffers)
+ 	  x1, y1);
+    */
+ 
+-   /* Save only states that have no st_atom — they can't be re-derived. */
+-   cso_save_state(cso, (CSO_BIT_STREAM_OUTPUTS |
+-                        (st->active_queries ? CSO_BIT_PAUSE_QUERIES : 0)));
++   cso_save_state(cso, (CSO_BIT_BLEND |
++                        CSO_BIT_STENCIL_REF |
++                        CSO_BIT_DEPTH_STENCIL_ALPHA |
++                        CSO_BIT_RASTERIZER |
++                        CSO_BIT_SAMPLE_MASK |
++                        CSO_BIT_MIN_SAMPLES |
++                        CSO_BIT_VIEWPORT |
++                        CSO_BIT_STREAM_OUTPUTS |
++                        CSO_BIT_VERTEX_ELEMENTS |
++                        (st->active_queries ? CSO_BIT_PAUSE_QUERIES : 0) |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BITS_VERTEX_PIPE_SHADERS));
+ 
+    /* blend state: RGBA masking */
+    {
+@@ -315,27 +324,10 @@ clear_with_quad(struct gl_context *ctx, unsigned clear_buffers)
+ 
+    pipe_resource_release(cso->pipe, releasebuf);
+ 
+-   /* Restore atomless states via CSO. */
++   /* Restore pipe state */
+    cso_restore_state(cso, 0);
+-
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_BLEND |
+-                               ST_INVALIDATE_DSA |
+-                               ST_INVALIDATE_RASTERIZER |
+-                               ST_INVALIDATE_SAMPLE_MASK |
+-                               ST_INVALIDATE_SAMPLE_SHADING |
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_FS_CONSTBUF0 |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_FS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   ctx->Array.NewVertexElements = true;
++   ST_SET_STATE2(ctx->NewDriverState, ST_NEW_VERTEX_ARRAYS, ST_NEW_FS_CONSTANTS);
+ }
+ 
+ 
+diff --git a/src/mesa/state_tracker/st_cb_drawpixels.c b/src/mesa/state_tracker/st_cb_drawpixels.c
+index 587080864d3..41880997007 100644
+--- a/src/mesa/state_tracker/st_cb_drawpixels.c
++++ b/src/mesa/state_tracker/st_cb_drawpixels.c
+@@ -731,7 +731,7 @@ draw_textured_quad(struct gl_context *ctx, GLint x, GLint y, GLfloat z,
+    ASSERTED GLsizei maxSize;
+    bool normalized = sv[0]->texture->target == PIPE_TEXTURE_2D ||
+                      (sv[0]->texture->target == PIPE_TEXTURE_RECT && st->lower_rect_tex);
+-   unsigned invalidate_flags;
++   unsigned cso_state_mask;
+ 
+    assert(sv[0]->texture->target == st->internal_target);
+ 
+@@ -743,22 +743,18 @@ draw_textured_quad(struct gl_context *ctx, GLint x, GLint y, GLfloat z,
+    assert(width <= maxSize);
+    assert(height <= maxSize);
+ 
+-   invalidate_flags = (ST_INVALIDATE_RASTERIZER |
+-                       ST_INVALIDATE_VIEWPORT |
+-                       ST_INVALIDATE_FS_SAMPLERS |
+-                       ST_INVALIDATE_VERTEX_BUFFERS |
+-                       ST_INVALIDATE_MESH_STATE |
+-                       ST_INVALIDATE_VS_STATE |
+-                       ST_INVALIDATE_FS_STATE |
+-                       ST_INVALIDATE_GS_STATE |
+-                       ST_INVALIDATE_TCS_STATE |
+-                       ST_INVALIDATE_TES_STATE);
++   cso_state_mask = (CSO_BIT_RASTERIZER |
++                     CSO_BIT_VIEWPORT |
++                     CSO_BIT_FRAGMENT_SAMPLERS |
++                     CSO_BIT_STREAM_OUTPUTS |
++                     CSO_BIT_VERTEX_ELEMENTS |
++                     CSO_BIT_MESH_SHADER |
++                     CSO_BITS_VERTEX_PIPE_SHADERS);
+    if (write_stencil) {
+-      invalidate_flags |= (ST_INVALIDATE_DSA |
+-                           ST_INVALIDATE_BLEND);
++      cso_state_mask |= (CSO_BIT_DEPTH_STENCIL_ALPHA |
++                         CSO_BIT_BLEND);
+    }
+-   /* Save only states that have no st_atom — they can't be re-derived. */
+-   cso_save_state(cso, CSO_BIT_STREAM_OUTPUTS);
++   cso_save_state(cso, cso_state_mask);
+ 
+    /* rasterizer state: just scissor */
+    {
+@@ -927,16 +923,15 @@ draw_textured_quad(struct gl_context *ctx, GLint x, GLint y, GLfloat z,
+       }
+    }
+ 
+-   /* Unbind sampler views bound directly on the pipe.
+-    * Restore atomless states (stream outputs) via CSO.
++   /* restore state */
++   /* Unbind all because st/mesa won't do it if the current shader doesn't
++    * use them.
+     */
+    cso_restore_state(cso, CSO_UNBIND_FS_SAMPLERVIEWS);
+    st->state.num_sampler_views[MESA_SHADER_FRAGMENT] = 0;
+ 
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st, invalidate_flags);
++   ctx->Array.NewVertexElements = true;
++   ST_SET_STATE2(ctx->NewDriverState, ST_NEW_VERTEX_ARRAYS, ST_NEW_FS_SAMPLER_VIEWS);
+ }
+ 
+ 
+diff --git a/src/mesa/state_tracker/st_cb_drawtex.c b/src/mesa/state_tracker/st_cb_drawtex.c
+index dd77e225329..35b6c16df00 100644
+--- a/src/mesa/state_tracker/st_cb_drawtex.c
++++ b/src/mesa/state_tracker/st_cb_drawtex.c
+@@ -246,8 +246,14 @@ st_DrawTex(struct gl_context *ctx, GLfloat x, GLfloat y, GLfloat z,
+ #undef SET_ATTRIB
+    }
+ 
+-   /* Save only states that have no st_atom — they can't be re-derived. */
+-   cso_save_state(cso, CSO_BIT_STREAM_OUTPUTS);
++   cso_save_state(cso, (CSO_BIT_VIEWPORT |
++                        CSO_BIT_STREAM_OUTPUTS |
++                        CSO_BIT_VERTEX_SHADER |
++                        CSO_BIT_TESSCTRL_SHADER |
++                        CSO_BIT_TESSEVAL_SHADER |
++                        CSO_BIT_GEOMETRY_SHADER |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BIT_VERTEX_ELEMENTS));
+ 
+    {
+       void *vs = lookup_shader(st, numAttribs, slots);
+@@ -299,20 +305,10 @@ st_DrawTex(struct gl_context *ctx, GLfloat x, GLfloat y, GLfloat z,
+ 
+    pipe_resource_release(pipe, releasebuf);
+ 
+-   /* Restore atomless states via CSO. */
++   /* restore state */
+    cso_restore_state(cso, 0);
+-
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   ctx->Array.NewVertexElements = true;
++   ST_SET_STATE(ctx->NewDriverState, ST_NEW_VERTEX_ARRAYS);
+ }
+ 
+ /**
+diff --git a/src/mesa/state_tracker/st_cb_readpixels.c b/src/mesa/state_tracker/st_cb_readpixels.c
+index bf6b0623b13..d729bb85517 100644
+--- a/src/mesa/state_tracker/st_cb_readpixels.c
++++ b/src/mesa/state_tracker/st_cb_readpixels.c
+@@ -137,10 +137,20 @@ try_pbo_readpixels(struct st_context *st, struct gl_renderbuffer *rb,
+    if (!st_pbo_addresses_pixelstore(st, GL_TEXTURE_2D, false, pack, pixels, &addr))
+       return false;
+ 
+-   /* Save only states that have no st_atom — they can't be re-derived. */
+-   cso_save_state(cso, (CSO_BIT_STREAM_OUTPUTS |
++   cso_save_state(cso, (CSO_BIT_FRAGMENT_SAMPLERS |
++                        CSO_BIT_BLEND |
++                        CSO_BIT_VERTEX_ELEMENTS |
++                        CSO_BIT_FRAMEBUFFER |
++                        CSO_BIT_VIEWPORT |
++                        CSO_BIT_RASTERIZER |
++                        CSO_BIT_DEPTH_STENCIL_ALPHA |
++                        CSO_BIT_STREAM_OUTPUTS |
+                         (st->active_queries ? CSO_BIT_PAUSE_QUERIES : 0) |
+-                        CSO_BIT_RENDER_CONDITION));
++                        CSO_BIT_SAMPLE_MASK |
++                        CSO_BIT_MIN_SAMPLES |
++                        CSO_BIT_RENDER_CONDITION |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BITS_VERTEX_PIPE_SHADERS));
+ 
+    cso_set_sample_mask(cso, ~0);
+    cso_set_min_samples(cso, 1);
+@@ -250,27 +260,10 @@ fail:
+    cso_restore_state(cso, CSO_UNBIND_FS_SAMPLERVIEWS | CSO_UNBIND_FS_IMAGE0);
+    st->state.num_sampler_views[MESA_SHADER_FRAGMENT] = 0;
+ 
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_FS_SAMPLERS |
+-                               ST_INVALIDATE_BLEND |
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_FB_STATE |
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_RASTERIZER |
+-                               ST_INVALIDATE_DSA |
+-                               ST_INVALIDATE_SAMPLE_MASK |
+-                               ST_INVALIDATE_SAMPLE_SHADING |
+-                               ST_INVALIDATE_FS_CONSTBUF0 |
+-                               ST_INVALIDATE_FS_IMAGES |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_FS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   st->ctx->Array.NewVertexElements = true;
++   ST_SET_STATE4(st->ctx->NewDriverState, ST_NEW_FS_CONSTANTS,
++                 ST_NEW_FS_IMAGES, ST_NEW_FS_SAMPLER_VIEWS,
++                 ST_NEW_VERTEX_ARRAYS);
+ 
+    return success;
+ }
+diff --git a/src/mesa/state_tracker/st_cb_texture.c b/src/mesa/state_tracker/st_cb_texture.c
+index 8c3a364254d..c36dead5a4d 100644
+--- a/src/mesa/state_tracker/st_cb_texture.c
++++ b/src/mesa/state_tracker/st_cb_texture.c
+@@ -1748,10 +1748,19 @@ try_pbo_upload_common(struct gl_context *ctx,
+    if (!fs)
+       return false;
+ 
+-   /* Save only states that have no st_atom. */
+-   cso_save_state(cso, (CSO_BIT_STREAM_OUTPUTS |
++   cso_save_state(cso, (CSO_BIT_VERTEX_ELEMENTS |
++                        CSO_BIT_FRAMEBUFFER |
++                        CSO_BIT_VIEWPORT |
++                        CSO_BIT_BLEND |
++                        CSO_BIT_DEPTH_STENCIL_ALPHA |
++                        CSO_BIT_RASTERIZER |
++                        CSO_BIT_STREAM_OUTPUTS |
+                         (st->active_queries ? CSO_BIT_PAUSE_QUERIES : 0) |
+-                        CSO_BIT_RENDER_CONDITION));
++                        CSO_BIT_SAMPLE_MASK |
++                        CSO_BIT_MIN_SAMPLES |
++                        CSO_BIT_RENDER_CONDITION |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BITS_VERTEX_PIPE_SHADERS));
+ 
+    cso_set_sample_mask(cso, ~0);
+    cso_set_min_samples(cso, 1);
+@@ -1824,25 +1833,9 @@ fail:
+    cso_restore_state(cso, CSO_UNBIND_FS_SAMPLERVIEWS);
+    st->state.num_sampler_views[MESA_SHADER_FRAGMENT] = 0;
+ 
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_FB_STATE |
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_BLEND |
+-                               ST_INVALIDATE_DSA |
+-                               ST_INVALIDATE_RASTERIZER |
+-                               ST_INVALIDATE_SAMPLE_MASK |
+-                               ST_INVALIDATE_SAMPLE_SHADING |
+-                               ST_INVALIDATE_FS_CONSTBUF0 |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_FS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   ctx->Array.NewVertexElements = true;
++   ST_SET_STATE3(ctx->NewDriverState, ST_NEW_VERTEX_ARRAYS,
++                 ST_NEW_FS_CONSTANTS, ST_NEW_FS_SAMPLER_VIEWS);
+ 
+    return success;
+ }
+@@ -2016,10 +2009,19 @@ try_pbo_download(struct st_context *st,
+    if (!st_pbo_addresses_pixelstore(st, gl_target, dims == 3, pack, pixels, &addr))
+       return false;
+ 
+-   /* Save only states that have no st_atom. */
+-   cso_save_state(cso, (CSO_BIT_STREAM_OUTPUTS |
++   cso_save_state(cso, (CSO_BIT_VERTEX_ELEMENTS |
++                        CSO_BIT_FRAMEBUFFER |
++                        CSO_BIT_VIEWPORT |
++                        CSO_BIT_BLEND |
++                        CSO_BIT_DEPTH_STENCIL_ALPHA |
++                        CSO_BIT_RASTERIZER |
++                        CSO_BIT_STREAM_OUTPUTS |
+                         (st->active_queries ? CSO_BIT_PAUSE_QUERIES : 0) |
+-                        CSO_BIT_RENDER_CONDITION));
++                        CSO_BIT_SAMPLE_MASK |
++                        CSO_BIT_MIN_SAMPLES |
++                        CSO_BIT_RENDER_CONDITION |
++                        CSO_BIT_MESH_SHADER |
++                        CSO_BITS_VERTEX_PIPE_SHADERS));
+ 
+    cso_set_sample_mask(cso, ~0);
+    cso_set_min_samples(cso, 1);
+@@ -2112,26 +2114,10 @@ fail:
+    cso_restore_state(cso, CSO_UNBIND_FS_SAMPLERVIEWS | CSO_UNBIND_FS_IMAGE0);
+    st->state.num_sampler_views[MESA_SHADER_FRAGMENT] = 0;
+ 
+-   /* Invalidate all states this meta-op modified. The atoms will
+-    * re-derive them from GL state before the next draw.
+-    */
+-   st_context_invalidate_state(st,
+-                               ST_INVALIDATE_VERTEX_BUFFERS |
+-                               ST_INVALIDATE_FB_STATE |
+-                               ST_INVALIDATE_VIEWPORT |
+-                               ST_INVALIDATE_BLEND |
+-                               ST_INVALIDATE_DSA |
+-                               ST_INVALIDATE_RASTERIZER |
+-                               ST_INVALIDATE_SAMPLE_MASK |
+-                               ST_INVALIDATE_SAMPLE_SHADING |
+-                               ST_INVALIDATE_FS_CONSTBUF0 |
+-                               ST_INVALIDATE_FS_IMAGES |
+-                               ST_INVALIDATE_VS_STATE |
+-                               ST_INVALIDATE_FS_STATE |
+-                               ST_INVALIDATE_GS_STATE |
+-                               ST_INVALIDATE_TCS_STATE |
+-                               ST_INVALIDATE_TES_STATE |
+-                               ST_INVALIDATE_MESH_STATE);
++   st->ctx->Array.NewVertexElements = true;
++   ST_SET_STATE4(st->ctx->NewDriverState, ST_NEW_FS_CONSTANTS,
++                 ST_NEW_FS_IMAGES, ST_NEW_FS_SAMPLER_VIEWS,
++                 ST_NEW_VERTEX_ARRAYS);
+ 
+    return success;
+ }
+diff --git a/src/mesa/state_tracker/st_context.c b/src/mesa/state_tracker/st_context.c
+index 1fdc815e0d8..2fbe24a3b96 100644
+--- a/src/mesa/state_tracker/st_context.c
++++ b/src/mesa/state_tracker/st_context.c
+@@ -696,38 +696,33 @@ st_create_context_priv(struct gl_context *ctx, struct pipe_context *pipe,
+ 
+    ctx->Const.TESPositionAlwaysPrecise = options->vs_position_always_precise;
+ 
+-   /* GLES 2/3 doesn't expose alpha test, user clip planes, or two-sided
+-    * color, so those lowers shouldn't disable the one-variant fast path.
+-    */
+-   const bool is_gles2 = _mesa_is_gles2(ctx);
+-
+    /* Set which shader types can be compiled at link time. */
+    st->shader_has_one_variant[MESA_SHADER_VERTEX] =
+          st->has_shareable_shaders &&
+          !st->clamp_vert_color_in_shader &&
+          !st->lower_point_size &&
+-         (is_gles2 || !st->lower_ucp);
++         !st->lower_ucp;
+ 
+    st->shader_has_one_variant[MESA_SHADER_FRAGMENT] =
+          st->has_shareable_shaders &&
+          !st->lower_flatshade &&
+-         (is_gles2 || !st->lower_alpha_test) &&
++         !st->lower_alpha_test &&
+          !st->clamp_frag_color_in_shader &&
+          !st->force_persample_in_shader &&
+-         (is_gles2 || !st->lower_two_sided_color);
++         !st->lower_two_sided_color;
+ 
+    st->shader_has_one_variant[MESA_SHADER_TESS_CTRL] = st->has_shareable_shaders;
+    st->shader_has_one_variant[MESA_SHADER_TESS_EVAL] =
+          st->has_shareable_shaders &&
+          !st->clamp_vert_color_in_shader &&
+          !st->lower_point_size &&
+-         (is_gles2 || !st->lower_ucp);
++         !st->lower_ucp;
+ 
+    st->shader_has_one_variant[MESA_SHADER_GEOMETRY] =
+          st->has_shareable_shaders &&
+          !st->clamp_vert_color_in_shader &&
+          !st->lower_point_size &&
+-         (is_gles2 || !st->lower_ucp);
++         !st->lower_ucp;
+    st->shader_has_one_variant[MESA_SHADER_COMPUTE] = st->has_shareable_shaders;
+ 
+    if (!st->pipe->set_context_param || !util_thread_scheduler_enabled())
+diff --git a/src/mesa/state_tracker/st_manager.c b/src/mesa/state_tracker/st_manager.c
+index a42d0c36896..733d0da96c2 100644
+--- a/src/mesa/state_tracker/st_manager.c
++++ b/src/mesa/state_tracker/st_manager.c
+@@ -909,34 +909,6 @@ st_context_invalidate_state(struct st_context *st, unsigned flags)
+    }
+    if (flags & ST_INVALIDATE_FB_STATE)
+       ST_SET_STATE(ctx->NewDriverState, ST_NEW_FB_STATE);
+-   if (flags & ST_INVALIDATE_VIEWPORT)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_VIEWPORT);
+-   if (flags & ST_INVALIDATE_VS_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_VS_STATE);
+-   if (flags & ST_INVALIDATE_GS_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_GS_STATE);
+-   if (flags & ST_INVALIDATE_TCS_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_TCS_STATE);
+-   if (flags & ST_INVALIDATE_TES_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_TES_STATE);
+-   if (flags & ST_INVALIDATE_MESH_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_MS_STATE);
+-   if (flags & ST_INVALIDATE_RASTERIZER)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_RASTERIZER);
+-   if (flags & ST_INVALIDATE_FS_SAMPLERS)
+-      ST_SET_STATE2(ctx->NewDriverState, ST_NEW_FS_SAMPLERS, ST_NEW_FS_SAMPLER_VIEWS);
+-   if (flags & ST_INVALIDATE_FS_STATE)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_FS_STATE);
+-   if (flags & ST_INVALIDATE_BLEND)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_BLEND);
+-   if (flags & ST_INVALIDATE_DSA)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_DSA);
+-   if (flags & ST_INVALIDATE_SAMPLE_MASK)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_SAMPLE_STATE);
+-   if (flags & ST_INVALIDATE_SAMPLE_SHADING)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_SAMPLE_SHADING);
+-   if (flags & ST_INVALIDATE_FS_IMAGES)
+-      ST_SET_STATE(ctx->NewDriverState, ST_NEW_FS_IMAGES);
+ }
+ 
+ 
+diff --git a/src/util/u_gralloc/u_gralloc_fallback.c b/src/util/u_gralloc/u_gralloc_fallback.c
+index 44fb32d8cfd..bb6459c2e29 100644
+--- a/src/util/u_gralloc/u_gralloc_fallback.c
++++ b/src/util/u_gralloc/u_gralloc_fallback.c
+@@ -148,12 +148,16 @@ fallback_gralloc_get_buffer_info(struct u_gralloc *gralloc,
+    out->strides[0] = stride;
+ 
+ #ifdef HAS_FREEDRENO
+-   uint32_t gmsm = ('g' << 24) | ('m' << 16) | ('s' << 8) | 'm';
++  /* uint32_t gmsm = ('g' << 24) | ('m' << 16) | ('s' << 8) | 'm';
+    if (hnd->handle->numInts >= 2 && hnd->handle->data[hnd->handle->numFds] == gmsm) {
+-      /* This UBWC flag was introduced in a5xx. */
+-      bool ubwc = hnd->handle->data[hnd->handle->numFds + 1] & 0x08000000;
+-      out->modifier = ubwc ? DRM_FORMAT_MOD_QCOM_COMPRESSED : DRM_FORMAT_MOD_LINEAR;
++
+    }
++   */
++   
++   /* TODO: Actually find a way to detect a Qualcomm vendor allocated buffer */
++   /* This UBWC flag was introduced in a5xx. */
++   bool ubwc = hnd->handle->data[hnd->handle->numFds + 1] & 0x08000000;
++   out->modifier = ubwc ? DRM_FORMAT_MOD_QCOM_COMPRESSED : DRM_FORMAT_MOD_LINEAR;
+ #endif
+ 
+    return 0;
+diff --git a/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.c b/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.c
+index e1fdf75d999..e25852e63df 100644
+--- a/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.c
++++ b/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.c
+@@ -162,8 +162,6 @@ vk_hash_descriptor_heap_mappings(
+ struct heap_mapping_ctx {
+    const VkShaderDescriptorSetAndBindingMappingInfoEXT *info;
+ 
+-   const vk_nir_lower_descriptor_heaps_options *options;
+-
+    /* Map from vk_sampler_state to indices */
+    struct hash_table *sampler_idx_map;
+ };
+@@ -244,33 +242,15 @@ unpack_combined_image_sampler(nir_builder *b, nir_def *combined,
+       return nir_ubitfield_extract_imm(b, combined, 0, 20);
+ }
+ 
+-static bool
+-is_mapping_implicitly_non_uniform(struct heap_mapping_ctx *ctx,
+-                                  const VkDescriptorSetAndBindingMappingEXT *mapping,
+-                                  nir_def *index)
+-{
+-   /* Non-arrayed resources backed by HEAP_WITH_SHADER_RECORD_INDEX can be
+-    * implicitly non-uniform: different lanes in a subgroup may have different
+-    * shader record indices (and thus different heap entries) with no
+-    * descriptor indexing in the shader to annotate it.
+-    */
+-   return mapping->source == VK_DESCRIPTOR_MAPPING_SOURCE_HEAP_WITH_SHADER_RECORD_INDEX_EXT &&
+-          index == NULL && ctx->options && ctx->options->lower_shader_record_index_to_non_uniform;
+-}
+-
+ static nir_def *
+ vk_build_descriptor_heap_offset(nir_builder *b,
+-                                struct heap_mapping_ctx *ctx,
+                                 const VkDescriptorSetAndBindingMappingEXT *mapping,
+                                 nir_resource_type resource_type,
+                                 uint32_t binding, nir_def *index,
+-                                bool is_sampler, bool *non_uniform_out)
++                                bool is_sampler)
+ {
+    assert(util_is_power_of_two_nonzero(resource_type));
+ 
+-   if (non_uniform_out != NULL)
+-      *non_uniform_out = is_mapping_implicitly_non_uniform(ctx, mapping, index);
+-
+    if (index == NULL)
+       index = nir_imm_int(b, 0);
+ 
+@@ -621,8 +601,7 @@ build_buffer_addr_for_deref(nir_builder *b, nir_def *root_addr,
+ /* The cursor is not where you left it when this function returns. */
+ static nir_def *
+ build_deref_heap_offset(nir_builder *b, nir_deref_instr *deref,
+-                        bool is_sampler, struct heap_mapping_ctx *ctx,
+-                        bool *non_uniform_out)
++                        bool is_sampler, struct heap_mapping_ctx *ctx)
+ {
+    uint32_t set, binding;
+    nir_resource_type resource_type;
+@@ -640,9 +619,11 @@ build_deref_heap_offset(nir_builder *b, nir_deref_instr *deref,
+ 
+       b->cursor = nir_before_instr(&deref->instr);
+ 
+-      return vk_build_descriptor_heap_offset(b, ctx, mapping, resource_type,
+-                                             binding, index, is_sampler,
+-                                             non_uniform_out);
++      if (index == NULL)
++         index = nir_imm_int(b, 0);
++
++      return vk_build_descriptor_heap_offset(b, mapping, resource_type,
++                                             binding, index, is_sampler);
+    } else {
+       nir_deref_instr *root_cast = deref_get_root_cast(deref);
+       if (root_cast == NULL)
+@@ -690,13 +671,10 @@ lower_heaps_tex(nir_builder *b, nir_tex_instr *tex,
+    assert(texture != NULL);
+ 
+    {
+-      bool texture_non_uniform = false;
+-      nir_def *heap_offset = build_deref_heap_offset(b, texture, false, ctx,
+-                                                     &texture_non_uniform);
++      nir_def *heap_offset = build_deref_heap_offset(b, texture, false, ctx);
+       if (heap_offset != NULL) {
+          nir_src_rewrite(&tex->src[texture_src_idx].src, heap_offset);
+          tex->src[texture_src_idx].src_type = nir_tex_src_texture_heap_offset;
+-         tex->texture_non_uniform |= texture_non_uniform;
+          progress = true;
+       }
+    }
+@@ -711,13 +689,10 @@ lower_heaps_tex(nir_builder *b, nir_tex_instr *tex,
+       const VkSamplerCreateInfo *embedded_sampler =
+          get_deref_embedded_sampler(sampler, ctx);
+       if (embedded_sampler == NULL) {
+-         bool sampler_non_uniform = false;
+-         nir_def *heap_offset = build_deref_heap_offset(b, sampler, true, ctx,
+-                                                        &sampler_non_uniform);
++         nir_def *heap_offset = build_deref_heap_offset(b, sampler, true, ctx);
+          if (heap_offset != NULL) {
+             nir_src_rewrite(&tex->src[sampler_src_idx].src, heap_offset);
+             tex->src[sampler_src_idx].src_type = nir_tex_src_sampler_heap_offset;
+-            tex->sampler_non_uniform |= sampler_non_uniform;
+             progress = true;
+          }
+       } else {
+@@ -744,9 +719,7 @@ lower_heaps_image(nir_builder *b, nir_intrinsic_instr *intrin,
+                   struct heap_mapping_ctx *ctx, bool deref)
+ {
+    nir_deref_instr *image = nir_src_as_deref(intrin->src[0]);
+-   bool is_non_uniform = false;
+-   nir_def *heap_offset = build_deref_heap_offset(b, image, false, ctx,
+-                                                  &is_non_uniform);
++   nir_def *heap_offset = build_deref_heap_offset(b, image, false, ctx);
+    if (heap_offset == NULL)
+       return false;
+ 
+@@ -756,11 +729,6 @@ lower_heaps_image(nir_builder *b, nir_intrinsic_instr *intrin,
+       nir_src_rewrite(&intrin->src[0], heap_offset);
+    }
+ 
+-   if (is_non_uniform) {
+-      nir_intrinsic_set_access(intrin,
+-                               nir_intrinsic_access(intrin) | ACCESS_NON_UNIFORM);
+-   }
+-
+    return true;
+ }
+ 
+@@ -822,10 +790,9 @@ try_lower_heaps_deref_access(nir_builder *b, nir_intrinsic_instr *intrin,
+ 
+       b->cursor = nir_before_instr(&desc_load->instr);
+       nir_def *heap_offset =
+-         vk_build_descriptor_heap_offset(b, ctx, mapping, resource_type, binding,
++         vk_build_descriptor_heap_offset(b, mapping, resource_type, binding,
+                                          NULL /* index */,
+-                                         false /* is_sampler */,
+-                                         NULL /* non_uniform_out */);
++                                         false /* is_sampler */);
+ 
+       /* This moves the cursor */
+       heap_offset = build_buffer_addr_for_deref(b, heap_offset, deref,
+@@ -955,9 +922,8 @@ lower_heaps_load_descriptor(nir_builder *b, nir_intrinsic_instr *desc_load,
+ 
+       /* Everything else is an offset */
+       nir_def *heap_offset =
+-         vk_build_descriptor_heap_offset(b, ctx, mapping, resource_type, binding,
+-                                         index, false /* is_sampler */,
+-                                         NULL /* non_uniform_out */);
++         vk_build_descriptor_heap_offset(b, mapping, resource_type, binding,
++                                         index, false /* is_sampler */);
+       nir_def *desc = nir_load_heap_descriptor(b, desc_load->def.num_components,
+                                                desc_load->def.bit_size,
+                                                heap_offset,
+@@ -1035,12 +1001,10 @@ bool
+ vk_nir_lower_descriptor_heaps(
+    nir_shader *nir,
+    const VkShaderDescriptorSetAndBindingMappingInfoEXT *mapping,
+-   const vk_nir_lower_descriptor_heaps_options *options,
+    struct vk_sampler_state_array *embedded_samplers_out)
+ {
+    struct heap_mapping_ctx ctx = {
+       .info = mapping,
+-      .options = options,
+       .sampler_idx_map = _mesa_hash_table_create(NULL, hash_sampler,
+                                                  samplers_equal),
+    };
+diff --git a/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.h b/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.h
+index 6b344dc2d65..37fc05aba47 100644
+--- a/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.h
++++ b/src/vulkan/runtime/vk_nir_lower_descriptor_heaps.h
+@@ -67,15 +67,9 @@ vk_sampler_state_array_finish(struct vk_sampler_state_array *arr)
+    free(arr->samplers);
+ }
+ 
+-typedef struct vk_nir_lower_descriptor_heaps_options {
+-   /* Whether to lower non-arrayed resources backed by SRI to non-uniform. */
+-   bool lower_shader_record_index_to_non_uniform : 1;
+-} vk_nir_lower_descriptor_heaps_options;
+-
+ bool vk_nir_lower_descriptor_heaps(
+    nir_shader *nir,
+    const VkShaderDescriptorSetAndBindingMappingInfoEXT *mapping,
+-   const vk_nir_lower_descriptor_heaps_options *options,
+    struct vk_sampler_state_array *embedded_samplers_out);
+ 
+ #endif
+diff --git a/src/vulkan/runtime/vk_pipeline.c b/src/vulkan/runtime/vk_pipeline.c
+index c4acd592ed9..db98ebf6144 100644
+--- a/src/vulkan/runtime/vk_pipeline.c
++++ b/src/vulkan/runtime/vk_pipeline.c
+@@ -1010,7 +1010,7 @@ vk_pipeline_precompile_shader(struct vk_device *device,
+    struct vk_sampler_state_array embedded_samplers;
+    bool heaps_progress = false;
+    NIR_PASS(heaps_progress, nir, vk_nir_lower_descriptor_heaps,
+-            desc_map, NULL, &embedded_samplers);
++            desc_map, &embedded_samplers);
+    if (heaps_progress) {
+       NIR_PASS(_, nir, nir_remove_dead_variables,
+                nir_var_uniform | nir_var_image, NULL);
+diff --git a/src/vulkan/runtime/vk_shader.c b/src/vulkan/runtime/vk_shader.c
+index d3e9aad084e..f78d06e76f2 100644
+--- a/src/vulkan/runtime/vk_shader.c
++++ b/src/vulkan/runtime/vk_shader.c
+@@ -283,7 +283,7 @@ vk_shader_to_nir(struct vk_device *device,
+ 
+    bool heaps_progress = false;
+    NIR_PASS(heaps_progress, nir, vk_nir_lower_descriptor_heaps,
+-            desc_map, NULL, embedded_samplers_out);
++            desc_map, embedded_samplers_out);
+    if (heaps_progress) {
+       NIR_PASS(_, nir, nir_remove_dead_variables,
+                nir_var_uniform | nir_var_image, NULL);

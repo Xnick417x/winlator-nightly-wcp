@@ -1,0 +1,62 @@
+[
+  {
+    "type": "DXVK",
+    "verName": "Dxvk-2.7.1-gplasync",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-2.7.1-gplasync.wcp"
+  },
+  {
+    "type": "DXVK",
+    "verName": "Dxvk-2.7.1-arm64ec-gplasync",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Dxvk/Dxvk-2.7.1-arm64ec-gplasync.wcp"
+  },
+  {
+    "type": "DXVK",
+    "verName": "Dxvk-2.4.1-pre-reg",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-2.4.1-pre-reg.wcp"
+  },
+  {
+    "type": "Box64",
+    "verName": "Box64-0.4.1-fix",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Box64/Box64-0.4.1-fix.wcp"
+  },
+  {
+    "type": "WOWBox64",
+    "verName": "Wowbox64-0.4.1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.1.wcp"
+  },
+  {
+    "type": "FEXCore",
+    "verName": "FEX-2604",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-FEX/FEX-2604.wcp"
+  },
+  {
+    "type": "VKD3D",
+    "verName": "Vk3dk-proton-3.0b",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-proton-3.0b.wcp"
+  },
+  {
+    "type": "VKD3D",
+    "verName": "Vk3dk-arm64ec-3.0b",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-arm64ec-3.0b.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.20-x86_64",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.20-x86_64.wcp"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-10-arm64ec-coffincolors",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10-arm64ec-coffincolors.wcp"
+  }
+]

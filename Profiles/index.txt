@@ -1,0 +1,161 @@
+Adventure 2.icp
+Ajay common V1.2
+Alan Wake.icp
+Alien Versus Predator.icp
+Alpha Protocol.icp
+Alt Gamepad
+Amnesia The Bunker.icp
+ASSASSINS CREED.icp
+Baldi's Basics V3.icp
+Ben 10 Controls.icp
+Besiege.icp
+Bioshock.icp
+Call of Juarez Gunslinger.icp
+CLOS2.icp
+Cod-World at War-1.icp
+Cod-World at War.icp
+CoffinofAndyandLeyley.icp
+controls u2.icp
+cuphead.icp
+Cyber Shadow.icp
+Dark Souls 2.icp
+DC.icp
+Deadcell.icp
+Deus Ex Human Revolution.icp
+DE MENU.icp
+Divinity 2 DC.icp
+DMC4.icp
+DOW2.icp
+DragonballDBZ.icp
+Dragons Age.icp
+Drakensang.icp
+Driver Parallel Lines.icp
+DyingLightAnolog.icp
+Fallout 3.icp
+Far Cry 3.icp
+Far Cry 4.icp
+Far Cry.icp
+FasterThanLight.icp
+Final Fantasy 8.icp
+Final Fantasy Type-0.icp
+Flatout Games.icp
+Flatout Ultimate Carnage.icp
+FPS.icp
+Front Mission Evolved-1.icp
+Front Mission Evolved.icp
+GAMING.icp
+GH-alt-rts.icp
+GH-alt2-rts.icp
+GH-dual-anolog.icp
+GH-rts.icp
+Gravity Circuit.icp
+GTA 3 Classic.icp
+GTA 5.icp
+GTA San Andreas.icp
+gta Trilogy.icp
+Gta vice city.icp
+GTA-SA.icp
+Gta-V.icp
+GTASA.icp
+Hades.icp
+Half-Life 2.icp
+halo1.icp
+halo2.icp
+Hitman 2.icp
+hitman Absolution.icp
+Hyper DBZ.icp
+IGI 2.icp
+Infernal.icp
+input.icp
+JoJo ASBR v2.icp
+JoJo ASBR.icp
+Journey Realm DD.icp
+Just cause 2.icp
+Keyboard.icp
+La Mulana.icp
+Lego Games.icp
+Lego star wars TCS.icp
+M&B.icp
+Madden NFL (Xbox).icp
+Marvel Ultimate Alliance.icp
+Mass Effect 1 v2.icp
+Mass Effect 2-1.icp
+Mass Effect 2.icp
+Metro 2033.icp
+Mewgenics.icp
+MGRR.icp
+MGSV Phantom Pain.icp
+Mini_Ninja.icp
+Miside.icp
+mostly.icp
+mugen.icp
+NFS Carbon.icp
+NFS MW Final Pro V5.icp
+NFS MW FINAL V4.icp
+NFSHP (ready2play).icp
+Oblivion Lost Remake 2.5.icp
+Oblivion.icp
+Oblivion_XInput.icp
+Outlast 1.icp
+PES1.icp
+PES2.icp
+Playstation Controller.icp
+pop2.icp
+Postal 2.icp
+Prey.icp
+Prince of Persia Forgotten Sands (Phone).icp
+Project Zomboid (1).icp
+Psychonauts.icp
+QrTa_FPS.icp
+Quake 4.icp
+QWERTY-V3.icp
+Racing.icp
+Racing_alt.icp
+RAGE.icp
+Rayman 3.icp
+Resident Evil 6.icp
+Risen 2.icp
+RTS-Gamepad.icp
+Shovel Knight.icp
+Silksong.icp
+Singularity.icp
+Skyrim.icp
+Sleeping-Dogs.icp
+Sonic Generations.icp
+Sonic Mania.icp
+Spiderman Shattered Dimensions.icp
+Stalker CS.icp
+STALKER SOC.icp
+Stalker Trilogy Touch.icp
+stalker-1.icp
+stalker.icp
+Star Wars Jedi Knight 2.icp
+StarCraft-1.icp
+StarCraft.icp
+SteamWorld Dig 2.icp
+Sunset Overdrive.icp
+SYSTEMSHOCK.icp
+The Alliance Alive.icp
+The Forest.icp
+The Last of Us.icp
+The Saboteur.icp
+TMNT2003.icp
+ToEEcontroller.icp
+Tomb Raider Anniversary.icp
+Turok 2.icp
+Turok Evolution.icp
+Ultima Underworld.icp
+Ultra Street Fighter IV.icp
+Undertale.icp
+Unepic.icp
+Universal profile.icp
+Unleashed.icp
+virtual controller ik.icp
+Virtual Gamepad alt.icp
+Virtual Keyboard.icp
+Wolfenstein.icp
+Worms Armageddon TOUCHSCREEN.icp
+Xanadu Next.icp
+Xbox Controller.icp
+XHYN_C02.icp
+Ys Origin.icp

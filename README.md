@@ -7,7 +7,20 @@
 
 These builds are automatically checked and generated every night at **9:00 PM CST** if new updates exist in their official repositories.
 
+Contents.Json updated at **12:00 AM CST**
+
 </div>
+
+---
+
+### Contents for Winlator
+Copy the link below, open Winlator, and go to **Settings** -> **Downloadable Content URL** -> **Paste URL**.
+
+    https://raw.githubusercontent.com/Xnick417x/Winlator-Bionic-Nightly-wcp/refs/heads/main/content.json
+
+If Contents don't show up. Try turning phone to Landscape View.
+
+For Driver manager URL. Paste main repo URL. 
 
 ---
 
@@ -24,17 +37,15 @@ These builds are automatically checked and generated every night at **9:00 PM CS
 
 | Component | Download | History |
 | :--- | :--- | :--- |
-| **Weekly Bundle** (All-in-One) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Weekly-2026-02-20/Weekly-2026-02-20.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=Weekly&expanded=true) |
-| **DXVK** (GPLAsync) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nightly-b02cac89/dxvk-gplasync-b02cac89.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
-| **DXVK** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-arm64ec-nightly-b02cac89/DXVK-ARM64EC-v2.7.1-gplasync-arm64ec-b02cac89.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-arm64ec-nightly+NOT+Weekly&expanded=true) |
-| **DXVK-NVAPI** (GPLAsync) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nvapi-nightly-68374ec3/dxvk-nvapi-gplasync-68374ec3.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-nvapi-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
-| **DXVK-NVAPI** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nvapi-arm64ec-nightly-68374ec3/DXVK-NVAPI-ARM64EC-v2.7.1-nvapi-arm64ec-68374ec3.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-nvapi-arm64ec-nightly+NOT+Weekly&expanded=true) |
-| **VKD3D-Proton** (Standard) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-d6ac0aec/Vk3dk-Standard-3.0b-d6ac0aec.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=vk3dk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
-| **VKD3D-Proton** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-d6ac0aec/Vk3dk-Arm64ec-3.0b-arm64ec-d6ac0aec.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=vk3dk-arm64ec-nightly+NOT+Weekly&expanded=true) |
-| **FEXCore** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2601-537d1599f/FEXCore-2601-537d1599f.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=fex-nightly+NOT+Weekly&expanded=true) |
-| **Box64** (Standard) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-857991c50/box64-0.4.1-857991c50-nightly.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=box64-nightly+NOT+wowbox64+NOT+bionic+NOT+Weekly&expanded=true) |
-| **Box64** (Non standard - wip) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-857991c50/bionic-box64-0.4.1-857991c50-bionic.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=bionic-box64-nightly+NOT+Weekly&expanded=true) |
-| **WOWBox64** | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-857991c50/WOWBox64-0.4.1-857991c50-nightly.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
+| **Weekly Bundle** (All-in-One) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Weekly-2026-04-17/Weekly-2026-04-17.7z) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=Weekly&expanded=true) |
+| **DXVK** (GPLAsync) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nightly-a1abc9c4/2.7.1-gplasync-a1abc9c4.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
+| **DXVK** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-arm64ec-nightly-a1abc9c4/2.7.1-arm64ec-a1abc9c4.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=dxvk-arm64ec-nightly+NOT+Weekly&expanded=true) |
+| **VKD3D-Proton** (Standard) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-71095c7b/Vk3dk-3.0b-71095c7b.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=vk3dk-nightly+NOT+arm64ec+NOT+Weekly&expanded=true) |
+| **VKD3D-Proton** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-71095c7b/Vk3dk-3.0b-arm64ec-71095c7b.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=vk3dk-arm64ec-nightly+NOT+Weekly&expanded=true) |
+| **FEXCore** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-441116e1e/FEXCore-2604-441116e1e.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=fex-nightly+NOT+Weekly&expanded=true) |
+| **Box64** (Standard) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-55e8ebf52/Box64-0.4.1-55e8ebf52.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=box64-nightly+NOT+wowbox64+NOT+bionic+NOT+Weekly&expanded=true) |
+| **Box64** (Non standard - wip) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-55e8ebf52/Bionic-Box64-0.4.1-55e8ebf52.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=bionic-box64-nightly+NOT+Weekly&expanded=true) |
+| **WOWBox64** | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-55e8ebf52/WOWBox64-0.4.1-55e8ebf52.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
 
 ### Stable Builds
 
@@ -47,12 +58,27 @@ These builds are automatically checked and generated every night at **9:00 PM CS
 | **FEXCore** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-FEX) |
 | **Box64** (Standard) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-Box64) |
 | **WOWBox64** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-wowbox64) |
+| **DXVK Sarek** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Sarek) |
 
-###  Wine Layers (Bionic)
+### Turnip Nightly
+
+| Component | Download | History |
+| :--- | :--- | :--- |
+| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-78e2bbc/Turnip-26.2.0-78e2bbc.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-78e2bbc/Turnip-26.2.0-78e2bbc-A8xx.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+
+### Wine Layers (Bionic)
 [**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Wine)
 
-###  Runtime Packages
-[**Download**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Packages/Runtime.packages.zip)
+### Proton Layers (Bionic) 
+[**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/GameNative)
+
+### Drivers
+**Qualcomm** - Coming soon  
+**Turnip - Stables** - Coming soon  
+
+### Runtime Packages
+[**Download Runtime Package**](https://huggingface.co/datasets/Xnick417x/Runtime-packages/resolve/main/Runtime-packages.7z?download=true)
 
 ---
 
@@ -73,15 +99,32 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 * DXVK-Sarek [**pythonlover02**](https://github.com/pythonlover02)
 * DXVK-GPLAsync Patch [**Ph42oN**](https://gitlab.com/Ph42oN)
 * VKD3D [**Hans-Kristian Arntzen**](https://github.com/HansKristian-Work)
-* Freedreno Turnip driver [**Mesa**](https://gitlab.freedesktop.org/mesa/mesa)
+* Freedreno Turnip Driver [**Mesa**](https://gitlab.freedesktop.org/mesa/mesa)
 * Winlator [**Bruno**](https://github.com/brunodev85/winlator)
-* Winlator cmod [**Coffincolors**](https://github.com/coffincolors/winlator) + [**Pipetto-crypto**](https://github.com/Pipetto-crypto/winlator)
+* Winlator Cmod [**Coffincolors**](https://github.com/coffincolors/winlator) + [**Pipetto-crypto**](https://github.com/Pipetto-crypto/winlator)
 * Winlator - Ludashi [**StevenMXZ**](https://github.com/StevenMXZ/Winlator-Ludashi)
-* Arihany - Pre regression [**Arihany**](https://github.com/Arihany/WinlatorWCPHub)
-* Pipetto-crypto - Box64 fix [**Pipetto-crypto**](https://github.com/Pipetto-crypto/box64)
+* Arihany - Pre Regression [**Arihany**](https://github.com/Arihany/WinlatorWCPHub)
+* Pipetto-crypto - Box64 Fix [**Pipetto-crypto**](https://github.com/Pipetto-crypto/box64)
 * Wine [**WineHQ**](https://www.winehq.org/)
-* The412banner - wcp hub [**The412Banner**](https://github.com/The412Banner/Nightlies)
+* The412banner - .wcp Hub [**The412Banner**](https://github.com/The412Banner/Nightlies)
 * Zero K11MCH1 - Stables [**K11MCH1**](https://github.com/K11MCH1/Winlator101)
+* GameNative - Proton Layers [**GameNative**](https://github.com/utkarshdalal/GameNative)
+* Ajay [**Ajay Prefix Pro**](https://ajay9634dev-pludc.wordpress.com/)
+* REF4IK - Wine Layers [**REF4IK**](https://github.com/REF4IK/winlator-ref4ik-/releases/tag/1.0)
+* Pepelespooder - Bleeding Edge [**Pepelespooder**](https://github.com/Pepelespooder/proton-arm64-nightlies/releases)
+* Smuger - Proton Layers [**Smuger**](https://github.com/Smuger/proton-wine/releases)
+* The412Banner - Nightly Turnip [**The412Banner**](https://github.com/The412Banner/Banners-Turnip)
+
+---
+
+### Disclaimer ⚠️
+wcp's are compiled binary's from latest upstream sources. They are not my work. They are not always stable. You the user accept the risks and responsibility.
+If you shall find an issue with something. Please contact the source of the provider, and make an issue request. 
+
+**Copyright © 2026 Xnick417x. All Rights Reserved.**
+The custom build scripts and automated GitHub Actions workflows in this repository are proprietary. Unauthorized copying, modification, or redistribution of this repository's codebase is strictly prohibited.
+
+---
 
 <div align="center">
 Maintained by Xnick417x

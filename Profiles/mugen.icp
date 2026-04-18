@@ -1,0 +1,253 @@
+{
+  "id": 3,
+  "name": "Mugen",
+  "cursorSpeed": 1,
+  "elements": [
+    {
+      "type": "D_PAD",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_UP",
+        "KEY_RIGHT",
+        "KEY_DOWN",
+        "KEY_LEFT"
+      ],
+      "scale": 1.25,
+      "x": 0.10000000149011612,
+      "y": 0.6739130616188049,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_A",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.6495652198791504,
+      "y": 0.5642722249031067,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_S",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.75,
+      "y": 0.5642722249031067,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_D",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.8500000238418579,
+      "y": 0.5642722249031067,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_Z",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.6495652198791504,
+      "y": 0.8034026622772217,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_X",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.75,
+      "y": 0.8034026622772217,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_C",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.8500000238418579,
+      "y": 0.8034026622772217,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ENTER",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.5,
+      "y": 0.8034026622772217,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_SPACE",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.3700000047683716,
+      "y": 0.8034026622772217,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_ESC",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.07956521958112717,
+      "y": 0.3478260934352875,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F1",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.07956521958112717,
+      "y": 0.15122874081134796,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F2",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.20000000298023224,
+      "y": 0.15122874081134796,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F3",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.31869566440582275,
+      "y": 0.15122874081134796,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "CIRCLE",
+      "bindings": [
+        "KEY_1",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.8500000238418579,
+      "y": 0.3024574816226959,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    },
+    {
+      "type": "BUTTON",
+      "shape": "RECT",
+      "bindings": [
+        "KEY_F4",
+        "NONE",
+        "NONE"
+      ],
+      "scale": 1.25,
+      "x": 0.4399999976158142,
+      "y": 0.15217390656471252,
+      "toggleSwitch": false,
+      "text": "",
+      "iconId": 0
+    }
+  ],
+  "controllers": [
+    {
+      "id": "efbfda7e7d0202f1cd9c93c0dc4c92c89aad65c8",
+      "name": "NG-2001",
+      "controllerBindings": [
+        { "keyCode": 19, "binding": "KEY_UP" },
+        { "keyCode": 21, "binding": "KEY_LEFT" },
+        { "keyCode": 20, "binding": "KEY_DOWN" },
+        { "keyCode": 22, "binding": "KEY_RIGHT" },
+        { "keyCode": 99, "binding": "KEY_A" },
+        { "keyCode": 100, "binding": "KEY_S" },
+        { "keyCode": 97, "binding": "KEY_D" },
+        { "keyCode": 96, "binding": "KEY_Z" },
+        { "keyCode": 102, "binding": "KEY_X" },
+        { "keyCode": 103, "binding": "KEY_C" },
+        { "keyCode": 108, "binding": "KEY_ENTER" },
+        { "keyCode": 109, "binding": "KEY_SPACE" }
+      ]
+    }
+  ]
+}

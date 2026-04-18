@@ -2,7 +2,7 @@ name: Build Vk3dk Combined
 
 on:
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '14 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -22,12 +22,17 @@ jobs:
 
       - name: Check for Updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          cd src
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            cd src
-            if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -41,10 +46,18 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             ca-certificates curl xz-utils jq git glslang-tools \
             build-essential python3 python3-pip pkg-config \
-            meson ninja-build zstd
+            meson ninja-build zstd ccache
+
+      - name: Cache llvm-mingw
+        if: env.SHOULD_BUILD == 'true'
+        id: cache-llvm-mingw
+        uses: actions/cache@v4
+        with:
+          path: /opt/llvm-mingw
+          key: llvm-mingw-20251104
 
       - name: Setup Toolchain (llvm-mingw)
-        if: env.SHOULD_BUILD == 'true'
+        if: env.SHOULD_BUILD == 'true' && steps.cache-llvm-mingw.outputs.cache-hit != 'true'
         run: |
           LLVM_MINGW_TAG="20251104"
           TOOLCHAIN_DIR="/opt/llvm-mingw"
@@ -52,14 +65,38 @@ jobs:
           sudo rm -rf "$TOOLCHAIN_DIR"
           sudo mkdir -p "$TOOLCHAIN_DIR"
           sudo tar -C "$TOOLCHAIN_DIR" --strip-components=1 -xJf llvm.tar.xz
-          echo "$TOOLCHAIN_DIR/bin" >> $GITHUB_PATH
+          rm llvm.tar.xz
+
+      - name: Set PATH
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          echo "/opt/llvm-mingw/bin" >> $GITHUB_PATH
+
+      - name: Setup ccache
+        if: env.SHOULD_BUILD == 'true'
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-vk3dk-standard-${{ env.UPSTREAM_HASH }}
+          restore-keys: |
+            ccache-vk3dk-standard-
+
+      - name: Configure ccache
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          mkdir -p .ccache
+          echo "CCACHE_DIR=$PWD/.ccache" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=500M" >> $GITHUB_ENV
 
       - name: Generate Version Info
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          VERSION_NAME="3.0b-${COMMIT_HASH}"
+          git fetch --tags --force
+          LATEST_TAG="3.0b"
+          VERSION_NAME="${LATEST_TAG}-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
@@ -68,8 +105,8 @@ jobs:
         run: |
           cat <<EOF > cross-x64.txt
           [binaries]
-          c = '/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang'
-          cpp = '/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang++'
+          c = ['ccache', '/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang']
+          cpp = ['ccache', '/opt/llvm-mingw/bin/x86_64-w64-mingw32-clang++']
           ar = '/opt/llvm-mingw/bin/llvm-ar'
           strip = '/opt/llvm-mingw/bin/llvm-strip'
           windres = '/opt/llvm-mingw/bin/x86_64-w64-mingw32-windres'
@@ -82,11 +119,11 @@ jobs:
           cpu = 'x86_64'
           endian = 'little'
           EOF
-          
+
           cat <<EOF > cross-x86.txt
           [binaries]
-          c = '/opt/llvm-mingw/bin/i686-w64-mingw32-clang'
-          cpp = '/opt/llvm-mingw/bin/i686-w64-mingw32-clang++'
+          c = ['ccache', '/opt/llvm-mingw/bin/i686-w64-mingw32-clang']
+          cpp = ['ccache', '/opt/llvm-mingw/bin/i686-w64-mingw32-clang++']
           ar = '/opt/llvm-mingw/bin/llvm-ar'
           strip = '/opt/llvm-mingw/bin/llvm-strip'
           windres = '/opt/llvm-mingw/bin/i686-w64-mingw32-windres'
@@ -106,6 +143,10 @@ jobs:
           meson setup build-x86 --cross-file ../cross-x86.txt -Dbuildtype=release -Dstrip=true
           ninja -C build-x86
 
+      - name: Show ccache stats
+        if: env.SHOULD_BUILD == 'true'
+        run: ccache -s
+
       - name: Package Standard
         if: env.SHOULD_BUILD == 'true'
         run: |
@@ -121,23 +162,35 @@ jobs:
             "type": "VKD3D",
             "versionName": "${{ env.VERSION_NAME }}",
             "versionCode": 0,
-            "description": "Vk3dk Standard Nightly ${{ env.COMMIT_HASH }}",
+            "description": "Vk3dk Nightly ${{ env.COMMIT_HASH }}",
             "files": [
-              {"source": "system32/d3d12.dll", "target": "\${system32}/d3d12.dll"},
-              {"source": "system32/d3d12core.dll", "target": "\${system32}/d3d12core.dll"},
-              {"source": "syswow64/d3d12.dll", "target": "\${syswow64}/d3d12.dll"},
-              {"source": "syswow64/d3d12core.dll", "target": "\${syswow64}/d3d12core.dll"}
+              {
+                "source": "system32/d3d12.dll",
+                "target": "\${system32}/d3d12.dll"
+              },
+              {
+                "source": "system32/d3d12core.dll",
+                "target": "\${system32}/d3d12core.dll"
+              },
+              {
+                "source": "syswow64/d3d12.dll",
+                "target": "\${syswow64}/d3d12.dll"
+              },
+              {
+                "source": "syswow64/d3d12core.dll",
+                "target": "\${syswow64}/d3d12core.dll"
+              }
             ]
           }
           EOF
           cd final_package
-          tar -cJf ../Vk3dk-Standard-${{ env.VERSION_NAME }}.wcp *
+          tar -cJf ../Vk3dk-${{ env.VERSION_NAME }}.wcp *
 
       - name: Upload Artifact (Standard)
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: vk3dk-standard
+          name: vk3dk
           path: '*.wcp'
 
       - name: Create Release (Standard)
@@ -146,9 +199,9 @@ jobs:
         with:
           tag_name: vk3dk-nightly-${{ env.COMMIT_HASH }}
           files: '*.wcp'
-          name: "Vk3dk Standard Nightly ${{ env.COMMIT_HASH }}"
+          name: "Vk3dk Nightly ${{ env.COMMIT_HASH }}"
           body: |
-            Automated nightly build of Vk3dk (Standard).
+            Automated nightly build of Vk3dk.
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases (Standard)
@@ -156,9 +209,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("vk3dk-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("vk3dk-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (Standard)
         if: env.SHOULD_BUILD == 'true'
@@ -173,16 +230,16 @@ jobs:
           cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/vk3dk-nightly-${{ env.COMMIT_HASH }}/Vk3dk-Standard-${{ env.VERSION_NAME }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/vk3dk-nightly-${{ env.COMMIT_HASH }}/Vk3dk-${{ env.VERSION_NAME }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
           git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*Standard/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton.*Standard/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Vk3dk Standard ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             git commit -m "Update dashboard for Vk3dk ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
@@ -202,12 +259,17 @@ jobs:
 
       - name: Check for Updates
         id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          cd src
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            cd src
-            if [ -z "$(git log --since='26 hours ago' --pretty=format:'%H')" ]; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -220,17 +282,38 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
             ca-certificates curl xz-utils jq git python3 pkg-config \
-            zstd meson ninja-build wget unzip build-essential
+            zstd meson ninja-build wget unzip build-essential ccache
+
+      - name: Cache GLSLang
+        if: env.SHOULD_BUILD == 'true'
+        id: cache-glslang
+        uses: actions/cache@v4
+        with:
+          path: glslang
+          key: glslang-master
 
       - name: Setup GLSLang
-        if: env.SHOULD_BUILD == 'true'
+        if: env.SHOULD_BUILD == 'true' && steps.cache-glslang.outputs.cache-hit != 'true'
         run: |
           wget -q https://github.com/KhronosGroup/glslang/releases/download/master-tot/glslang-master-linux-Release.zip
           unzip -q glslang-master-linux-Release.zip -d glslang
+          rm glslang-master-linux-Release.zip
+
+      - name: Add GLSLang to Path
+        if: env.SHOULD_BUILD == 'true'
+        run: |
           echo "$PWD/glslang/bin" >> $GITHUB_PATH
 
-      - name: Setup Toolchain (llvm-mingw)
+      - name: Cache llvm-mingw
         if: env.SHOULD_BUILD == 'true'
+        id: cache-llvm-mingw
+        uses: actions/cache@v4
+        with:
+          path: /opt/llvm-mingw
+          key: llvm-mingw-20251104
+
+      - name: Setup Toolchain (llvm-mingw)
+        if: env.SHOULD_BUILD == 'true' && steps.cache-llvm-mingw.outputs.cache-hit != 'true'
         run: |
           LLVM_MINGW_TAG="20251104"
           TOOLCHAIN_DIR="/opt/llvm-mingw"
@@ -238,14 +321,38 @@ jobs:
           sudo rm -rf "$TOOLCHAIN_DIR"
           sudo mkdir -p "$TOOLCHAIN_DIR"
           sudo tar -C "$TOOLCHAIN_DIR" --strip-components=1 -xJf llvm.tar.xz
-          echo "$TOOLCHAIN_DIR/bin" >> $GITHUB_PATH
+          rm llvm.tar.xz
+
+      - name: Set PATH
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          echo "/opt/llvm-mingw/bin" >> $GITHUB_PATH
+
+      - name: Setup ccache
+        if: env.SHOULD_BUILD == 'true'
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-vk3dk-arm64ec-${{ env.UPSTREAM_HASH }}
+          restore-keys: |
+            ccache-vk3dk-arm64ec-
+
+      - name: Configure ccache
+        if: env.SHOULD_BUILD == 'true'
+        run: |
+          mkdir -p .ccache
+          echo "CCACHE_DIR=$PWD/.ccache" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=500M" >> $GITHUB_ENV
 
       - name: Generate Version Info
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          VERSION_NAME="3.0b-arm64ec-${COMMIT_HASH}"
+          git fetch --tags --force
+          LATEST_TAG="3.0b"
+          VERSION_NAME="${LATEST_TAG}-arm64ec-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
@@ -254,8 +361,8 @@ jobs:
         run: |
           cat <<EOF > arm64ec.txt
           [binaries]
-          c = 'arm64ec-w64-mingw32-clang'
-          cpp = 'arm64ec-w64-mingw32-clang++'
+          c = ['ccache', 'arm64ec-w64-mingw32-clang']
+          cpp = ['ccache', 'arm64ec-w64-mingw32-clang++']
           ar = 'llvm-ar'
           strip = 'llvm-strip'
           windres = 'arm64ec-w64-mingw32-windres'
@@ -270,8 +377,8 @@ jobs:
 
           cat <<EOF > x86.txt
           [binaries]
-          c = 'i686-w64-mingw32-clang'
-          cpp = 'i686-w64-mingw32-clang++'
+          c = ['ccache', 'i686-w64-mingw32-clang']
+          cpp = ['ccache', 'i686-w64-mingw32-clang++']
           ar = 'llvm-ar'
           strip = 'llvm-strip'
           windres = 'i686-w64-mingw32-windres'
@@ -290,6 +397,10 @@ jobs:
           meson setup build-x86 --cross-file ../x86.txt -Dbuildtype=release -Dstrip=true
           ninja -C build-x86 -j 2
 
+      - name: Show ccache stats
+        if: env.SHOULD_BUILD == 'true'
+        run: ccache -s
+
       - name: Package ARM64EC
         if: env.SHOULD_BUILD == 'true'
         run: |
@@ -302,17 +413,30 @@ jobs:
           find src/build-x86 -name "d3d12core.dll" -exec cp -L {} final_package/syswow64/ \;
           llvm-strip --strip-all final_package/system32/*.dll
           llvm-strip --strip-all final_package/syswow64/*.dll
+          
           cat <<EOF > final_package/profile.json
           {
             "type": "VKD3D",
             "versionName": "${{ env.VERSION_NAME }}",
-            "versionCode": 1,
-            "description": "Vk3dk Arm64ec Nightly ${{ env.COMMIT_HASH }}",
+            "versionCode": 0,
+            "description": "Vk3dk arm64ec Nightly ${{ env.COMMIT_HASH }}",
             "files": [
-              {"source": "system32/d3d12.dll", "target": "\${system32}/d3d12.dll"},
-              {"source": "system32/d3d12core.dll", "target": "\${system32}/d3d12core.dll"},
-              {"source": "syswow64/d3d12.dll", "target": "\${syswow64}/d3d12.dll"},
-              {"source": "syswow64/d3d12core.dll", "target": "\${syswow64}/d3d12core.dll"}
+              {
+                "source": "system32/d3d12.dll",
+                "target": "\${system32}/d3d12.dll"
+              },
+              {
+                "source": "system32/d3d12core.dll",
+                "target": "\${system32}/d3d12core.dll"
+              },
+              {
+                "source": "syswow64/d3d12.dll",
+                "target": "\${syswow64}/d3d12.dll"
+              },
+              {
+                "source": "syswow64/d3d12core.dll",
+                "target": "\${syswow64}/d3d12core.dll"
+              }
             ]
           }
           EOF
@@ -320,13 +444,13 @@ jobs:
           tar -cf ../archive.tar .
           cd ..
           xz -9 archive.tar
-          mv archive.tar.xz Vk3dk-Arm64ec-${{ env.VERSION_NAME }}.wcp
+          mv archive.tar.xz Vk3dk-${{ env.VERSION_NAME }}.wcp
 
       - name: Upload Artifact (ARM64EC)
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: vk3dk-Arm64ec
+          name: vk3dk-arm64ec
           path: '*.wcp'
 
       - name: Create Release (ARM64EC)
@@ -335,9 +459,9 @@ jobs:
         with:
           tag_name: vk3dk-arm64ec-nightly-${{ env.COMMIT_HASH }}
           files: '*.wcp'
-          name: "Vk3dk Arm64ec Nightly ${{ env.COMMIT_HASH }}"
+          name: "Vk3dk arm64ec Nightly ${{ env.COMMIT_HASH }}"
           body: |
-            Automated nightly build of Vk3dk (Arm64ec).
+            Automated nightly build of Vk3dk (arm64ec).
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases (ARM64EC)
@@ -345,9 +469,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("vk3dk-arm64ec-nightly-"))' \
-          | tail -n +9 \
-          | xargs -I {} sh -c 'gh release delete "{}" --cleanup-tag -y'
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("vk3dk-arm64ec-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          
+          for TAG in $OLD_RELEASES; do
+            echo "Deleting old release: $TAG"
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            sleep 2
+          done
 
       - name: Update Dashboard (ARM64EC)
         if: env.SHOULD_BUILD == 'true'
@@ -362,14 +490,14 @@ jobs:
           cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/vk3dk-arm64ec-nightly-${{ env.COMMIT_HASH }}/Vk3dk-Arm64ec-${{ env.VERSION_NAME }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/vk3dk-arm64ec-nightly-${{ env.COMMIT_HASH }}/Vk3dk-${{ env.VERSION_NAME }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
           git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*ARM64EC/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton.*ARM64EC/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
              git commit -m "Update dashboard for Vk3dk ARM64EC ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
