@@ -34,7 +34,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q "dxvk-nightly-$COMMIT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -78,7 +78,7 @@ jobs:
         run: |
           cd dxvk
           wget https://gitlab.com/Ph42oN/dxvk-gplasync/-/raw/main/patches/dxvk-gplasync-master.patch
-          git apply dxvk-gplasync-master.patch
+          patch -p1 < dxvk-gplasync-master.patch
 
       - name: Build DXVK
         if: env.SHOULD_BUILD == 'true'
@@ -228,7 +228,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$COMMIT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q "dxvk-arm64ec-nightly-$COMMIT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -252,16 +252,8 @@ jobs:
             ca-certificates curl xz-utils jq git build-essential \
             python3 pkg-config zstd meson ninja-build wget unzip ccache
 
-      - name: Cache Glslang
-        if: env.SHOULD_BUILD == 'true'
-        id: cache-glslang
-        uses: actions/cache@v4
-        with:
-          path: glslang
-          key: glslang-master
-
       - name: Setup Glslang
-        if: env.SHOULD_BUILD == 'true' && steps.cache-glslang.outputs.cache-hit != 'true'
+        if: env.SHOULD_BUILD == 'true'
         run: |
           wget -q https://github.com/KhronosGroup/glslang/releases/download/master-tot/glslang-master-linux-Release.zip
           unzip -q glslang-master-linux-Release.zip -d glslang
@@ -315,7 +307,7 @@ jobs:
         run: |
           cd dxvk
           wget https://gitlab.com/Ph42oN/dxvk-gplasync/-/raw/main/patches/dxvk-gplasync-master.patch
-          git apply dxvk-gplasync-master.patch
+          patch -p1 < dxvk-gplasync-master.patch
 
       - name: Configure Cross-Files
         if: env.SHOULD_BUILD == 'true'
@@ -329,6 +321,7 @@ jobs:
           windres = 'arm64ec-w64-mingw32-windres'
           widl = 'arm64ec-w64-mingw32-widl'
           pkg-config = 'pkg-config'
+          
           [host_machine]
           system = 'windows'
           cpu_family = 'aarch64'
