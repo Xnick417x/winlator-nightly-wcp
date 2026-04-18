@@ -11,6 +11,7 @@ Baldi's Basics V3.icp
 Ben 10 Controls.icp
 Besiege.icp
 Bioshock.icp
+Black Mesa.icp
 Call of Juarez Gunslinger.icp
 CLOS2.icp
 Cod-World at War-1.icp
@@ -30,6 +31,7 @@ DOW2.icp
 DragonballDBZ.icp
 Dragons Age.icp
 Drakensang.icp
+Dreadcell.icp
 Driver Parallel Lines.icp
 DyingLightAnolog.icp
 Fallout 3.icp
@@ -64,6 +66,7 @@ halo1.icp
 halo2.icp
 Hitman 2.icp
 hitman Absolution.icp
+HxHNENxIMPACT .icp
 Hyper DBZ.icp
 IGI 2.icp
 Infernal.icp
@@ -71,6 +74,7 @@ input.icp
 JoJo ASBR v2.icp
 JoJo ASBR.icp
 Journey Realm DD.icp
+Just cuz..icp
 Just cause 2.icp
 Keyboard.icp
 La Mulana.icp
@@ -120,6 +124,7 @@ RTS-Gamepad.icp
 Shovel Knight.icp
 Silksong.icp
 Singularity.icp
+SkullGirls2nd.icp
 Skyrim.icp
 Sleeping-Dogs.icp
 Sonic Generations.icp
@@ -150,6 +155,7 @@ Ultra Street Fighter IV.icp
 Undertale.icp
 Unepic.icp
 Universal profile.icp
+Universal Numlock.icp
 Unleashed.icp
 virtual controller ik.icp
 Virtual Gamepad alt.icp
@@ -160,3 +166,4 @@ Xanadu Next.icp
 Xbox Controller.icp
 XHYN_C02.icp
 Ys Origin.icp
+4fingerGP.icp
