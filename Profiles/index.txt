@@ -14,6 +14,7 @@ Call of Juarez Gunslinger.icp
 CLOS2.icp
 Cod-World at War-1.icp
 Cod-World at War.icp
+CoffinofAndyandLeyley.icp
 controls u2.icp
 cuphead.icp
 Cyber Shadow.icp
@@ -21,6 +22,7 @@ Dark Souls 2.icp
 DC.icp
 Deadcell.icp
 Deus Ex Human Revolution.icp
+DE MENU.icp
 Divinity 2 DC.icp
 DMC4.icp
 DOW2.icp
@@ -33,6 +35,7 @@ Fallout 3.icp
 Far Cry 3.icp
 Far Cry 4.icp
 Far Cry.icp
+FasterThanLight.icp
 Final Fantasy 8.icp
 Final Fantasy Type-0.icp
 Flatout Games.icp
@@ -112,6 +115,7 @@ RAGE.icp
 Rayman 3.icp
 Resident Evil 6.icp
 Risen 2.icp
+RTS-Gamepad.icp
 Shovel Knight.icp
 Silksong.icp
 Singularity.icp
