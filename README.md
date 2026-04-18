@@ -112,7 +112,6 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 * Ajay [**Ajay Prefix Pro**](https://ajay9634dev-pludc.wordpress.com/)
 * REF4IK - Wine Layers [**REF4IK**](https://github.com/REF4IK/winlator-ref4ik-/releases/tag/1.0)
 * Pepelespooder - Bleeding Edge [**Pepelespooder**](https://github.com/Pepelespooder/proton-arm64-nightlies/releases)
-* Smuger - Proton Layers [**Smuger**](https://github.com/Smuger/proton-wine/releases)
 * The412Banner - Nightly Turnip [**The412Banner**](https://github.com/The412Banner/Banners-Turnip)
 
 ---
