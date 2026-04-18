@@ -1,3 +1,5 @@
+18WheelsOfSteel.icp
+4fingerGP.icp
 Adventure 2.icp
 Ajay common V1.2
 Alan Wake.icp
@@ -12,19 +14,25 @@ Ben 10 Controls.icp
 Besiege.icp
 Bioshock.icp
 Black Mesa.icp
+Bomberman.icp
+brickrigs.icp
 Call of Juarez Gunslinger.icp
+Claw RTS.icp
 CLOS2.icp
 Cod-World at War-1.icp
 Cod-World at War.icp
 CoffinofAndyandLeyley.icp
+Color4fingerUniversal.icp
 controls u2.icp
+CS2D Button.icp
 cuphead.icp
 Cyber Shadow.icp
 Dark Souls 2.icp
 DC.icp
-Deadcell.icp
-Deus Ex Human Revolution.icp
 DE MENU.icp
+Deadcell.icp
+dead_space.icp
+Deus Ex Human Revolution.icp
 Divinity 2 DC.icp
 DMC4.icp
 DOW2.icp
@@ -34,15 +42,18 @@ Drakensang.icp
 Dreadcell.icp
 Driver Parallel Lines.icp
 DyingLightAnolog.icp
+Fallout 1+2.icp
 Fallout 3.icp
 Far Cry 3.icp
 Far Cry 4.icp
 Far Cry.icp
 FasterThanLight.icp
+FF12.icp
 Final Fantasy 8.icp
 Final Fantasy Type-0.icp
 Flatout Games.icp
 Flatout Ultimate Carnage.icp
+FPS AJAY ALL KEYS.icp
 FPS.icp
 Front Mission Evolved-1.icp
 Front Mission Evolved.icp
@@ -51,6 +62,7 @@ GH-alt-rts.icp
 GH-alt2-rts.icp
 GH-dual-anolog.icp
 GH-rts.icp
+Gothic 1.icp
 Gravity Circuit.icp
 GTA 3 Classic.icp
 GTA 5.icp
@@ -60,22 +72,26 @@ Gta vice city.icp
 GTA-SA.icp
 Gta-V.icp
 GTASA.icp
+gzdoom V2.icp
+gzdoom.icp
 Hades.icp
 Half-Life 2.icp
 halo1.icp
 halo2.icp
+HellCopter.icp
 Hitman 2.icp
 hitman Absolution.icp
 HxHNENxIMPACT .icp
 Hyper DBZ.icp
 IGI 2.icp
+IGI.icp
 Infernal.icp
 input.icp
 JoJo ASBR v2.icp
 JoJo ASBR.icp
 Journey Realm DD.icp
-Just cuz..icp
 Just cause 2.icp
+Just cuz..icp
 Keyboard.icp
 La Mulana.icp
 Lego Games.icp
@@ -86,6 +102,7 @@ Marvel Ultimate Alliance.icp
 Mass Effect 1 v2.icp
 Mass Effect 2-1.icp
 Mass Effect 2.icp
+MC2.icp
 Metro 2033.icp
 Mewgenics.icp
 MGRR.icp
@@ -93,6 +110,7 @@ MGSV Phantom Pain.icp
 Mini_Ninja.icp
 Miside.icp
 mostly.icp
+Mount and Blade Warband.icp
 mugen.icp
 NFS Carbon.icp
 NFS MW Final Pro V5.icp
@@ -114,10 +132,12 @@ Psychonauts.icp
 QrTa_FPS.icp
 Quake 4.icp
 QWERTY-V3.icp
+Racing Simulation.icp
 Racing.icp
 Racing_alt.icp
 RAGE.icp
 Rayman 3.icp
+Re7.icp
 Resident Evil 6.icp
 Risen 2.icp
 RTS-Gamepad.icp
@@ -141,6 +161,7 @@ StarCraft.icp
 SteamWorld Dig 2.icp
 Sunset Overdrive.icp
 SYSTEMSHOCK.icp
+Tekken.icp
 The Alliance Alive.icp
 The Forest.icp
 The Last of Us.icp
@@ -148,14 +169,16 @@ The Saboteur.icp
 TMNT2003.icp
 ToEEcontroller.icp
 Tomb Raider Anniversary.icp
+Tomb_raider.icp
+TouhouEOSD.icp
 Turok 2.icp
 Turok Evolution.icp
 Ultima Underworld.icp
 Ultra Street Fighter IV.icp
 Undertale.icp
 Unepic.icp
-Universal profile.icp
 Universal Numlock.icp
+Universal profile.icp
 Unleashed.icp
 virtual controller ik.icp
 Virtual Gamepad alt.icp
@@ -166,4 +189,3 @@ Xanadu Next.icp
 Xbox Controller.icp
 XHYN_C02.icp
 Ys Origin.icp
-4fingerGP.icp
