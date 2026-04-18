@@ -2,6 +2,7 @@ Adventure 2.icp
 Ajay common V1.2
 Alan Wake.icp
 Alien Versus Predator.icp
+All Games RTS.icp
 Alpha Protocol.icp
 Alt Gamepad
 Amnesia The Bunker.icp
