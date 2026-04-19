@@ -64,8 +64,8 @@ For Driver manager URL. Paste main repo URL.
 
 | Component | Download | History |
 | :--- | :--- | :--- |
-| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-fcfdd4c/Turnip-26.2.0-fcfdd4c.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
-| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-fcfdd4c/Turnip-26.2.0-fcfdd4c-A8xx.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a6xx/a7xx) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-b860e01/Turnip-26.2.0-b860e01.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
+| **Turnip** (a8xx-experimental) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/nightly-Turnip-26.2.0-b860e01/Turnip-26.2.0-b860e01-A8xx.zip) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=nightly-Turnip&expanded=true) |
 
 ### Wine Layers (Bionic)
 [**Download Assets**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Wine)
