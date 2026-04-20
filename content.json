@@ -253,15 +253,15 @@
   },
   {
     "type": "Proton",
-    "verName": "Proton-arm64ec10.99-ntsync",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-arm64ec10.99-ntsync.wcp"
-  },
-  {
-    "type": "Proton",
     "verName": "Proton-BE-arm64ec-b01ca65",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-BE-arm64ec-b01ca65.wcp"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-10.99-arm64ec-ntsync",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10.99-arm64ec-ntsync.wcp"
   },
   {
     "type": "Proton",
