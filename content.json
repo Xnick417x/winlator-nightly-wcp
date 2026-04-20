@@ -175,6 +175,12 @@
   },
   {
     "type": "DXVK",
+    "verName": "Dxvk-1.6.1-async",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-1.6.1-async.wcp"
+  },
+  {
+    "type": "DXVK",
     "verName": "Dxvk-1.5.5-async",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-1.5.5-async.wcp"
