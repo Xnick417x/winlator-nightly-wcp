@@ -1,21 +1,27 @@
 [
   {
     "type": "Box64",
+    "verName": "Box64-0.4.2",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Box64/Box64-0.4.2.wcp"
+  },
+  {
+    "type": "Box64",
+    "verName": "Bionic-Box64-0.4.2-7eeb50164",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-7eeb50164/Bionic-Box64-0.4.2-7eeb50164.wcp"
+  },
+  {
+    "type": "Box64",
+    "verName": "Box64-0.4.2-7eeb50164",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-7eeb50164/Box64-0.4.2-7eeb50164.wcp"
+  },
+  {
+    "type": "Box64",
     "verName": "Box64-0.4.1-fix",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Box64/Box64-0.4.1-fix.wcp"
-  },
-  {
-    "type": "Box64",
-    "verName": "Bionic-Box64-0.4.1-3c976b1ff",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-3c976b1ff/Bionic-Box64-0.4.1-3c976b1ff.wcp"
-  },
-  {
-    "type": "Box64",
-    "verName": "Box64-0.4.1-3c976b1ff",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-3c976b1ff/Box64-0.4.1-3c976b1ff.wcp"
   },
   {
     "type": "Box64",
@@ -367,15 +373,21 @@
   },
   {
     "type": "WOWBox64",
-    "verName": "Wowbox64-0.4.1",
+    "verName": "Wowbox64-0.4.2",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.1.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.2.wcp"
   },
   {
     "type": "WOWBox64",
-    "verName": "WOWBox64-0.4.1-3c976b1ff",
+    "verName": "WOWBox64-0.4.2-7eeb50164",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-3c976b1ff/WOWBox64-0.4.1-3c976b1ff.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-7eeb50164/WOWBox64-0.4.2-7eeb50164.wcp"
+  },
+  {
+    "type": "WOWBox64",
+    "verName": "Wowbox64-0.4.1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-wowbox64/Wowbox64-0.4.1.wcp"
   },
   {
     "type": "WOWBox64",
