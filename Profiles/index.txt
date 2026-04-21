@@ -32,12 +32,14 @@ DC.icp
 DE MENU.icp
 Deadcell.icp
 dead_space.icp
+Dead Island Riptide.icp
 Deus Ex Human Revolution.icp
 Divinity 2 DC.icp
 DMC4.icp
 DOW2.icp
 DragonballDBZ.icp
 Dragons Age.icp
+dragon a inquisition.icp
 Drakensang.icp
 Dreadcell.icp
 Driver Parallel Lines.icp
@@ -184,7 +186,7 @@ virtual controller ik.icp
 Virtual Gamepad alt.icp
 Virtual Keyboard.icp
 Wolfenstein.icp
-Worms Armageddon TOUCHSCREEN.icp
+Worms Armageddon.icp
 Xanadu Next.icp
 Xbox Controller.icp
 XHYN_C02.icp
