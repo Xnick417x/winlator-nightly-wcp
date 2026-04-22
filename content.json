@@ -277,6 +277,12 @@
   },
   {
     "type": "Proton",
+    "verName": "WN.Proton-11.0-arm64ec-NTSync-v1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/WN.Proton-11.0-arm64ec-NTSync-v1.wcp"
+  },
+  {
+    "type": "Proton",
     "verName": "Proton-10-arm64ec-coffincolors",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10-arm64ec-coffincolors.wcp"
@@ -325,6 +331,12 @@
   },
   {
     "type": "VKD3D",
+    "verName": "Vk3dk-3.0b-Tfix",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-3.0b-Tfix.wcp"
+  },
+  {
+    "type": "VKD3D",
     "verName": "Vk3dk-proton-3.0a",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-proton-3.0a.wcp"
@@ -340,6 +352,12 @@
     "verName": "Vk3dk-proton-3.0b-tilting",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-proton-3.0b-tilting.wcp"
+  },
+  {
+    "type": "VKD3D",
+    "verName": "Vk3dk-3.0b-arm64ec-Tfix",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-3.0b-arm64ec-Tfix.wcp"
   },
   {
     "type": "VKD3D",
