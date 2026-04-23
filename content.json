@@ -277,9 +277,9 @@
   },
   {
     "type": "Proton",
-    "verName": "WN.Proton-11.0-arm64ec-NTSync-v1",
+    "verName": "WN.Proton-11.0-arm64ec-NTSync-v2",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/WN.Proton-11.0-arm64ec-NTSync-v1.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/WN.Proton-11.0-arm64ec-NTSync-v2.wcp"
   },
   {
     "type": "Proton",
