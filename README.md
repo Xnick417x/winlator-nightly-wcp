@@ -45,7 +45,7 @@ For Driver manager URL. Paste main repo URL.
 | **FEXCore** (ARM64EC) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-701555e40/FEXCore-2604-701555e40.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=fex-nightly+NOT+Weekly&expanded=true) |
 | **Box64** (Standard) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-e11c10c1f/Box64-0.4.3-e11c10c1f.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=box64-nightly+NOT+wowbox64+NOT+bionic+NOT+Weekly&expanded=true) |
 | **Box64** (Non standard - wip) | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/bionic-box64-nightly-7eeb50164/Bionic-Box64-0.4.2-7eeb50164.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=bionic-box64-nightly+NOT+Weekly&expanded=true) |
-| **WOWBox64** | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-96fc30b10/WOWBox64-0.4.3-96fc30b10.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
+| **WOWBox64** | [**Download Latest**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-e11c10c1f/WOWBox64-0.4.3-e11c10c1f.wcp) | [View History](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases?q=wowbox64-nightly+NOT+Weekly&expanded=true) |
 
 ### Stable Builds
 
