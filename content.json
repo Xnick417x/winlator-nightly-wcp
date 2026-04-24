@@ -1,9 +1,9 @@
 [
   {
     "type": "Box64",
-    "verName": "Box64-0.4.3-96fc30b10",
+    "verName": "Box64-0.4.3-e11c10c1f",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-96fc30b10/Box64-0.4.3-96fc30b10.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-e11c10c1f/Box64-0.4.3-e11c10c1f.wcp"
   },
   {
     "type": "Box64",
@@ -145,6 +145,12 @@
   },
   {
     "type": "DXVK",
+    "verName": "Dxvk-Sarek-dyasync-1.12",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-Sarek-dyasync-1.12.wcp"
+  },
+  {
+    "type": "DXVK",
     "verName": "Dxvk-sarek-1.12",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Dxvk/Dxvk-sarek-1.12.wcp"
@@ -199,9 +205,9 @@
   },
   {
     "type": "FEXCore",
-    "verName": "FEXCore-2604-701555e40",
+    "verName": "FEXCore-2604-4b02c04af",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-701555e40/FEXCore-2604-701555e40.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-4b02c04af/FEXCore-2604-4b02c04af.wcp"
   },
   {
     "type": "FEXCore",
@@ -277,9 +283,9 @@
   },
   {
     "type": "Proton",
-    "verName": "WN.Proton-11.0-arm64ec-NTSync-v2",
+    "verName": "WN.Proton-11.0-arm64ec-NTSync-v3",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/WN.Proton-11.0-arm64ec-NTSync-v2.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/WN.Proton-11.0-arm64ec-NTSync-v3.wcp.xz"
   },
   {
     "type": "Proton",
@@ -289,15 +295,15 @@
   },
   {
     "type": "Proton",
-    "verName": "Proton-10.0-4-x86_64",
+    "verName": "Proton-10-4-x86_64",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10.0-4-x86_64.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10-4-x86_64.wcp"
   },
   {
     "type": "Proton",
-    "verName": "Proton-10.0-4-arm64ec",
+    "verName": "Proton-10-4-arm64ec",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10.0-4-arm64ec.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10-4-arm64ec.wcp"
   },
   {
     "type": "Proton",
@@ -391,9 +397,9 @@
   },
   {
     "type": "WOWBox64",
-    "verName": "WOWBox64-0.4.3-96fc30b10",
+    "verName": "WOWBox64-0.4.3-e11c10c1f",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-96fc30b10/WOWBox64-0.4.3-96fc30b10.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-e11c10c1f/WOWBox64-0.4.3-e11c10c1f.wcp"
   },
   {
     "type": "WOWBox64",
