@@ -113,6 +113,9 @@ Third-party components used for packaging (such as DXVK, Wine, vkd3d-proton, FEX
 * REF4IK - Wine Layers [**REF4IK**](https://github.com/REF4IK/winlator-ref4ik-/releases/tag/1.0)
 * Pepelespooder - Bleeding Edge [**Pepelespooder**](https://github.com/Pepelespooder/proton-arm64-nightlies/releases)
 * The412Banner - Nightly Turnip [**The412Banner**](https://github.com/The412Banner/Banners-Turnip)
+* AndreVto - Proton 11 Wip [**AndreVto**](https://github.com/AndreVto/proton-wine)
+* teldommm - Proton 10 NTSync [**teldommm**](https://github.com/teldommm/proton-arm64-nightlies)
+* WinNative - Proton 11 NTSync [**WinNative**](https://github.com/MaxsTechReview/WinNative) 
 
 ---
 
