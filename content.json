@@ -289,6 +289,18 @@
   },
   {
     "type": "Proton",
+    "verName": "Proton-11.0-1-x86_64",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-11.0-1-x86_64.wcp.xz"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-11.0-1-arm64ec",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-11.0-1-arm64ec.wcp.xz"
+  },
+  {
+    "type": "Proton",
     "verName": "Proton-10-arm64ec-coffincolors",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/GameNative/Proton-10-arm64ec-coffincolors.wcp"
@@ -445,15 +457,15 @@
   },
   {
     "type": "Wine",
-    "verName": "wine-11.3-arm64ec",
+    "verName": "wine-11.3-x86_64",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-11.3-arm64ec.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-11.3-x86_64.wcp"
   },
   {
     "type": "Wine",
-    "verName": "wine-10-x86_64-ref4ik",
+    "verName": "wine-10.0-x86_64-ref4ik",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-10-x86_64-ref4ik.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-10.0-x86_64-ref4ik.wcp"
   },
   {
     "type": "Wine",
@@ -463,21 +475,63 @@
   },
   {
     "type": "Wine",
+    "verName": "wine-9.21-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.21-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
     "verName": "wine-9.20-x86_64",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.20-x86_64.wcp"
   },
   {
     "type": "Wine",
-    "verName": "wine-9.16-x86_64_ref4ik",
+    "verName": "wine-9.20-x86_64-ref4ik",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.16-x86_64_ref4ik.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.20-x86_64-ref4ik.wcp"
   },
   {
     "type": "Wine",
-    "verName": "wine_9.13-x86_64_ref4ik",
+    "verName": "wine-9.19-x86_64-ref4ik",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine_9.13-x86_64_ref4ik.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.19-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.18-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.18-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.17-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.17-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.16-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.16-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.13-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.13-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.10-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.10-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.7-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.7-x86_64-ref4ik.wcp"
   },
   {
     "type": "Wine",
@@ -487,9 +541,15 @@
   },
   {
     "type": "Wine",
-    "verName": "wine-9.2-x86_64_ref4ik",
+    "verName": "wine-9.4-x86_64-ref4ik",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.2-x86_64_ref4ik.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.4-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-9.3-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.3-x86_64-ref4ik.wcp"
   },
   {
     "type": "Wine",
@@ -499,8 +559,14 @@
   },
   {
     "type": "Wine",
-    "verName": "wine-8.20-x86_64_ref4ik",
+    "verName": "wine-9.0.1-x86_64-ref4ik",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-8.20-x86_64_ref4ik.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-9.0.1-x86_64-ref4ik.wcp"
+  },
+  {
+    "type": "Wine",
+    "verName": "wine-8.20-x86_64-ref4ik",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Wine/wine-8.20-x86_64-ref4ik.wcp"
   }
 ]
