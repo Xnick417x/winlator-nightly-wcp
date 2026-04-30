@@ -1,9 +1,9 @@
 [
   {
     "type": "Box64",
-    "verName": "Box64-0.4.3-2c72942fa",
+    "verName": "Box64-0.4.3-2e7d01ec4",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-2c72942fa/Box64-0.4.3-2c72942fa.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/box64-nightly-2e7d01ec4/Box64-0.4.3-2e7d01ec4.wcp"
   },
   {
     "type": "Box64",
@@ -379,15 +379,15 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0b-arm64ec-2a8342b2",
+    "verName": "Vk3dk-3.0b-arm64ec-0feea6a6",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-2a8342b2/Vk3dk-3.0b-arm64ec-2a8342b2.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-0feea6a6/Vk3dk-3.0b-arm64ec-0feea6a6.wcp"
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0b-2a8342b2",
+    "verName": "Vk3dk-3.0b-0feea6a6",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-2a8342b2/Vk3dk-3.0b-2a8342b2.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-0feea6a6/Vk3dk-3.0b-0feea6a6.wcp"
   },
   {
     "type": "VKD3D",
@@ -409,9 +409,9 @@
   },
   {
     "type": "WOWBox64",
-    "verName": "WOWBox64-0.4.3-2c72942fa",
+    "verName": "WOWBox64-0.4.3-2e7d01ec4",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-2c72942fa/WOWBox64-0.4.3-2c72942fa.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/wowbox64-nightly-2e7d01ec4/WOWBox64-0.4.3-2e7d01ec4.wcp"
   },
   {
     "type": "WOWBox64",
