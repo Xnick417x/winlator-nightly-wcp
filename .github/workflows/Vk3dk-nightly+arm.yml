@@ -95,7 +95,7 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          LATEST_TAG=$(git describe --tags --abbrev=0)
+          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
           VERSION_NAME="${LATEST_TAG}-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
@@ -351,7 +351,7 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          LATEST_TAG=$(git describe --tags --abbrev=0)
+          LATEST_TAG=$(git describe --tags --abbrev=0 | sed 's/^v//')
           VERSION_NAME="${LATEST_TAG}-arm64ec-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
