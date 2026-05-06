@@ -72,6 +72,12 @@
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Box64/Box64-0.3.4.wcp"
   },
   {
+    "type": "Box64",
+    "verName": "Box64-0.3.2",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Box64/Box64-0.3.2.wcp"
+  },
+  {
     "type": "DXVK",
     "verName": "Dxvk-2.7.1-gplasync",
     "verCode": "0",
