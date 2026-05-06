@@ -361,6 +361,12 @@
   },
   {
     "type": "VKD3D",
+    "verName": "Vk3dk-arm64ec-3.0.1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-arm64ec-3.0.1.wcp"
+  },
+  {
+    "type": "VKD3D",
     "verName": "Vk3dk-arm64ec-2.14.1",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-arm64ec-2.14.1.wcp"
@@ -412,12 +418,6 @@
     "verName": "Vk3dk-proton-3.0.1",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Vk3dk/Vk3dk-proton-3.0.1.wcp"
-  },
-  {
-    "type": "VKD3D",
-    "verName": "Vk3dk-proton-3.0.1-arm64ec",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Vk3dk/Vk3dk-proton-3.0.1-arm64ec.wcp"
   },
   {
     "type": "VKD3D",
