@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-standard:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout VKD3D
@@ -77,9 +77,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .ccache
-          key: ccache-vk3dk-standard-${{ env.UPSTREAM_HASH }}
+          key: ccache-vk3dk-${{ env.UPSTREAM_HASH }}
           restore-keys: |
-            ccache-vk3dk-standard-
+            ccache-vk3dk-
 
       - name: Configure ccache
         if: env.SHOULD_BUILD == 'true'
@@ -95,12 +95,12 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          LATEST_TAG="3.0b"
+          LATEST_TAG=$(git describe --tags --abbrev=0)
           VERSION_NAME="${LATEST_TAG}-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
-      - name: Build Standard
+      - name: Build
         if: env.SHOULD_BUILD == 'true'
         run: |
           cat <<EOF > cross-x64.txt
@@ -147,7 +147,7 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: ccache -s
 
-      - name: Package Standard
+      - name: Package
         if: env.SHOULD_BUILD == 'true'
         run: |
           rm -rf final_package
@@ -186,14 +186,14 @@ jobs:
           cd final_package
           tar -cJf ../Vk3dk-${{ env.VERSION_NAME }}.wcp *
 
-      - name: Upload Artifact (Standard)
+      - name: Upload Artifact
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: vk3dk
           path: '*.wcp'
 
-      - name: Create Release (Standard)
+      - name: Create Release
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v1
         with:
@@ -204,7 +204,7 @@ jobs:
             Automated nightly build of Vk3dk.
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
 
-      - name: Cleanup Old Releases (Standard)
+      - name: Cleanup Old Releases
         if: env.SHOULD_BUILD == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -217,14 +217,14 @@ jobs:
             sleep 2
           done
 
-      - name: Update Dashboard (Standard)
+      - name: Update Dashboard
         if: env.SHOULD_BUILD == 'true'
         uses: actions/checkout@v4
         with:
           path: dashboard
           fetch-depth: 0
 
-      - name: Push README Updates (Standard)
+      - name: Push README Updates
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dashboard
@@ -237,7 +237,7 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*Standard/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
              git commit -m "Update dashboard for Vk3dk ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
@@ -351,12 +351,12 @@ jobs:
           cd src
           COMMIT_HASH=$(git rev-parse --short HEAD)
           git fetch --tags --force
-          LATEST_TAG="3.0b"
+          LATEST_TAG=$(git describe --tags --abbrev=0)
           VERSION_NAME="${LATEST_TAG}-arm64ec-${COMMIT_HASH}"
           echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
           echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
 
-      - name: Build ARM64EC
+      - name: Build arm64ec
         if: env.SHOULD_BUILD == 'true'
         run: |
           cat <<EOF > arm64ec.txt
@@ -401,7 +401,7 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         run: ccache -s
 
-      - name: Package ARM64EC
+      - name: Package arm64ec
         if: env.SHOULD_BUILD == 'true'
         run: |
           rm -rf final_package
@@ -446,14 +446,14 @@ jobs:
           xz -9 archive.tar
           mv archive.tar.xz Vk3dk-${{ env.VERSION_NAME }}.wcp
 
-      - name: Upload Artifact (ARM64EC)
+      - name: Upload Artifact (arm64ec)
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: vk3dk-arm64ec
           path: '*.wcp'
 
-      - name: Create Release (ARM64EC)
+      - name: Create Release (arm64ec)
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v1
         with:
@@ -464,7 +464,7 @@ jobs:
             Automated nightly build of Vk3dk (arm64ec).
             Commit: https://github.com/HansKristian-Work/vkd3d-proton/commit/${{ env.COMMIT_HASH }}
 
-      - name: Cleanup Old Releases (ARM64EC)
+      - name: Cleanup Old Releases (arm64ec)
         if: env.SHOULD_BUILD == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -477,14 +477,14 @@ jobs:
             sleep 2
           done
 
-      - name: Update Dashboard (ARM64EC)
+      - name: Update Dashboard (arm64ec)
         if: env.SHOULD_BUILD == 'true'
         uses: actions/checkout@v4
         with:
           path: dashboard
           fetch-depth: 0
 
-      - name: Push README Updates (ARM64EC)
+      - name: Push README Updates (arm64ec)
         if: env.SHOULD_BUILD == 'true'
         run: |
           cd dashboard
@@ -497,9 +497,9 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*ARM64EC/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/VKD3D-Proton.*arm64ec/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Vk3dk ARM64EC ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             git commit -m "Update dashboard for Vk3dk arm64ec ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
