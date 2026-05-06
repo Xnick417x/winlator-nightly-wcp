@@ -85,21 +85,21 @@
   },
   {
     "type": "DXVK",
-    "verName": "2.7.1-gplasync-c2308b6b",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nightly-c2308b6b/2.7.1-gplasync-c2308b6b.wcp"
-  },
-  {
-    "type": "DXVK",
     "verName": "Dxvk-2.7.1-arm64ec-gplasync",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/Stable-Arm64ec-Dxvk/Dxvk-2.7.1-arm64ec-gplasync.wcp"
   },
   {
     "type": "DXVK",
-    "verName": "2.7.1-arm64ec-c2308b6b",
+    "verName": "2.7.1-arm64ec-a9bdb298",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-arm64ec-nightly-c2308b6b/2.7.1-arm64ec-c2308b6b.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-arm64ec-nightly-a9bdb298/2.7.1-arm64ec-a9bdb298.wcp"
+  },
+  {
+    "type": "DXVK",
+    "verName": "2.7.1-gplasync-a9bdb298",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/dxvk-nightly-a9bdb298/2.7.1-gplasync-a9bdb298.wcp"
   },
   {
     "type": "DXVK",
@@ -223,9 +223,9 @@
   },
   {
     "type": "FEXCore",
-    "verName": "FEXCore-2604-694e68b83",
+    "verName": "FEXCore-2604-4db2a98d7",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-694e68b83/FEXCore-2604-694e68b83.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/fex-nightly-2604-4db2a98d7/FEXCore-2604-4db2a98d7.wcp"
   },
   {
     "type": "FEXCore",
@@ -397,15 +397,15 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0b-arm64ec-13debcbb",
+    "verName": "Vk3dk-3.0b-arm64ec-3b10bd7a",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-13debcbb/Vk3dk-3.0b-arm64ec-13debcbb.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-arm64ec-nightly-3b10bd7a/Vk3dk-3.0b-arm64ec-3b10bd7a.wcp"
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0b-13debcbb",
+    "verName": "Vk3dk-3.0b-3b10bd7a",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-13debcbb/Vk3dk-3.0b-13debcbb.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/download/vk3dk-nightly-3b10bd7a/Vk3dk-3.0b-3b10bd7a.wcp"
   },
   {
     "type": "VKD3D",
