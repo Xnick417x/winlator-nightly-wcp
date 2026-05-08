@@ -1,4 +1,4 @@
-name: Build Box64 Bionic Nightly
+name: Build Box64 Bionic
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q "bionic-box64-nightly-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -131,9 +131,9 @@ jobs:
           cat <<EOF > profile.json
           {
             "type": "Box64",
-            "versionName": "${{ env.FULL_VERSION }}",
+            "versionName": "v${{ env.FULL_VERSION }}",
             "versionCode": 0,
-            "description": "Box64 Bionic Nightly\nCommit: ${{ env.COMMIT_HASH }}",
+            "description": "Box64 Bionic v${{ env.FULL_VERSION }}\nCommit: ${{ env.COMMIT_HASH }}",
             "files": [
               {
                 "source": "box64",
@@ -143,7 +143,7 @@ jobs:
           }
           EOF
           
-          tar -cJf "Bionic-Box64-${{ env.FULL_VERSION }}.wcp" box64 profile.json
+          tar -cJf "Bionic-Box64-v${{ env.FULL_VERSION }}.wcp" box64 profile.json
 
       - name: Upload Artifact
         if: env.SHOULD_BUILD == 'true'
@@ -155,13 +155,13 @@ jobs:
 
       - name: Create Release
         if: env.SHOULD_BUILD == 'true'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: bionic-box64-nightly-${{ env.COMMIT_HASH }}
+          tag_name: v${{ env.FULL_VERSION }}-bionic
           files: build/Bionic-Box64-*.wcp
-          name: "Box64 Bionic Nightly ${{ env.COMMIT_HASH }}"
+          name: "Box64 Bionic v${{ env.FULL_VERSION }}"
           body: |
-            Automated nightly build of Box64 (Bionic Optimized).
+            Automated build of Box64 (Bionic Optimized).
             Commit: https://github.com/ptitSeb/box64/commit/${{ env.COMMIT_HASH }}
 
       - name: Cleanup Old Releases
@@ -169,7 +169,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("bionic-box64-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | endswith("-bionic"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
           for TAG in $OLD_RELEASES; do
             echo "Deleting old release: $TAG"
@@ -190,16 +190,16 @@ jobs:
           cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/bionic-box64-nightly-${{ env.COMMIT_HASH }}/Bionic-Box64-${{ env.FULL_VERSION }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${{ env.FULL_VERSION }}-bionic/Bionic-Box64-v${{ env.FULL_VERSION }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
           git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/\*\*Box64\*\* (Non standard - wip)/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/\*\*Box64 Bionic\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Box64 Bionic ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             git commit -m "Update dashboard for Box64 Bionic v${{ env.FULL_VERSION }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
