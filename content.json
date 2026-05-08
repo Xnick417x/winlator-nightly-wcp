@@ -1,15 +1,15 @@
 [
   {
     "type": "Box64",
-    "verName": "Bionic-Box64-0.4.3-469c42062",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/bionic-box64-nightly-469c42062/Bionic-Box64-0.4.3-469c42062.wcp"
-  },
-  {
-    "type": "Box64",
     "verName": "Box64-0.4.3-469c42062",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-469c42062/Box64-0.4.3-469c42062.wcp"
+  },
+  {
+    "type": "Box64",
+    "verName": "Bionic-Box64-0.4.3-70b6068ec",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/bionic-box64-nightly-70b6068ec/Bionic-Box64-0.4.3-70b6068ec.wcp"
   },
   {
     "type": "Box64",
