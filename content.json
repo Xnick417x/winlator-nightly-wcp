@@ -385,15 +385,15 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0.1-arm64ec-ddcda06e",
+    "verName": "Vk3dk-3.0.1-arm64ec-7cf0b003",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vk3dk-arm64ec-nightly-ddcda06e/Vk3dk-3.0.1-arm64ec-ddcda06e.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vk3dk-arm64ec-nightly-7cf0b003/Vk3dk-3.0.1-arm64ec-7cf0b003.wcp"
   },
   {
     "type": "VKD3D",
-    "verName": "Vk3dk-3.0.1-ddcda06e",
+    "verName": "Vk3dk-3.0.1-7cf0b003",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vk3dk-nightly-ddcda06e/Vk3dk-3.0.1-ddcda06e.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vk3dk-nightly-7cf0b003/Vk3dk-3.0.1-7cf0b003.wcp"
   },
   {
     "type": "VKD3D",
