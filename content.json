@@ -307,9 +307,33 @@
   },
   {
     "type": "Proton",
+    "verName": "Proton-11.0-1-x86_64",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/GameNative/Proton-11.0-1-x86_64.wcp"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-11.0-1-arm64ec",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/GameNative/Proton-11.0-1-arm64ec.wcp"
+  },
+  {
+    "type": "Proton",
     "verName": "Proton-10-arm64ec-coffincolors",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/GameNative/Proton-10-arm64ec-coffincolors.wcp"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-10.0-4-x86_64",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/GameNative/Proton-10.0-4-x86_64.wcp"
+  },
+  {
+    "type": "Proton",
+    "verName": "Proton-10.0-4-arm64ec",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/GameNative/Proton-10.0-4-arm64ec.wcp"
   },
   {
     "type": "Proton",
