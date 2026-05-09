@@ -211,15 +211,21 @@
   },
   {
     "type": "FEXCore",
-    "verName": "FEX-2604",
+    "verName": "FEX-2605",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-FEX/FEX-2604.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-FEX/FEX-2605.wcp"
   },
   {
     "type": "FEXCore",
-    "verName": "FEXCore-2604-e517f3259",
+    "verName": "FEXCore-2605-a04b0241c",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2604-e517f3259/FEXCore-2604-e517f3259.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2605-a04b0241c/FEXCore-2605-a04b0241c.wcp"
+  },
+  {
+    "type": "FEXCore",
+    "verName": "FEX-2604",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-FEX/FEX-2604.wcp"
   },
   {
     "type": "FEXCore",
