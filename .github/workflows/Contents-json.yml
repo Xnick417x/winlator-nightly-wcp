@@ -19,7 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -c '
+          cat << 'EOF' > generate.py
           import os
           import json
           import subprocess
@@ -31,8 +31,8 @@ jobs:
           nightly_targets = [
               ("DXVK", "dxvk-nightly-"),
               ("DXVK", "dxvk-arm64ec-nightly-"),
-              ("VKD3D", "vk3dk-nightly-"),
-              ("VKD3D", "vk3dk-arm64ec-nightly-"),
+              ("VKD3D", "vk3dk-3.0b-"),
+              ("VKD3D", "vk3dk-arm64ec-3.0b-"),
               ("FEXCore", "fex-nightly-"),
               ("Box64", "box64-nightly-"),
               ("Box64", "bionic-box64-nightly-"),
@@ -60,7 +60,7 @@ jobs:
           if tags_json:
               try:
                   all_tags = [t.get("tagName") for t in json.loads(tags_json)]
-              except:
+              except Exception:
                   pass
 
           for w_type, prefix in nightly_targets:
@@ -80,7 +80,7 @@ jobs:
                                       "verCode": "0",
                                       "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
                                   })
-                      except:
+                      except Exception:
                           pass
 
           for w_type, tag in stable_targets:
@@ -98,7 +98,7 @@ jobs:
                                   "verCode": "0",
                                   "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
                               })
-                      except:
+                      except Exception:
                           pass
 
           def version_sort_key(item):
@@ -110,7 +110,9 @@ jobs:
 
           with open("contents.json", "w") as f:
               json.dump(pack_data, f, indent=2)
-          '
+          EOF
+          
+          python generate.py
 
       - name: Commit and Push contents.json
         run: |
