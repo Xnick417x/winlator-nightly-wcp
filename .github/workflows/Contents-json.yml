@@ -15,11 +15,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Generate contents.json
+      - name: Generate content.json
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cat << 'EOF' > generate.py
+          python -c '
           import os
           import json
           import subprocess
@@ -31,8 +31,8 @@ jobs:
           nightly_targets = [
               ("DXVK", "dxvk-nightly-"),
               ("DXVK", "dxvk-arm64ec-nightly-"),
-              ("VKD3D", "vk3dk-3.0b-"),
-              ("VKD3D", "vk3dk-arm64ec-3.0b-"),
+              ("VKD3D", "vk3dk-nightly-"),
+              ("VKD3D", "vk3dk-arm64ec-nightly-"),
               ("FEXCore", "fex-nightly-"),
               ("Box64", "box64-nightly-"),
               ("Box64", "bionic-box64-nightly-"),
@@ -60,7 +60,7 @@ jobs:
           if tags_json:
               try:
                   all_tags = [t.get("tagName") for t in json.loads(tags_json)]
-              except Exception:
+              except:
                   pass
 
           for w_type, prefix in nightly_targets:
@@ -80,7 +80,7 @@ jobs:
                                       "verCode": "0",
                                       "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
                                   })
-                      except Exception:
+                      except:
                           pass
 
           for w_type, tag in stable_targets:
@@ -98,8 +98,8 @@ jobs:
                                   "verCode": "0",
                                   "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
                               })
-                      except Exception:
-                          pass
+                  except:
+                      pass
 
           def version_sort_key(item):
               numbers = [int(n) for n in re.findall(r"\d+", item["verName"])]
@@ -108,16 +108,14 @@ jobs:
 
           pack_data = sorted(pack_data, key=version_sort_key)
 
-          with open("contents.json", "w") as f:
+          with open("content.json", "w") as f:
               json.dump(pack_data, f, indent=2)
-          EOF
-          
-          python generate.py
+          '
 
-      - name: Commit and Push contents.json
+      - name: Commit and Push content.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add contents.json
-          git commit -m "Auto-update WCP Hub contents.json [skip ci]" || echo "No changes to commit"
+          git commit -m "Auto-update WCP Hub content.json [skip ci]" || echo "No changes to commit"
           git push
