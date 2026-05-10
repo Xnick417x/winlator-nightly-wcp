@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Generate content.json
+      - name: Generate contents.json
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -74,6 +74,8 @@ jobs:
                               asset_name = asset.get("name", "")
                               if asset_name.endswith(".wcp") or asset_name.endswith(".wcp.xz"):
                                   clean_name = asset_name.replace(".wcp.xz", "").replace(".wcp", "")
+                                  clean_name = re.sub(r"(?i)standard", "", clean_name).strip()
+                                  clean_name = re.sub(r"  +", " ", clean_name)
                                   pack_data.append({
                                       "type": w_type,
                                       "verName": clean_name,
@@ -92,6 +94,8 @@ jobs:
                           asset_name = asset.get("name", "")
                           if asset_name.endswith(".wcp") or asset_name.endswith(".wcp.xz"):
                               clean_name = asset_name.replace(".wcp.xz", "").replace(".wcp", "")
+                              clean_name = re.sub(r"(?i)standard", "", clean_name).strip()
+                              clean_name = re.sub(r"  +", " ", clean_name)
                               pack_data.append({
                                   "type": w_type,
                                   "verName": clean_name,
@@ -108,14 +112,14 @@ jobs:
 
           pack_data = sorted(pack_data, key=version_sort_key)
 
-          with open("content.json", "w") as f:
+          with open("contents.json", "w") as f:
               json.dump(pack_data, f, indent=2)
           '
 
-      - name: Commit and Push content.json
+      - name: Commit and Push contents.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content.json
-          git commit -m "Auto-update WCP Hub content.json [skip ci]" || echo "No changes to commit"
+          git add contents.json
+          git commit -m "Auto-update WCP Hub contents.json [skip ci]" || echo "No changes to commit"
           git push
