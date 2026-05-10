@@ -16,7 +16,7 @@ Contents.Json updated at **12:00 AM CST**
 ### Contents for Winlator
 Copy the link below, open Winlator, and go to **Settings** -> **Downloadable Content URL** -> **Paste URL**.
 
-    https://raw.githubusercontent.com/Xnick417x/Winlator-Bionic-Nightly-wcp/refs/heads/main/content.json
+    https://raw.githubusercontent.com/Xnick417x/winlator-nightly-wcp/refs/heads/main/contents.json
 
 If Contents don't show up. Try turning phone to Landscape View.
 
