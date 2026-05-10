@@ -163,6 +163,18 @@
   },
   {
     "type": "DXVK",
+    "verName": "Dxvk-Sarek-async-1.11",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-Dxvk/Dxvk-Sarek-async-1.11.wcp"
+  },
+  {
+    "type": "DXVK",
+    "verName": "Dxvk-1.10-stripped",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-Dxvk/Dxvk-1.10-stripped.wcp"
+  },
+  {
+    "type": "DXVK",
     "verName": "Dxvk-1.10.3-async",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-Dxvk/Dxvk-1.10.3-async.wcp"
