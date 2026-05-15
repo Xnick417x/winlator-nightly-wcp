@@ -26,7 +26,7 @@ For Driver manager URL. Paste main repo URL.
 
 ### Status
 * **DXVK:** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/Dxvk-nightly-Gplasync.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/Dxvk-nightly-Gplasync.yml)
-* **VKD3D:** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/Vk3dk-nightly+arm.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/Vk3dk-nightly+arm.yml)
+* **VKD3D:** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/Vk3dk-nightly+arm.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/Vkd3d-nightly+arm.yml)
 * **FEXCore:** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/FexCore-nightly.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/FexCore-nightly.yml)
 * **Box64 / WOWBox64:** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/Box64-nightly+Wowbox.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/Box64-nightly+Wowbox.yml)
 * **Box64 (WIP):** [![Build Status](https://img.shields.io/github/actions/workflow/status/Xnick417x/Winlator-Bionic-Nightly-wcp/Box64-bionic.yml?label=Build&style=flat-square)](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/actions/workflows/Box64-bionic.yml)
