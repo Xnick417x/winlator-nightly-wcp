@@ -54,7 +54,7 @@ For Driver manager URL. Paste main repo URL.
 | **DXVK** (GPLAsync) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-Dxvk) |
 | **DXVK** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-Arm64ec-Dxvk) |
 | **VKD3D-Proton** (Standard) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-VKD3D) |
-| **VKD3D-Proton** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-Arm64ec-VKD3D) |
+| **VKD3D-Proton** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-arm64ec-VKD3D) |
 | **FEXCore** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-FEX) |
 | **Box64** (Standard) | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-Box64) |
 | **WOWBox64** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-wowbox64) |
