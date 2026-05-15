@@ -486,6 +486,12 @@
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-wowbox64/WOWBox64-0.3.6.wcp"
   },
   {
+    "type": "WOWBox64",
+    "verName": "WOWBox64-0.3.4",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-wowbox64/WOWBox64-0.3.4.wcp"
+  },
+  {
     "type": "Wine",
     "verName": "wine-11.3-x86_64",
     "verCode": "0",
