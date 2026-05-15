@@ -100,7 +100,7 @@ jobs:
                                   "type": w_type,
                                   "verName": clean_name,
                                   "verCode": "0",
-                                  "remoteUrl": f"https://github.com/{target_repo}/releases/download/{tag}/{asset_name}"
+                                  "remoteUrl": f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
                               })
                   except:
                       pass
