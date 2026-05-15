@@ -170,7 +170,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | endswith("-box64"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
+          OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | startswith("box64-nightly-"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
           for TAG in $OLD_RELEASES;
           do
