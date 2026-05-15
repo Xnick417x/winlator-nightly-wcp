@@ -30,10 +30,12 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 |
+            grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -101,7 +103,8 @@ jobs:
         run: |
           cd source
           wget -q "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/patch/pipetto-controller-fix.patch" -O my-patch.patch
-          patch -p1 < my-patch.patch || true
+          patch -p1 < my-patch.patch ||
+          true
 
       - name: Configure and Build
         if: env.SHOULD_BUILD == 'true'
@@ -130,9 +133,9 @@ jobs:
           cat <<EOF > profile.json
           {
             "type": "Box64",
-            "versionName": "v${{ env.FULL_VERSION }}",
+            "versionName": "${{ env.FULL_VERSION }}",
             "versionCode": 0,
-            "description": "Box64-v${{ env.FULL_VERSION }}",
+            "description": "Box64-${{ env.FULL_VERSION }}",
             "files": [
               {
                 "source": "box64",
@@ -141,7 +144,7 @@ jobs:
             ]
           }
           EOF
-          tar -cJf "Box64-v${{ env.FULL_VERSION }}.wcp" box64 profile.json
+          tar -cJf "Box64-${{ env.FULL_VERSION }}.wcp" box64 profile.json
 
       - name: Upload Artifact
         if: env.SHOULD_BUILD == 'true'
@@ -155,9 +158,9 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.FULL_VERSION }}-box64
+          tag_name: ${{ env.FULL_VERSION }}-box64
           files: build/Box64-*.wcp
-          name: "Box64 v${{ env.FULL_VERSION }}"
+          name: "Box64 ${{ env.FULL_VERSION }}"
           body: |
             Automated build of Box64 (Android Native).
             Commit: https://github.com/ptitSeb/box64/commit/${{ env.COMMIT_HASH }}
@@ -169,9 +172,11 @@ jobs:
         run: |
           OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | endswith("-box64"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
-          for TAG in $OLD_RELEASES; do
+          for TAG in $OLD_RELEASES;
+          do
             echo "Deleting old release: $TAG"
-            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y ||
+            true
             sleep 2
           done
 
@@ -188,17 +193,21 @@ jobs:
           cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${{ env.FULL_VERSION }}-box64/Box64-v${{ env.FULL_VERSION }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.FULL_VERSION }}-box64/Box64-${{ env.FULL_VERSION }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
-          git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
+          git checkout $BRANCH_NAME 2>/dev/null ||
+          git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/\*\*Box64\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/\*\*Box64\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|"
+             README.md
              git add README.md
-             git commit -m "Update dashboard for Box64 v${{ env.FULL_VERSION }} [skip ci]" || echo "Nothing to commit"
-             if git push origin $BRANCH_NAME; then exit 0; fi
+             git commit -m "Update dashboard for Box64 ${{ env.FULL_VERSION }} [skip ci]" ||
+             echo "Nothing to commit"
+             if git push origin $BRANCH_NAME;
+             then exit 0; fi
              n=$((n+1))
              sleep 15
           done
@@ -225,10 +234,12 @@ jobs:
           SHORT_HASH=$(git rev-parse --short HEAD)
           echo "UPSTREAM_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]];
+          then
             echo "SHOULD_BUILD=true" >> $GITHUB_ENV
           else
-            if gh release list --repo ${{ github.repository }} --limit 100 | grep -q -- "-$SHORT_HASH"; then
+            if gh release list --repo ${{ github.repository }} --limit 100 |
+            grep -q -- "-$SHORT_HASH"; then
               echo "SHOULD_BUILD=false" >> $GITHUB_ENV
             else
               echo "SHOULD_BUILD=true" >> $GITHUB_ENV
@@ -303,7 +314,8 @@ jobs:
         run: |
           cd source
           wget -q "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/patch/pipetto-controller-fix.patch" -O my-patch.patch
-          patch -p1 < my-patch.patch || true
+          patch -p1 < my-patch.patch ||
+          true
 
       - name: Configure and Build
         if: env.SHOULD_BUILD == 'true'
@@ -331,9 +343,9 @@ jobs:
           cat <<EOF > profile.json
           {
             "type": "WOWBox64",
-            "versionName": "v${{ env.FULL_VERSION }}",
+            "versionName": "${{ env.FULL_VERSION }}",
             "versionCode": 0,
-            "description": "WOWBox64-v${{ env.FULL_VERSION }}",
+            "description": "WOWBox64-${{ env.FULL_VERSION }}",
             "files": [
               {
                 "source": "wowbox64.dll",
@@ -342,7 +354,7 @@ jobs:
             ]
           }
           EOF
-          tar -cJf "WOWBox64-v${{ env.FULL_VERSION }}.wcp" wowbox64.dll profile.json
+          tar -cJf "WOWBox64-${{ env.FULL_VERSION }}.wcp" wowbox64.dll profile.json
 
       - name: Upload Artifact
         if: env.SHOULD_BUILD == 'true'
@@ -356,9 +368,9 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.FULL_VERSION }}-wowbox64
+          tag_name: ${{ env.FULL_VERSION }}-wowbox64
           files: build/wowbox64-prefix/src/wowbox64-build/WOWBox64-*.wcp
-          name: "WOWBox64 v${{ env.FULL_VERSION }}"
+          name: "WOWBox64 ${{ env.FULL_VERSION }}"
           body: |
             Automated build of WOWBox64 (MinGW).
             Commit: https://github.com/ptitSeb/box64/commit/${{ env.COMMIT_HASH }}
@@ -370,9 +382,11 @@ jobs:
         run: |
           OLD_RELEASES=$(gh release list --repo ${{ github.repository }} --limit 500 --json tagName,createdAt --jq '[.[] | select(.tagName | endswith("-wowbox64"))] | sort_by(.createdAt) | reverse | .[].tagName' | tail -n +9)
           
-          for TAG in $OLD_RELEASES; do
+          for TAG in $OLD_RELEASES;
+          do
             echo "Deleting old release: $TAG"
-            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y || true
+            gh release delete "$TAG" --repo ${{ github.repository }} --cleanup-tag -y ||
+            true
             sleep 2
           done
 
@@ -389,17 +403,21 @@ jobs:
           cd dashboard
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${{ env.FULL_VERSION }}-wowbox64/WOWBox64-v${{ env.FULL_VERSION }}.wcp"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.FULL_VERSION }}-wowbox64/WOWBox64-${{ env.FULL_VERSION }}.wcp"
           BRANCH_NAME="${{ github.ref_name }}"
-          git checkout $BRANCH_NAME 2>/dev/null || git checkout -b $BRANCH_NAME
+          git checkout $BRANCH_NAME 2>/dev/null ||
+          git checkout -b $BRANCH_NAME
           n=0
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/\*\*WOWBox64\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/\*\*WOWBox64\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|"
+             README.md
              git add README.md
-             git commit -m "Update dashboard for WOWBox64 v${{ env.FULL_VERSION }} [skip ci]" || echo "Nothing to commit"
-             if git push origin $BRANCH_NAME; then exit 0; fi
+             git commit -m "Update dashboard for WOWBox64 ${{ env.FULL_VERSION }} [skip ci]" ||
+             echo "Nothing to commit"
+             if git push origin $BRANCH_NAME;
+             then exit 0; fi
              n=$((n+1))
              sleep 15
           done
