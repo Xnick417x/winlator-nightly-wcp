@@ -86,8 +86,7 @@ jobs:
                           pass
 
           for w_type, tag in stable_targets:
-              target_repo = "Xnick417x/Winlator-Bionic-Nightly-wcp" if tag == "Stable-wowbox64" else repo
-              assets_json = run_gh(f"gh release view {tag} --repo {target_repo} --json assets")
+              assets_json = run_gh(f"gh release view {tag} --repo {repo} --json assets")
               if assets_json:
                   try:
                       assets = json.loads(assets_json).get("assets", [])

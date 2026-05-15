@@ -57,7 +57,7 @@ For Driver manager URL. Paste main repo URL.
 | **VKD3D-Proton** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/winlator-nightly-wcp/releases/tag/Stable-arm64ec-VKD3D) |
 | **FEXCore** (ARM64EC) | [**Browse Stable Versions**](https://github.com/Xnick417x/winlator-nightly-wcp/releases/tag/Stable-FEX) |
 | **Box64** (Standard) | [**Browse Stable Versions**](https://github.com/Xnick417x/winlator-nightly-wcp/releases/tag/Stable-Box64) |
-| **WOWBox64** | [**Browse Stable Versions**](https://github.com/Xnick417x/Winlator-Bionic-Nightly-wcp/releases/tag/Stable-wowbox64) |
+| **WOWBox64** | [**Browse Stable Versions**](https://github.com/Xnick417x/winlator-nightly-wcp/releases/tag/Stable-wowbox64) |
 | **DXVK Sarek** | [**Browse Stable Versions**](https://github.com/Xnick417x/winlator-nightly-wcp/releases/tag/Sarek) |
 
 ### Turnip Nightly
