@@ -158,7 +158,7 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.FULL_VERSION }}-box64
+          tag_name: box64-nightly-${{ env.FULL_VERSION }}
           files: build/Box64-*.wcp
           name: "Box64 ${{ env.FULL_VERSION }}"
           body: |
@@ -364,7 +364,7 @@ jobs:
         if: env.SHOULD_BUILD == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.FULL_VERSION }}-wowbox64
+          tag_name: wowbox64-nightly-${{ env.FULL_VERSION }}
           files: build/wowbox64-prefix/src/wowbox64-build/WOWBox64-*.wcp
           name: "WOWBox64 ${{ env.FULL_VERSION }}"
           body: |
