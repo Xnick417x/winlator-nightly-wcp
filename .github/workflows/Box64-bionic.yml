@@ -131,9 +131,9 @@ jobs:
           cat <<EOF > profile.json
           {
             "type": "Box64",
-            "versionName": "v${{ env.FULL_VERSION }}",
+            "versionName": "${{ env.FULL_VERSION }}",
             "versionCode": 0,
-            "description": "Box64 Bionic v${{ env.FULL_VERSION }}\nCommit: ${{ env.COMMIT_HASH }}",
+            "description": "Box64 Bionic ${{ env.FULL_VERSION }}\nCommit: ${{ env.COMMIT_HASH }}",
             "files": [
               {
                 "source": "box64",
@@ -197,9 +197,9 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/\*\*Box64 Bionic\*\*/ s|\[\*\*Download Latest\*\*\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
+             sed -i "/\*\*Box64\*\* (Non standard - wip)/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Box64 Bionic v${{ env.FULL_VERSION }} [skip ci]" || echo "Nothing to commit"
+             git commit -m "Update dashboard for Box64 Bionic ${{ env.FULL_VERSION }} [skip ci]" || echo "Nothing to commit"
              if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15

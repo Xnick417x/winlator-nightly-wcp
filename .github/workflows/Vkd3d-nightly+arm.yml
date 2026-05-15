@@ -510,13 +510,10 @@ jobs:
           until [ "$n" -ge 5 ]
           do
              git pull origin $BRANCH_NAME --rebase
-             sed -i "/VKD3D-Proton.*arm64ec/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|"
-             README.md
+             sed -i "/\*\*VKD3D-Proton\*\* (ARM64EC)/ s|\\[\\*\\*Download Latest\\*\\*\\]([^)]*)|[**Download Latest**]($DOWNLOAD_URL)|" README.md
              git add README.md
-             git commit -m "Update dashboard for Vkd3d arm64ec ${{ env.COMMIT_HASH }} [skip ci]" ||
-             echo "Nothing to commit"
-             if git push origin $BRANCH_NAME;
-             then exit 0; fi
+             git commit -m "Update dashboard for Vkd3d arm64ec ${{ env.COMMIT_HASH }} [skip ci]" || echo "Nothing to commit"
+             if git push origin $BRANCH_NAME; then exit 0; fi
              n=$((n+1))
              sleep 15
           done
