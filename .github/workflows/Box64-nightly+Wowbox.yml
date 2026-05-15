@@ -209,7 +209,6 @@ jobs:
              sleep 15
           done
           exit 1
-
   build-wowbox64:
     name: Build WOWBox64 (MinGW)
     runs-on: ubuntu-latest

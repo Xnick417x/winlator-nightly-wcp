@@ -92,6 +92,8 @@ jobs:
                           asset_name = asset.get("name", "")
                           if asset_name.endswith(".wcp") or asset_name.endswith(".wcp.xz"):
                               clean_name = asset_name.replace(".wcp.xz", "").replace(".wcp", "")
+                              if w_type == "VKD3D":
+                                  clean_name = clean_name.replace("-proton", "").replace("-Proton", "")
                               pack_data.append({
                                   "type": w_type,
                                   "verName": clean_name,
