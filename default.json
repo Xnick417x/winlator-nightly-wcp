@@ -39,13 +39,13 @@
     "type": "VKD3D",
     "verName": "Vkd3d-proton-3.0.1",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-Vkd3d/Vkd3d-proton-3.0.1.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-VKD3D/Vkd3d-proton-3.0.1.wcp"
   },
   {
     "type": "VKD3D",
     "verName": "Vkd3d-arm64ec-3.0.1",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-Arm64ec-Vkd3d/Vkd3d-arm64ec-3.0.1.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Stable-arm64ec-VKD3D/Vkd3d-arm64ec-3.0.1.wcp"
   },
   {
     "type": "Wine",
