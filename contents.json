@@ -523,12 +523,6 @@
   },
   {
     "type": "Wine",
-    "verName": "wine-9.20-x86_64-ref4ik",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Wine/wine-9.20-x86_64-ref4ik.wcp"
-  },
-  {
-    "type": "Wine",
     "verName": "wine-9.19-x86_64-ref4ik",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/Wine/wine-9.19-x86_64-ref4ik.wcp"
