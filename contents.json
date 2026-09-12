@@ -1,9 +1,9 @@
 [
   {
     "type": "Box64",
-    "verName": "Box64-0.4.5-5524b6203",
+    "verName": "Box64-0.4.5-c79152cb4",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-5524b6203/Box64-0.4.5-5524b6203.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-c79152cb4/Box64-0.4.5-c79152cb4.wcp"
   },
   {
     "type": "Box64",
@@ -223,9 +223,9 @@
   },
   {
     "type": "FEXCore",
-    "verName": "FEXCore-2609-f18599d09",
+    "verName": "FEXCore-2609-4b652eb91",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2609-f18599d09/FEXCore-2609-f18599d09.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2609-4b652eb91/FEXCore-2609-4b652eb91.wcp"
   },
   {
     "type": "FEXCore",
@@ -433,15 +433,15 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vkd3d-3.0.1-arm64ec-0bd10357",
+    "verName": "Vkd3d-3.0.1-967e7af3",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-arm64ec-nightly-0bd10357/Vkd3d-3.0.1-arm64ec-0bd10357.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-nightly-967e7af3/Vkd3d-3.0.1-967e7af3.wcp"
   },
   {
     "type": "VKD3D",
-    "verName": "Vkd3d-3.0.1-0bd10357",
+    "verName": "Vkd3d-3.0.1-arm64ec-967e7af3",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-nightly-0bd10357/Vkd3d-3.0.1-0bd10357.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-arm64ec-nightly-967e7af3/Vkd3d-3.0.1-arm64ec-967e7af3.wcp"
   },
   {
     "type": "VKD3D",
@@ -463,9 +463,9 @@
   },
   {
     "type": "WOWBox64",
-    "verName": "WOWBox64-0.4.5-5524b6203",
+    "verName": "WOWBox64-0.4.5-c79152cb4",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/wowbox64-nightly-0.4.5-5524b6203/WOWBox64-0.4.5-5524b6203.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/wowbox64-nightly-0.4.5-c79152cb4/WOWBox64-0.4.5-c79152cb4.wcp"
   },
   {
     "type": "WOWBox64",
