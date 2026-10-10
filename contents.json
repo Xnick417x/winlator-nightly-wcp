@@ -1,15 +1,15 @@
 [
   {
     "type": "Box64",
-    "verName": "Box64-0.4.5-779d69f2e",
-    "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-779d69f2e/Box64-0.4.5-779d69f2e.wcp"
-  },
-  {
-    "type": "Box64",
     "verName": "Bionic-Box64-0.4.5-b9fd03e3a",
     "verCode": "0",
     "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/bionic-box64-nightly-0.4.5-b9fd03e3a/Bionic-Box64-0.4.5-b9fd03e3a.wcp"
+  },
+  {
+    "type": "Box64",
+    "verName": "Box64-0.4.5-c5ddad2a1",
+    "verCode": "0",
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-c5ddad2a1/Box64-0.4.5-c5ddad2a1.wcp"
   },
   {
     "type": "Box64",
@@ -463,9 +463,9 @@
   },
   {
     "type": "WOWBox64",
-    "verName": "WOWBox64-0.4.5-779d69f2e",
+    "verName": "WOWBox64-0.4.5-c5ddad2a1",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/wowbox64-nightly-0.4.5-779d69f2e/WOWBox64-0.4.5-779d69f2e.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/wowbox64-nightly-0.4.5-c5ddad2a1/WOWBox64-0.4.5-c5ddad2a1.wcp"
   },
   {
     "type": "WOWBox64",
