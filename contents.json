@@ -1,15 +1,15 @@
 [
   {
     "type": "Box64",
-    "verName": "Box64-0.4.5-ae3412c1b",
+    "verName": "Bionic-Box64-0.4.5-d96343fbb",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-ae3412c1b/Box64-0.4.5-ae3412c1b.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/bionic-box64-nightly-0.4.5-d96343fbb/Bionic-Box64-0.4.5-d96343fbb.wcp"
   },
   {
     "type": "Box64",
-    "verName": "Bionic-Box64-0.4.5-b99d44309",
+    "verName": "Box64-0.4.5-ae3412c1b",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/bionic-box64-nightly-0.4.5-b99d44309/Bionic-Box64-0.4.5-b99d44309.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/box64-nightly-0.4.5-ae3412c1b/Box64-0.4.5-ae3412c1b.wcp"
   },
   {
     "type": "Box64",
@@ -223,9 +223,9 @@
   },
   {
     "type": "FEXCore",
-    "verName": "FEXCore-2610-d7b8e1497",
+    "verName": "FEXCore-2610-3b7daa5e8",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2610-d7b8e1497/FEXCore-2610-d7b8e1497.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/fex-nightly-2610-3b7daa5e8/FEXCore-2610-3b7daa5e8.wcp"
   },
   {
     "type": "FEXCore",
@@ -433,15 +433,15 @@
   },
   {
     "type": "VKD3D",
-    "verName": "Vkd3d-3.0.1-arm64ec-0bb64c56",
+    "verName": "Vkd3d-3.0.1-arm64ec-ef9a02e8",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-arm64ec-nightly-0bb64c56/Vkd3d-3.0.1-arm64ec-0bb64c56.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-arm64ec-nightly-ef9a02e8/Vkd3d-3.0.1-arm64ec-ef9a02e8.wcp"
   },
   {
     "type": "VKD3D",
-    "verName": "Vkd3d-3.0.1-0bb64c56",
+    "verName": "Vkd3d-3.0.1-ef9a02e8",
     "verCode": "0",
-    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-nightly-0bb64c56/Vkd3d-3.0.1-0bb64c56.wcp"
+    "remoteUrl": "https://github.com/Xnick417x/winlator-nightly-wcp/releases/download/vkd3d-nightly-ef9a02e8/Vkd3d-3.0.1-ef9a02e8.wcp"
   },
   {
     "type": "VKD3D",
